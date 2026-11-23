@@ -335,7 +335,8 @@ def main():
             return terminar([], 'movies')
         t = normalizar(texto)
         def puntaje(x):
-            campos = [normalizar(x['titulo']), normalizar(x.get('original', ''))]
+            # título que se muestra, original y en español: "21 gramos" encuentra "21 Grams"
+            campos = [normalizar(x['titulo']), normalizar(x.get('original', '')), normalizar(x.get('titulo_es', ''))]
             if any(c.startswith(t) for c in campos):
                 return 0
             if any(f' {t}' in f' {c}' for c in campos):

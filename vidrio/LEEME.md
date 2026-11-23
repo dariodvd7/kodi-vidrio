@@ -56,6 +56,16 @@ Kodi 21 de la Mac).
 | `herramientas/` | `texturas.py` (genera las texturas), `includes.py` (genera `Includes_Vidrio.xml`; no editar ese archivo a mano), Home original de Estuary. |
 | `dist/` | Zips e IPA armados (fuera de git; `herramientas/zips.py`, `fork/armar_ipa.py`; publicados en Releases). |
 
+## Títulos y sinopsis
+`homelab/catalogo.py`: el título es el original si la película o serie es de habla inglesa o española (idioma original
+de Radarr/Sonarr); si no, el título en español. El título en español queda en `titulo_es` y la búsqueda lo usa
+("21 gramos" encuentra *21 Grams*). Se quita el año pegado al final. La sinopsis va en español: si Jellyfin la tiene
+en inglés o vacía, se pide a Seerr (TMDb, es-MX y después es-ES); si TMDb no la tiene, sale de
+`homelab/sinopsis_es.json` (traducciones propias, por `movie:<tmdb>`, `tv:<tmdb>` o `tv:carpeta:<carpeta>`; el
+catálogo avisa cuáles faltan). Si Jellyfin identificó mal una película (otro código de TMDb que Radarr) o dejó el
+nombre del archivo, valen los datos de Radarr y el título y la sinopsis en español de Seerr. En el homelab,
+`sinopsis_es.json` va al lado de `catalogo.py` en `/opt/kodi-artwork/`.
+
 ## Red de casa (`local.json`)
 Si Kodi usa la skin y el plugin directo desde esta carpeta (enlaces simbólicos, como en el Mac), el catálogo por
 defecto es el de ejemplo: poner la ruta real en los ajustes del plugin (`addon_data/plugin.video.vidrio/settings.xml`,
@@ -67,8 +77,8 @@ empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la to
 (sin ella usa la de ejemplo): en el cron, `VIDRIO_HOMELAB=<ip> /opt/kodi-artwork/catalogo.py`.
 
 ## Instalar
-1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.2.5.zip`,
-   después `skin.vidrio-1.2.1.zip` (versiones actuales: add-on 1.2.5, skin 1.2.1). La skin pide el add-on, por eso va
+1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.2.6.zip`,
+   después `skin.vidrio-1.2.1.zip` (versiones actuales: add-on 1.2.6, skin 1.2.1). La skin pide el add-on, por eso va
    primero.
 2. Para tráileres: instalar YouTube (`plugin.video.youtube`) del repositorio oficial. Funciona sin clave propia de la API.
 3. Interfaz → Skin → Vidrio.

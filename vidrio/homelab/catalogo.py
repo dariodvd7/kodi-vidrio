@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Arma el catálogo que usa el add-on Vidrio en Kodi, sin biblioteca de Kodi.
 
-Textos en español (título, sinopsis, géneros, episodios) salen de Jellyfin (es-419); tráileres y duración de
+Textos en español (sinopsis, géneros, episodios) salen de Jellyfin (es-419); tráileres, duración e idioma original de
 Radarr/Sonarr, con Jellyfin de respaldo. Escribe /srv/kodi-addons/vidrio/catalogo.json (Samba KodiAddons).
+
+Título: el original si la película o serie es de habla inglesa o española; si no, el título en español (queda también
+en 'titulo_es' para buscar). Sinopsis: en español; si Jellyfin la tiene en inglés o vacía, se pide en español a Seerr
+(TMDb, es-MX y después es-ES) y, si TMDb no la tiene, se toma de sinopsis_es.json (traducciones propias).
 Uso: sudo catalogo.py [--salida RUTA]
 """
 import json, os, re, shutil, sqlite3, sys, tempfile, time, urllib.request
@@ -14,6 +18,9 @@ JF_IMAGEN = f'http://{HOMELAB}:8097/Items/{{id}}/Images/Primary?fillWidth=640&qu
 SALIDA = sys.argv[sys.argv.index('--salida') + 1] if '--salida' in sys.argv else '/srv/kodi-addons/vidrio/catalogo.json'
 RAIZ = {'/movies/': ('/mnt/media/peliculas/', f'smb://{HOMELAB}/Peliculas/'),
         '/tv/': ('/mnt/media/series/', f'smb://{HOMELAB}/Series/')}
+SEERR = '/mnt/media/docker/seerr/settings.json'  # Seerr consulta TMDb: sinopsis en español que Jellyfin no tiene
+CORRECCIONES = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sinopsis_es.json')
+IDIOMAS_ORIGINAL = {'English', 'Spanish'}  # títulos que se muestran en su idioma original
 VIDEO = re.compile(r'\.(mkv|mp4|m4v|avi|mov|ts|m2ts|wmv)$', re.I)
 YT = re.compile(r'(?:v=|youtu\.be/|/embed/)([\w-]{11})')
 
@@ -122,6 +129,76 @@ def anio(valor, fecha):
     return valor or (int(fecha[:4]) if fecha and fecha[:4].isdigit() else 0)
 
 
+PALABRAS_EN = re.compile(r'\b(the|and|with|his|her|their|when|after|who|is|of|to|a|an|in|on)\b', re.I)
+PALABRAS_ES = re.compile(r'\b(el|la|los|las|que|una|un|del|con|por|para|su|sus|es|en|y)\b', re.I)
+ANIO_FINAL = re.compile(r'\s*\(\d{4}\)$')
+
+
+def en_ingles(texto):
+    """True si la sinopsis está en inglés (cuenta palabras frecuentes de cada idioma)."""
+    return len(PALABRAS_EN.findall(texto or '')) > len(PALABRAS_ES.findall(texto or ''))
+
+
+def limpiar_titulo(t):
+    return ANIO_FINAL.sub('', (t or '').strip())
+
+
+_seerr = {}
+
+
+def sinopsis_seerr(tipo, tmdb):
+    """Sinopsis en español de TMDb a través de Seerr ('movie' o 'tv'), o '' si no hay."""
+    return datos_seerr(tipo, tmdb).get('sinopsis', '')
+
+
+def datos_seerr(tipo, tmdb):
+    """{'titulo', 'sinopsis'} en español de TMDb a través de Seerr ('movie' o 'tv'); {} si no hay."""
+    if not tmdb:
+        return {}
+    if 'clave' not in _seerr:
+        try:
+            _seerr['clave'] = json.load(open(SEERR))['main']['apiKey']
+        except (OSError, ValueError, KeyError):
+            _seerr['clave'] = None
+    if not _seerr['clave']:
+        return {}
+    if (tipo, tmdb) in _seerr:
+        return _seerr[(tipo, tmdb)]
+    datos = {}
+    for idioma in ('es-MX', 'es-ES'):
+        req = urllib.request.Request(f'http://127.0.0.1:5055/api/v1/{tipo}/{tmdb}?language={idioma}',
+                                     headers={'X-Api-Key': _seerr['clave']})
+        try:
+            r = json.load(urllib.request.urlopen(req, timeout=30))
+        except Exception as e:
+            print(f'aviso: Seerr no respondió para {tipo} {tmdb} ({e})', file=sys.stderr)
+            break
+        datos.setdefault('titulo', (r.get('title') or r.get('name') or '').strip())
+        texto = (r.get('overview') or '').strip()
+        if texto and not en_ingles(texto):
+            datos['sinopsis'] = texto
+            break
+    _seerr[(tipo, tmdb)] = datos
+    return datos
+
+
+def corregir(x, tipo, idioma, original, correcciones):
+    """Aplica la regla de título y la sinopsis en español a una película ('movie') o serie ('tv')."""
+    x['titulo_es'] = limpiar_titulo(x['titulo'])
+    x['titulo'] = limpiar_titulo(original) if idioma in IDIOMAS_ORIGINAL and original else x['titulo_es']
+    x['original'] = limpiar_titulo(original or x.get('original'))
+    x['idioma'] = idioma or ''
+    if not x['sinopsis'] or en_ingles(x['sinopsis']):
+        tmdb = x.get('ids', {}).get('tmdb')
+        nueva = (sinopsis_seerr(tipo, tmdb) or correcciones.get(f'{tipo}:{tmdb}', '')
+                 or correcciones.get(f"{tipo}:carpeta:{x.get('carpeta')}", ''))  # sin código de TMDb: por carpeta
+        if nueva:
+            x['sinopsis'] = nueva
+        elif x['sinopsis']:
+            print(f'aviso: sin sinopsis en español para {x["titulo"]} ({tipo} {tmdb}): agregarla a sinopsis_es.json',
+                  file=sys.stderr)
+
+
 def main():
     tmp = tempfile.mkdtemp()
     try:
@@ -170,6 +247,16 @@ def main():
                             generos=base['generos'] or [GENEROS_EN.get(g, g) for g in r.get('genres', [])],
                             clasificacion=base['clasificacion'] or r.get('certification') or '')
             jf = proveedores.get(f['Id'], {})
+            if r.get('tmdbId') and (str(r['tmdbId']) != (jf.get('tmdb') or str(r['tmdbId'])) or BASURA.search(base['titulo'])
+                                    or '#' in base['titulo']):
+                # Jellyfin la identificó mal (otra película) o dejó el nombre del archivo: vale lo de Radarr
+                es = datos_seerr('movie', str(r['tmdbId']))
+                base.update(titulo=es.get('titulo') or r.get('title') or base['titulo'], original=r.get('originalTitle') or '',
+                            anio=r.get('year') or base['anio'], sinopsis=es.get('sinopsis') or r.get('overview') or '',
+                            generos=[GENEROS_EN.get(g, g) for g in r.get('genres', [])] or base['generos'],
+                            clasificacion=r.get('certification') or '', lema='')
+                print(f"aviso: {nombre}: Jellyfin la tiene como otra película o sin identificar; uso Radarr ({base['titulo']})",
+                      file=sys.stderr)
             base['ids'] = {k: v for k, v in {'tmdb': str(r.get('tmdbId') or jf.get('tmdb') or ''),
                                               'imdb': r.get('imdbId') or jf.get('imdb') or ''}.items() if v and v != '0'}
             base.update(carpeta=nombre, archivo=url, dir=url.rsplit('/', 1)[0] + '/',
@@ -197,6 +284,19 @@ def main():
                 'estreno': (f['PremiereDate'] or '')[:10], 'agregada': int(os.path.getmtime(local)),
                 'imagen': JF_IMAGEN.format(id=f['Id'].replace('-', '').lower()) if f['Id'] in con_imagen else '',
             })
+
+    try:
+        correcciones = json.load(open(CORRECCIONES, encoding='utf-8'))
+    except (OSError, ValueError):
+        correcciones = {}
+    for p in peliculas:
+        r = radarr.get(p['carpeta'], {})
+        corregir(p, 'movie', (r.get('originalLanguage') or {}).get('name'), r.get('originalTitle') or p['original'], correcciones)
+    for s in series.values():
+        so = sonarr.get(s['carpeta'], {})
+        idioma = (so.get('originalLanguage') or {}).get('name')
+        original = s['original'] or (so.get('title') if idioma == 'English' else '')
+        corregir(s, 'tv', idioma, original, correcciones)
 
     for sid, s in series.items():
         eps = sorted(episodios.get(sid, []), key=lambda e: (e['temporada'], e['episodio']))
