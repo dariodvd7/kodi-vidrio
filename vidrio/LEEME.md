@@ -236,3 +236,15 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   cada 30 minutos), así una versión nueva llega al abrir Kodi y no en la revisión diaria.
 - Kodi avisa en el log que el repositorio usa HTTP sin cifrar: es la red de casa; los zips se verifican con su sha256.
 - Probado en el TCL: plugin 1.4.1 → 1.4.2 y repositorio 1.0.0 → 1.0.1 desde el homelab.
+
+## Mis canales (plugin 1.5.0, skin 1.4.0)
+
+- Primera fila de la guía (control 5610). La arma el plugin con `?lista=guia&grupo=Mis canales` a partir de
+  `mis_canales.json` en el perfil del plugin: cada equipo tiene su lista. Sin elegir nada, arranca con
+  `guia.MIS_INICIALES` (11 canales de aire, noticias y deportes).
+- El botón "Mis canales" (5691, al lado de "Abrir DGO") abre un diálogo del plugin (`?editar_mis_canales=1`) con
+  todos los canales y sus logos, los elegidos arriba y marcados. Al aceptar, el plugin cambia la propiedad
+  `Window(home).Property(Vidrio.MisCanales)`, que va en la dirección de la fila, y Kodi la recarga.
+- Es un botón y no el menú contextual porque en una ventana propia de la skin (1154) Kodi no abre el menú
+  contextual de los elementos de una lista.
+- Probado en el TCL; llegó por el repositorio sin tocar nada.
