@@ -28,3 +28,11 @@ msgstr "Buscar subtítulos en español automáticamente"
 msgctxt "#30005"
 msgid "Show only the channels DGO has in the TV guide"
 msgstr "Mostrar en la guía solo los canales de DGO"
+
+msgctxt "#30006"
+msgid "Back up this Kodi's settings to the home server every day"
+msgstr "Hacer un backup diario de la configuración de este Kodi en el homelab"
+
+msgctxt "#30007"
+msgid "Backup folder (empty: KodiBackups on the home server)"
+msgstr "Carpeta del backup (vacío: KodiBackups del homelab)"

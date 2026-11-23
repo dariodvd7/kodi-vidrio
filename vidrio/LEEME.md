@@ -293,3 +293,19 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   su contenedor con `docker exec`. El asunto llega como "[atvloadly] Vidrio: …".
 - `salud.py --mostrar` muestra el estado sin mandar nada; `--prueba` manda un correo de prueba. Estado en
   `/var/lib/vidrio-salud/estado.json`, registro en `/var/log/vidrio-salud.log`.
+
+## Backup de la configuración (plugin 1.8.0)
+
+- El servicio hace un backup por día de cada Kodi (con Kodi abierto hace 10 minutos y nada sonando; si falla, reintenta
+  a las 6 h) en `smb://<homelab>/KodiBackups/<equipo>/` (Android, tvOS, macOS, o el nombre que se le ponga a Kodi en Ajustes > Servicios), con los últimos 14. Ajustes del plugin: "Hacer un
+  backup diario…" y "Carpeta del backup" (vacío = KodiBackups del homelab). `?respaldar=1` lo hace en el momento.
+- Lleva `guisettings.xml`, `sources.xml`, `favourites.xml`, `advancedsettings.xml`, `profiles.xml`, `keymaps/`,
+  `playlists/`, el `settings.xml` de cada add-on y de Vidrio también `mis_canales.json` y `posiciones.json`.
+- Sin claves: fuera `script.trakt` y `passwords.xml`; en `guisettings.xml` y los `settings.xml` se vacían los ajustes
+  cuyo id tiene como palabra entera token, password, key, api_key, auth, login, user, cookie, session, pin...
+- En el homelab: `/srv/kodi-backups` (dueño `apple`), compartida como `[KodiBackups]` sin contraseña pero con
+  escritura solo para la red de casa (por ejemplo `192.168.1.0/24`) (`hosts allow`). Copia de la configuración anterior de Samba en
+  `/etc/samba/smb.conf.bak-*`.
+- Restaurar (TCL o Mac): con Kodi cerrado, copiar el contenido del zip a la carpeta `userdata` de Kodi y abrirlo;
+  después volver a vincular Trakt. En el Apple TV no hay acceso a los archivos: haría falta una opción de restaurar
+  dentro de Vidrio (pendiente).

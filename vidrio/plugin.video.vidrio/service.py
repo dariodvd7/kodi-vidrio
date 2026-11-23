@@ -376,6 +376,26 @@ def seguir_posicion(trailers, seguido):
     return actual
 
 
+def tal_vez_respaldar(arranque):
+    """Backup diario de la configuración (resources/lib/respaldo.py): con Kodi abierto hace 10 minutos y nada
+    sonando. Si falla (carpeta del homelab inaccesible), vuelve a probar a las 6 horas."""
+    if time.time() - arranque < 600 or xbmc.Player().isPlaying():
+        return
+    if not xbmcaddon.Addon().getSettingBool('respaldo'):
+        return
+    intento = HOME.getProperty('Vidrio.RespaldoIntento')
+    if intento and time.time() - float(intento) < 6 * 3600:
+        return
+    from resources.lib import respaldo
+    if not respaldo.toca():
+        return
+    HOME.setProperty('Vidrio.RespaldoIntento', str(time.time()))
+    try:
+        respaldo.respaldar()
+    except Exception as e:
+        log(f'backup: error {e}')
+
+
 def buscar_actualizaciones(motivo):
     """Pide a Kodi que revise los repositorios ya, para que una versión nueva de Vidrio (repository.vidrio, en el
     homelab) llegue al abrir Kodi y no recién en la revisión diaria. Como mucho cada 30 minutos: al actualizarse, el
@@ -405,6 +425,7 @@ def main():
     # muestra un error ("Unknown addon id") durante el segundo en que el plugin no está instalado.
     revisar_en, motivo_revision = time.time() + 90, 'Kodi arrancó'
     seguido = None  # (archivo, posición, total) de lo que el usuario mira del homelab
+    arranque = time.time()
     vueltas = 0
     ultima_vuelta = time.time()
     ultima_recarga = ultima_vuelta - RECARGA_PERIODICA  # la primera vez que esté el inicio en pantalla (al arrancar o al actualizar el add-on)
@@ -433,6 +454,8 @@ def main():
             except Exception as e:
                 log(f'abrir {pedido}: error {e}')
         ultima_vuelta = time.time()
+        if vueltas % 1000 == 500:
+            tal_vez_respaldar(arranque)
         if vueltas % 1000 == 0:  # al arrancar y cada ~5 minutos: también toma add-ons instalados después
             configurar_trakt()
             if vueltas:

@@ -28,3 +28,11 @@ msgstr ""
 msgctxt "#30005"
 msgid "Show only the channels DGO has in the TV guide"
 msgstr ""
+
+msgctxt "#30006"
+msgid "Back up this Kodi's settings to the home server every day"
+msgstr ""
+
+msgctxt "#30007"
+msgid "Backup folder (empty: KodiBackups on the home server)"
+msgstr ""

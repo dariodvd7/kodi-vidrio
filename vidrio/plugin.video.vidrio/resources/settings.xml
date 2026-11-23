@@ -29,6 +29,17 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="respaldo" type="boolean" label="30006">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="respaldo_destino" type="string" label="30007">
+					<level>0</level>
+					<default></default>
+					<constraints><allowempty>true</allowempty></constraints>
+					<control type="edit" format="string"/>
+				</setting>
 			</group>
 		</category>
 	</section>

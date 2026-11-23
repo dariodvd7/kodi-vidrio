@@ -369,6 +369,11 @@ def raiz():
 
 
 def main():
+    if P.get('respaldar'):  # backup ahora (diagnóstico o a pedido)
+        from resources.lib import respaldo
+        hecho = respaldo.respaldar(P.get('destino'))
+        items = [(f'{BASE}?nada=1', xbmcgui.ListItem(hecho or 'NO SE PUDO: ver el log'), False)]
+        return terminar(items, 'files', orden=False)
     if P.get('editar_mis_canales'):
         editar_mis_canales()
         if HANDLE >= 0:
