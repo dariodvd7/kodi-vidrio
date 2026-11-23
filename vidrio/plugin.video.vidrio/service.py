@@ -178,6 +178,7 @@ class Trailers:
         self.archivo = None     # archivo que está sonando y arrancamos nosotros
         self.vistos = set()     # no repetir el mismo tráiler mientras el foco no se mueva
         self.pedido_desde = 0.0
+        self.en_pantalla = 0.0  # cuándo arrancó el tráiler que suena
         self.fila = None        # última fila con foco
         self.fallos = 0         # tráileres que no arrancaron en esta sesión
         self.trakt_en = 0.0     # cuándo recargar "Continuar viendo" (después de ver algo que no sea un tráiler)
@@ -205,6 +206,7 @@ class Trailers:
             return
         if self.pedido:
             self.archivo, self.pedido = actual, ''
+            self.en_pantalla = time.time()
             self.fallos = 0
             HOME.setProperty('Vidrio.Preview', '1')
             log('tráiler en pantalla')
@@ -315,7 +317,13 @@ class Trailers:
                 self.cortar()
             return
         if trailer != self.candidato:
-            if self.archivo or self.pedido:
+            # Cortar un tráiler mientras arranca (YouTube todavía resolviendo, o los primeros segundos con el
+            # reproductor configurándose) trabó Kodi más de un minuto y hasta lo cerró en el TCL (Android TV, Kodi
+            # 21.2): se deja terminar de arrancar y se corta en la vuelta siguiente. Un pedido que nunca arranca lo
+            # cancela al_fallar a los 30 segundos.
+            if self.pedido or (self.archivo and time.time() - self.en_pantalla < ARRANQUE_SEGURO):
+                return
+            if self.archivo:
                 self.cortar()
             self.candidato, self.desde = trailer, time.time()
             self.vistos.discard(trailer)
@@ -343,6 +351,7 @@ class Monitor(xbmc.Monitor):
 
 
 RECARGA_PERIODICA = 5 * 60  # con el inicio en pantalla y nada sonando
+ARRANQUE_SEGURO = 4  # segundos: no cortar un tráiler antes (ver Trailers.paso)
 
 
 def buscar_actualizaciones(motivo):
