@@ -281,3 +281,15 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   95 %). "Continuar viendo" suma lo anotado que Trakt ya no muestra y lo retoma desde ese punto, salvo que el
   historial de Trakt diga que se vio después (por ejemplo, terminado en el otro equipo). Kodi guarda su propio punto,
   pero bajo la dirección con la que arrancó, que incluye el porcentaje de Trakt, y desde la lista no se encuentra.
+
+## Aviso si falla el homelab
+
+- `homelab/salud.py` (en `/opt/kodi-artwork/`, cron `/etc/cron.d/vidrio-salud` a los :40 de cada hora, con
+  `VIDRIO_HOMELAB` = IP real) revisa: catálogo actualizado en las últimas 30 h y con películas y series; guía de menos
+  de 7 h y con programación al aire en al menos 20 canales; repositorio (nginx 8099) publicando el plugin; Samba (445)
+  atendiendo.
+- Avisa por correo cuando algo empieza a fallar, cuando se arregla y un recordatorio por día si sigue. Usa el puente de
+  correo de atvloadly (`atvloadly-mail-bridge`, con la cuenta SMTP en su `mail.env`): le hace el POST desde adentro de
+  su contenedor con `docker exec`. El asunto llega como "[atvloadly] Vidrio: …".
+- `salud.py --mostrar` muestra el estado sin mandar nada; `--prueba` manda un correo de prueba. Estado en
+  `/var/lib/vidrio-salud/estado.json`, registro en `/var/log/vidrio-salud.log`.
