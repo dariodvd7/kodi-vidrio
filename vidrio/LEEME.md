@@ -78,7 +78,7 @@ empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la to
 
 ## Instalar
 1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.3.6.zip`,
-   después `skin.vidrio-1.3.1.zip` (versiones actuales: add-on 1.3.6, skin 1.3.1). La skin pide el add-on, por eso va
+   después `skin.vidrio-1.3.2.zip` (versiones actuales: add-on 1.3.6, skin 1.3.2). La skin pide el add-on, por eso va
    primero.
 2. Para tráileres: instalar YouTube (`plugin.video.youtube`) del repositorio oficial. Funciona sin clave propia de la API.
 3. Interfaz → Skin → Vidrio.
@@ -182,6 +182,13 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   En Android la pestaña se llama **DGO**: elegir un canal o "Abrir DGO" abre la app (`StartAndroidActivity
   (com.directv.dtvlatam)`), que se ve fuera de Kodi (DRM Widevine, sin API pública); "Atrás" vuelve a Kodi. En el
   Apple TV la pestaña es **Guía** (Kodi para tvOS no tiene ningún comando para abrir otra app; ver abajo).
+- **Enlaces de DGO en Android** (APK `com.directv.dtvlatam` 5.82.0, `DeepLinkKt.processDeepLink`, visto con JADX):
+  `SplashRouterActivity` acepta cualquier `dtvmobile://` o `dtvbrazil://`. Rutas: `dtvmobile://live` (o `main`,
+  `watch`, `sports`, `kids`) abre esa pestaña; `…/home/lander/<canal>` la página de un canal; `…/player/<tipo>/<id>`
+  y `…/home/pdp/<tipo>/<id>` un contenido. El canal y el id son internos de DGO (solo los da su API privada; los
+  logos públicos `stations/<canal>.png` devuelven la misma imagen para cualquier nombre), así que la guía del TCL abre
+  **TV en vivo**: `StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)`.
+  DGO no abre con la depuración USB activa. La app de tvOS no acepta ninguno de estos esquemas.
 - **Abrir DGO en el Apple TV** (plugin 1.3.6, skin 1.3.1): el Python de Kodi para tvOS trae `ctypes`, y
   `resources/lib/abrir.py` llama a `openURL:options:completionHandler:` con el runtime de Objective-C, en el hilo
   principal (`dispatch_async_f`), y arma a mano el block que devuelve el resultado. Lo ejecuta el **servicio**

@@ -7,7 +7,9 @@ import sys
 GRUPOS = ['Aire', 'Noticias', 'Deportes', 'Películas y series', 'Infantiles', 'Documentales', 'Música',
           'Internacionales', 'Otros']
 FILAS = [(5601 + i, g) for i, g in enumerate(GRUPOS)]
-ABRIR = 'StartAndroidActivity(com.directv.dtvlatam)'
+# Android: DGO acepta enlaces dtvmobile:// (DeepLinkKt.processDeepLink en su app): dtvmobile://live abre la pestaña
+# TV en vivo (su grilla). Un canal puntual pide el identificador interno de DGO, que solo da su API privada.
+ABRIR = 'StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)'
 # tvOS: Kodi no abre apps, pero el servicio de Vidrio pide a tvOS (ctypes + openURL) la página de DGO en la App Store,
 # que queda con el foco en "Abrir": un clic más y entra a DGO. DGO no tiene un enlace propio que tvOS acepte.
 ABRIR_TVOS = 'RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)'

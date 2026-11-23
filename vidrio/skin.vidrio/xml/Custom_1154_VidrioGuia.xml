@@ -35,7 +35,7 @@
 			<textcolor>E6FFFFFF</textcolor><focusedcolor>FF101014</focusedcolor>
 			<texturefocus border="30">vidrio/pill_focus.png</texturefocus>
 			<texturenofocus border="30">vidrio/glass_pill.png</texturenofocus>
-			<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+			<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)</onclick>
 			<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 			<ondown>5600</ondown>
 		</control>
@@ -177,7 +177,7 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5690</onup>
 					<ondown>5602</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -258,7 +258,7 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5601</onup>
 					<ondown>5603</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -339,7 +339,7 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5602</onup>
 					<ondown>5604</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -420,7 +420,7 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5603</onup>
 					<ondown>5605</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -501,7 +501,7 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5604</onup>
 					<ondown>5606</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -582,7 +582,7 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5605</onup>
 					<ondown>5607</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -663,7 +663,7 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5606</onup>
 					<ondown>5608</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -744,7 +744,7 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5607</onup>
 					<ondown>5609</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -825,7 +825,7 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5608</onup>
 					<ondown>5609</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
