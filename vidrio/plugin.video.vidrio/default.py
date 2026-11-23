@@ -229,7 +229,8 @@ def editar_mis_canales():
     actuales = guia.mis_canales(g)
     por_id = {c['id']: c for c in canales}
     elegidos = [por_id[i] for i in actuales if i in por_id]
-    orden = elegidos + [c for c in canales if c['id'] not in set(actuales)]
+    solo_dgo = xbmcaddon.Addon().getSettingBool('solo_dgo')
+    orden = elegidos + [c for c in canales if c['id'] not in set(actuales) and not (solo_dgo and c.get('dgo') is False)]
     opciones = []
     for c in orden:
         li = xbmcgui.ListItem(c['nombre'], c.get('grupo', ''))
@@ -255,8 +256,12 @@ def canales_guia(grupo):
     if grupo == MIS_CANALES:
         por_id = {c['id']: c for c in canales}
         canales = [por_id[i] for i in guia.mis_canales(g) if i in por_id]
+    solo_dgo = xbmcaddon.Addon().getSettingBool('solo_dgo')
     for c in canales:
         if grupo and grupo != MIS_CANALES and c.get('grupo') != grupo:
+            continue
+        # Los que DGO no tiene ("dgo": false, lo marca homelab/guia.py) no se ven; en "Mis canales" queda lo elegido
+        if solo_dgo and grupo != MIS_CANALES and c.get('dgo') is False:
             continue
         actual, siguiente = guia.ahora_y_despues(c, ahora)
         li = xbmcgui.ListItem(c['nombre'], offscreen=True)

@@ -24,3 +24,7 @@ msgstr "Segundos sobre un título antes de que arranque el tráiler"
 msgctxt "#30004"
 msgid "Search Spanish subtitles automatically"
 msgstr "Buscar subtítulos en español automáticamente"
+
+msgctxt "#30005"
+msgid "Show only the channels DGO has in the TV guide"
+msgstr "Mostrar en la guía solo los canales de DGO"

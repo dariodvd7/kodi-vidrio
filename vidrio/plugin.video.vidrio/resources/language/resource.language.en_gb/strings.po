@@ -24,3 +24,7 @@ msgstr ""
 msgctxt "#30004"
 msgid "Search Spanish subtitles automatically"
 msgstr ""
+
+msgctxt "#30005"
+msgid "Show only the channels DGO has in the TV guide"
+msgstr ""

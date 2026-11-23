@@ -44,6 +44,17 @@ GRUPOS = [
     ('Música', r'musica|mtv|vh1|much|quiero|\bhtv\b|telehit|cm musical|allegro'),
     ('Aire', r'telefe|el trece|el nueve|america|tv publica|television publica|canal \d|bravo|televida|rural|argentinisima|tele ?10|telemax|metro|el seis|magazine|volver'),
 ]
+# Canales del plan de DGO (canales_dgo.json, al lado de este archivo: los nombres de la grilla de TV en vivo de
+# directvgo.com). Cada canal de la guía lleva "dgo": true/false y el plugin oculta los que DGO no tiene. Sin el
+# archivo no se marca nada y la guía muestra todos.
+CANALES_DGO = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'canales_dgo.json')
+# Nombre en la guía -> nombre en DGO, cuando no coinciden solos
+EQUIVALENTES_DGO = {
+    'TN': 'Todo Noticias.', 'C5N': 'C5N Canal 5 Noticias', 'A24': 'AMERICA 24', 'F24': 'France 24',
+    'Atres Series': 'Atreseries', 'Nat Geo': 'National Geographic', 'Home & Health': 'Discovery Home & Health',
+    'DHE': 'Discovery Home & Health', 'ID - Investigation Discovery': 'Discovery ID', 'Disney Junior': 'Disney Jr (Sur)',
+    'Quiero': 'Quiero Musica en Mi Idioma',
+}
 ORDEN_GRUPOS = ['Aire', 'Noticias', 'Deportes', 'Películas y series', 'Infantiles', 'Documentales', 'Música',
                 'Internacionales', 'Otros']
 
@@ -74,6 +85,19 @@ def lindo(nombre):
     for p in n.split():
         palabras.append(p if p.upper() in SIGLAS or any(c.isdigit() for c in p) and len(p) <= 4 else p.capitalize())
     return ' '.join(palabras).replace('Tyc', 'TyC').replace('Ln+', 'LN+')
+
+
+def clave_dgo(nombre):
+    """Como clave(), sin el país o la región que DGO agrega al nombre ("ESPN 2 Argentina", "Space (Sur)")."""
+    return clave(re.sub(r'\b(argentina|arg|sur|south|colombia|internacional)\b|[()]', '', nombre, flags=re.I))
+
+
+def canales_de_dgo():
+    try:
+        with open(CANALES_DGO, encoding='utf-8') as fh:
+            return {clave_dgo(n) for n in json.load(fh)['canales']}
+    except (OSError, ValueError, KeyError):
+        return None
 
 
 def grupo(nombre):
@@ -149,12 +173,15 @@ def main():
         if previo is None or (' HD' in previo['nombre'] and ' HD' not in c['nombre']):
             por_clave[k] = c
     logo = logos()
+    dgo = canales_de_dgo()
     salida = []
     for k, c in por_clave.items():
         c['nombre'] = re.sub(r'\s+HD$', '', c['nombre'])
         c['programas'].sort(key=lambda p: p['inicio'])
         c['logo'] = logo.get(k, '')
         c['grupo'] = grupo(c['nombre'])
+        if dgo is not None:
+            c['dgo'] = clave_dgo(EQUIVALENTES_DGO.get(c['nombre'], c['nombre'])) in dgo
         salida.append(c)
     primero = {n.lower(): i for i, n in enumerate(PRIMERO)}
     salida.sort(key=lambda c: (ORDEN_GRUPOS.index(c['grupo']), primero.get(c['nombre'].lower(), len(primero)),
@@ -171,6 +198,8 @@ def main():
     print(f"guía: {len(salida)} canales ({sum(1 for c in salida if c['logo'])} con logo), "
           f"{sum(len(c['programas']) for c in salida)} programas; "
           + ', '.join(f"{g} {sum(1 for c in salida if c['grupo'] == g)}" for g in guia['grupos']))
+    if dgo is not None:
+        print(f"en DGO: {sum(1 for c in salida if c.get('dgo'))} de {len(salida)}")
 
 
 if __name__ == '__main__':
