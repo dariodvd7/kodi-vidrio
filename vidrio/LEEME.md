@@ -221,3 +221,18 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 
 ## Análisis de Kodi para tvOS
 `../analisis/COMO-ESTA-HECHO.md`.
+
+## Actualizaciones automáticas (repository.vidrio)
+
+- `herramientas/repo.py --subir` arma el repositorio (`addons.xml`, su `.md5` y cada zip con su `.sha256`) con la IP
+  real y lo sube al homelab, a `/srv/kodi-addons/repo`. Lo sirve un nginx de solo lectura (`homelab/kodi-repo/`,
+  instalado en `/opt/kodi-repo`) en el puerto 8099, solo en la IP de la red local; cualquier otra ruta da 404.
+- Para publicar: subir la versión en el `addon.xml` de la skin o el plugin y correr `repo.py --subir`.
+- En cada Kodi, una sola vez: instalar `repository.vidrio-<versión>.zip` desde un zip (está en la carpeta compartida)
+  y poner Ajustes → Sistema → Add-ons → Actualizaciones en **"Cualquier repositorio"**. Con "solo oficiales", Kodi no
+  actualiza la skin ni el plugin (instalados desde un zip, origen "a mano") y para cambiarlos pide desinstalarlos,
+  cosa que no puede porque la skin depende del plugin.
+- El servicio del plugin (1.4.2+) pide `UpdateAddonRepos` al arrancar Kodi y al volver de segundo plano (como mucho
+  cada 30 minutos), así una versión nueva llega al abrir Kodi y no en la revisión diaria.
+- Kodi avisa en el log que el repositorio usa HTTP sin cifrar: es la red de casa; los zips se verifican con su sha256.
+- Probado en el TCL: plugin 1.4.1 → 1.4.2 y repositorio 1.0.0 → 1.0.1 desde el homelab.

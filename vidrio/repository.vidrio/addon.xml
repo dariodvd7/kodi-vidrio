@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="repository.vidrio" name="Vidrio (homelab)" version="1.0.0" provider-name="Dario">
+<addon id="repository.vidrio" name="Vidrio (homelab)" version="1.0.1" provider-name="Dario">
 	<extension point="xbmc.addon.repository" name="Vidrio (homelab)">
 		<!-- Lo sirve el homelab (herramientas/repo.py lo arma y lo sube; nginx en el puerto 8099). La IP es de ejemplo:
 		     al empaquetar se pone la de vidrio/local.json. -->

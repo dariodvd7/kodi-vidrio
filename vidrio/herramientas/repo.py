@@ -2,7 +2,7 @@
 """Arma el repositorio de add-ons de Vidrio (repository.vidrio) y lo sube al homelab.
 
 Kodi lee el repositorio por HTTP: addons.xml (todos los addon.xml juntos), addons.xml.md5 y un zip por add-on en
-<id>/<id>-<versión>.zip. En el homelab lo sirve un nginx de solo lectura (puerto 8099, ver homelab/kodi-repo/) desde
+<id>/<id>-<versión>.zip, con su <zip>.sha256. En el homelab lo sirve un nginx de solo lectura (puerto 8099, ver homelab/kodi-repo/) desde
 /srv/kodi-addons/repo. Con el repositorio instalado y Kodi en "Instalar actualizaciones automáticamente", cada
 versión nueva de la skin o el plugin llega sola a todos los Kodi de casa.
 
@@ -53,6 +53,11 @@ def empaquetar(addon, tmp, salida, ip):
             for nombre in sorted(archivos):
                 ruta = os.path.join(raiz, nombre)
                 z.write(ruta, os.path.relpath(ruta, tmp))
+    # <hashes>sha256</hashes> en repository.vidrio: Kodi baja <zip>.sha256 y no instala si no coincide o falta
+    with open(zip_ruta, 'rb') as fh:
+        digest = hashlib.sha256(fh.read()).hexdigest()
+    with open(zip_ruta + '.sha256', 'w', encoding='utf-8') as fh:
+        fh.write(digest)
     # Kodi muestra el ícono del repositorio antes de bajar el zip
     for icono in ('icon.png', 'resources/icon.png'):
         if os.path.isfile(os.path.join(copia, icono)):
