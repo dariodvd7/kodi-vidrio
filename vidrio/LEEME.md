@@ -78,7 +78,7 @@ empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la to
 
 ## Instalar
 1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.2.6.zip`,
-   después `skin.vidrio-1.2.1.zip` (versiones actuales: add-on 1.2.6, skin 1.2.1). La skin pide el add-on, por eso va
+   después `skin.vidrio-1.2.3.zip` (versiones actuales: add-on 1.2.6, skin 1.2.3). La skin pide el add-on, por eso va
    primero.
 2. Para tráileres: instalar YouTube (`plugin.video.youtube`) del repositorio oficial. Funciona sin clave propia de la API.
 3. Interfaz → Skin → Vidrio.
@@ -165,6 +165,12 @@ Kodi 21.2 en un TCL Smart TV Pro (Android TV 11): solo la skin y el plugin, sin 
 `plugin.video.vidrio` y `skin.vidrio` desde zip, el español (Argentina), YouTube y Trakt del repositorio oficial y
 a4kSubtitles (repositorio y add-on) desde zip; país Argentina, subtítulos en español, sin cambio de frecuencia; skin
 Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de tvOS; el parche de YouTube no molesta.
+
+## DGO (DIRECTV GO)
+Pestaña "DGO" en la barra (solo en Android, `System.Platform.Android`): `StartAndroidActivity(com.directv.dtvlatam)`
+abre la app; DGO se ve fuera de Kodi (DRM Widevine, sin API pública) y "Atrás" vuelve a Kodi. En el Apple TV no
+aparece: Kodi para tvOS no tiene ningún comando para abrir otra app (los `openURL` del binario son para recibir
+enlaces) y un add-on en Python no puede llamar a UIApplication.
 
 ## Probado
 - Mac, Kodi 21.3: inicio, filas, datos en español, navegación con flechas, tráiler de YouTube de fondo con el

@@ -390,13 +390,15 @@
 
 	<include name="VidrioTab">
 		<param name="id"/><param name="label"/><param name="action"/><param name="previo" default="noop"/><param name="previo2" default="noop"/>
+		<param name="visible" default="true"/>
 		<definition>
 			<control type="button" id="$PARAM[id]">
+				<visible>$PARAM[visible]</visible>
 				<width>auto</width><height>64</height>
 				<font>vidrio_tab</font>
 				<label>$PARAM[label]</label>
 				<align>center</align><aligny>center</aligny>
-				<textoffsetx>26</textoffsetx>
+				<textoffsetx>22</textoffsetx>
 				<textcolor>E6FFFFFF</textcolor>
 				<focusedcolor>FF101014</focusedcolor>
 				<texturefocus border="32">vidrio/pill_focus.png</texturefocus>

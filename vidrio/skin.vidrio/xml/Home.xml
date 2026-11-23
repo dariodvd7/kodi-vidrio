@@ -109,11 +109,11 @@
 
 		<!-- Barra de pestañas de vidrio -->
 		<control type="image">
-			<left>300</left><top>36</top><width>1320</width><height>76</height>
+			<left>150</left><top>36</top><width>1440</width><height>76</height>
 			<texture border="38">vidrio/glass_pill.png</texture>
 		</control>
 		<control type="grouplist" id="9000">
-			<left>306</left><top>42</top><width>1308</width><height>64</height>
+			<left>156</left><top>42</top><width>1428</width><height>64</height>
 			<orientation>horizontal</orientation>
 			<align>center</align>
 			<itemgap>2</itemgap>
@@ -125,6 +125,8 @@
 			<include content="VidrioTab"><param name="id" value="9004"/><param name="label" value="Géneros"/><param name="action" value="ActivateWindow(1153)"/></include>
 			<include content="VidrioTab"><param name="id" value="9005"/><param name="label" value="Buscar"/><param name="action" value="ActivateWindow(1152)"/></include>
 			<include content="VidrioTab"><param name="id" value="9009"/><param name="label" value="Trakt"/><param name="previo" value="SetProperty(Vidrio.GrillaQ,lista=trakt,home)"/><param name="previo2" value="SetProperty(Vidrio.GrillaTitulo,Trakt,home)"/><param name="action" value="ActivateWindow(1151)"/></include>
+			<!-- DGO (DIRECTV GO): abre la app, que se ve fuera de Kodi; Kodi solo puede abrir otras apps en Android -->
+			<include content="VidrioTab"><param name="id" value="9010"/><param name="label" value="DGO"/><param name="action" value="StartAndroidActivity(com.directv.dtvlatam)"/><param name="visible" value="System.Platform.Android"/></include>
 			<include content="VidrioTab"><param name="id" value="9006"/><param name="label" value="Archivos"/><param name="action" value="ActivateWindow(Videos,sources://video/,return)"/></include>
 			<include content="VidrioTab"><param name="id" value="9007"/><param name="label" value="Ajustes"/><param name="action" value="ActivateWindow(Settings)"/></include>
 			<include content="VidrioTab"><param name="id" value="9008"/><param name="label" value="Salir"/><param name="action" value="Quit"/></include>
