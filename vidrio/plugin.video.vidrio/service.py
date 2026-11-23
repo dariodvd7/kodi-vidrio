@@ -5,7 +5,7 @@
    que tiene tráiler, lo reproduce en modo ventana (la skin lo muestra arriba, con el borde inferior difuminado).
    Se corta al mover el foco o al salir del inicio. Nunca corta algo que no haya arrancado este servicio.
 2. YouTube: le aplica un parche chico al add-on de YouTube para que su servidor local funcione en macOS/tvOS
-   (ver PARCHE_YOUTUBE).
+   (ver PARCHE_YOUTUBE) y marca su asistente de configuración como hecho (si no, traba el primer tráiler).
 3. Subtítulos: deja a Kodi y a a4kSubtitles configurados para usar subtítulos en español; si el video no los trae,
    a4kSubtitles los busca y descarga solo.
 4. Trakt: al cortar o terminar algo que no sea un tráiler, unos segundos después (cuando script.trakt ya avisó a Trakt)
@@ -65,6 +65,19 @@ def parchear_youtube():
         return False
     if not ADDON.getSettingBool('trailers'):
         return False
+    # El asistente de configuración de YouTube aparece la primera vez que se reproduce algo (en un Kodi nuevo, el
+    # primer tráiler de fondo) y deja esa reproducción colgada: solo se ve un error de conexión con su servidor HTTP
+    # local. Sus valores por defecto ya sirven para los tráileres, así que se marca como hecho. YouTube lo vuelve a
+    # mostrar si forced_runs es anterior a la fecha de su versión: se pone la fecha actual.
+    if yt.getSetting('kodion.setup_wizard') != 'false':
+        yt.setSetting('kodion.setup_wizard', 'false')
+        log('YouTube: asistente de configuración marcado como hecho')
+    try:
+        corridas = int(yt.getSetting('kodion.setup_wizard.forced_runs') or 0)
+    except ValueError:
+        corridas = 0
+    if corridas < 1767970800:  # fecha que usa YouTube 7.4 (10/01/2026)
+        yt.setSetting('kodion.setup_wizard.forced_runs', str(int(time.time())))
     ruta = xbmcvfs.translatePath(yt.getAddonInfo('path')) + \
         '/resources/lib/youtube_plugin/kodion/network/http_server.py'
     cambio = False
