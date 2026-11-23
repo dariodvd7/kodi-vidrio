@@ -63,8 +63,8 @@ empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la to
 (sin ella usa la de ejemplo): en el cron, `VIDRIO_HOMELAB=<ip> /opt/kodi-artwork/catalogo.py`.
 
 ## Instalar
-1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.2.3.zip`,
-   después `skin.vidrio-1.2.0.zip` (versiones actuales: add-on 1.2.3, skin 1.2.0). La skin pide el add-on, por eso va
+1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.2.4.zip`,
+   después `skin.vidrio-1.2.0.zip` (versiones actuales: add-on 1.2.4, skin 1.2.0). La skin pide el add-on, por eso va
    primero.
 2. Para tráileres: instalar YouTube (`plugin.video.youtube`) del repositorio oficial. Funciona sin clave propia de la API.
 3. Interfaz → Skin → Vidrio.
@@ -140,7 +140,9 @@ Rearmar (otra versión de Vidrio o de Kodi: `--ipa` y `--salida`): `python3 fork
 atvloadly: página del Apple TV → IPA URL (servir el archivo un rato con `python3 -m http.server` en el Mac) o IPA
 file, la cuenta, "Remove extensions" activado. Instalado y probado el 22/11 (arranca con todo puesto, sin errores).
 Reinstalar encima conserva los ajustes de Kodi (están en NSUserDefaults) pero borra los datos de los add-ons
-(`Library/Caches`): hay que volver a vincular Trakt. El servicio recarga "Continuar viendo" solo al vincularlo.
+(`Library/Caches`): hay que volver a vincular Trakt. El servicio recarga "Continuar viendo" solo al vincularlo (y
+otra vez a los 70 s: recién vinculada, Trakt puede responder la lista vacía). Para actualizar solo Vidrio sin perder
+Trakt: agregar `smb://<homelab>/KodiAddons/` como fuente e instalar `plugin.video.vidrio-<versión>.zip` encima.
 
 ## Probado
 - Mac, Kodi 21.3: inicio, filas, datos en español, navegación con flechas, tráiler de YouTube de fondo con el

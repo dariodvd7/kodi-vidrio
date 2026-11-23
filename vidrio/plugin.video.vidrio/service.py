@@ -166,6 +166,7 @@ class Trailers:
         self.completa = None    # último video del usuario que ya pasamos a pantalla completa
         self.vinculado = None   # si script.trakt tiene cuenta vinculada (para recargar la fila al vincularla)
         self.revisado = 0.0
+        self.trakt_otra = 0.0   # segunda recarga de "Continuar viendo" después de vincular Trakt
         self.player = Reproductor(self)
 
     def apagado(self):
@@ -264,6 +265,11 @@ class Trailers:
         vinculado = trakt.credenciales() is not None
         if self.vinculado is not None and vinculado != self.vinculado:
             log('Trakt ' + ('vinculado' if vinculado else 'desvinculado') + ': recargo Continuar viendo')
+            self.trakt_en = time.time()
+            # Recién vinculada, Trakt a veces responde la lista vacía (y queda guardada 1 min): otra vuelta después.
+            self.trakt_otra = time.time() + 70
+        elif self.trakt_otra and time.time() >= self.trakt_otra:
+            self.trakt_otra = 0.0
             self.trakt_en = time.time()
         self.vinculado = vinculado
 
