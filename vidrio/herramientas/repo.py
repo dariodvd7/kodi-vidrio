@@ -58,11 +58,12 @@ def empaquetar(addon, tmp, salida, ip):
         digest = hashlib.sha256(fh.read()).hexdigest()
     with open(zip_ruta + '.sha256', 'w', encoding='utf-8') as fh:
         fh.write(digest)
-    # Kodi muestra el ícono del repositorio antes de bajar el zip
-    for icono in ('icon.png', 'resources/icon.png'):
-        if os.path.isfile(os.path.join(copia, icono)):
-            shutil.copy(os.path.join(copia, icono), os.path.join(salida, addon, 'icon.png'))
-            break
+    # Kodi muestra el ícono y el fondo antes de bajar el zip: los pide en <id>/<ruta del addon.xml>
+    for ruta in re.findall(r'<(?:icon|fanart|screenshot)>([^<]+)</', xml):
+        origen = os.path.join(copia, ruta)
+        if os.path.isfile(origen):
+            os.makedirs(os.path.dirname(os.path.join(salida, addon, ruta)), exist_ok=True)
+            shutil.copy(origen, os.path.join(salida, addon, ruta))
     return re.sub(r'^<\?xml[^>]*\?>\s*', '', xml.strip()), ver
 
 
