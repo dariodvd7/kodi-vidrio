@@ -283,13 +283,12 @@ def raiz():
 
 def main():
     if P.get('abrir'):  # abrir otra app por su enlace (tvOS: DGO desde la guía); ver resources/lib/abrir.py
-        from resources.lib import abrir
-        try:
-            ok = abrir.abrir_url(P['abrir'])
-            xbmc.log(f"[vidrio] abrir {P['abrir']}: {'pedido' if ok else 'sin respuesta'}", xbmc.LOGINFO)
-        except Exception as e:
-            xbmc.log(f"[vidrio] abrir {P['abrir']}: error {e}", xbmc.LOGWARNING)
-        return xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
+        # Lo hace el servicio, que sigue vivo cuando tvOS avisa el resultado (este proceso termina enseguida y tvOS
+        # llamaría a una función que ya no existe: Kodi se cierra).
+        xbmcgui.Window(10000).setProperty('Vidrio.Abrir', P['abrir'])
+        if HANDLE >= 0:
+            xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
+        return
     cat = cargar(forzar=P.get('refrescar') == '1')
     pelis, series = cat.get('peliculas', []), cat.get('series', [])
     if 'reproducir' in P:

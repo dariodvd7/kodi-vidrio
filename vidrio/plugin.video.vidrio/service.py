@@ -371,7 +371,15 @@ def main():
               and not xbmc.Player().isPlaying()):
             recargar_trakt(trailers, 'cada 5 minutos en el inicio'); ultima_recarga = ahora
         monitor.despierto = False
-        ultima_vuelta = ahora
+        pedido = HOME.getProperty('Vidrio.Abrir')
+        if pedido:  # abrir otra app (tvOS): desde acá, porque el servicio sigue vivo cuando tvOS responde
+            HOME.clearProperty('Vidrio.Abrir')
+            try:
+                from resources.lib import abrir
+                abrir.abrir_url(pedido)
+            except Exception as e:
+                log(f'abrir {pedido}: error {e}')
+        ultima_vuelta = time.time()
         if vueltas % 1000 == 0:  # al arrancar y cada ~5 minutos: también toma add-ons instalados después
             configurar_trakt()
             if vueltas:

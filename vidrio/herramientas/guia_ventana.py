@@ -8,6 +8,9 @@ GRUPOS = ['Aire', 'Noticias', 'Deportes', 'Películas y series', 'Infantiles', '
           'Internacionales', 'Otros']
 FILAS = [(5601 + i, g) for i, g in enumerate(GRUPOS)]
 ABRIR = 'StartAndroidActivity(com.directv.dtvlatam)'
+# tvOS: Kodi no abre apps, pero el servicio de Vidrio pide a tvOS (ctypes + openURL) la página de DGO en la App Store,
+# que queda con el foco en "Abrir": un clic más y entra a DGO. DGO no tiene un enlace propio que tvOS acepte.
+ABRIR_TVOS = 'RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)'
 
 
 def var(nombre, plantilla, defecto=''):
@@ -85,10 +88,10 @@ def fila(i, cid, grupo):
 					<left>90</left><top>40</top><width>1830</width><height>260</height>
 					<orientation>horizontal</orientation>
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
-					{'<onup condition="System.Platform.Android">5690</onup>' if i == 0 else f'<onup>{arriba}</onup>'}
+					{'<onup>5690</onup>' if i == 0 else f'<onup>{arriba}</onup>'}
 					<ondown>{abajo}</ondown>
 					<onclick condition="System.Platform.Android">{ABRIR}</onclick>
-					<onclick condition="!System.Platform.Android">Notification(DGO,Abrilo desde el inicio del Apple TV,5000)</onclick>
+					<onclick condition="!System.Platform.Android">{ABRIR_TVOS}</onclick>
 					<itemlayout width="350" height="260">
 {tarjeta(cid, False)}					</itemlayout>
 					<focusedlayout width="350" height="260">
@@ -103,8 +106,8 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <!--
 	Vidrio: guía de TV (generada por herramientas/guia_ventana.py; no editar a mano).
 	Datos: guia.json del homelab (homelab/guia.py, open-epg.com). Arriba, el programa del canal con foco; abajo, una
-	fila de canales por grupo. En Android, elegir un canal (o "Abrir DGO") abre la app de DGO; en el Apple TV Kodi no
-	puede abrir otras apps y solo se ve la programación.
+	fila de canales por grupo. Elegir un canal (o "Abrir DGO") abre DGO: en Android directo, en el Apple TV la página
+	de DGO en la App Store con el foco en "Abrir".
 -->
 <window id="1154" type="window">
 	<defaultcontrol always="true">5600</defaultcontrol>
@@ -136,9 +139,9 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 			<textcolor>E6FFFFFF</textcolor><focusedcolor>FF101014</focusedcolor>
 			<texturefocus border="30">vidrio/pill_focus.png</texturefocus>
 			<texturenofocus border="30">vidrio/glass_pill.png</texturenofocus>
-			<onclick>{ABRIR}</onclick>
+			<onclick condition="System.Platform.Android">{ABRIR}</onclick>
+			<onclick condition="!System.Platform.Android">{ABRIR_TVOS}</onclick>
 			<ondown>5600</ondown>
-			<visible>System.Platform.Android</visible>
 		</control>
 		<control type="label">
 			<right>80</right><top>48</top><width>300</width><height>52</height>

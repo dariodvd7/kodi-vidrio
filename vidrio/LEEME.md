@@ -77,8 +77,8 @@ empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la to
 (sin ella usa la de ejemplo): en el cron, `VIDRIO_HOMELAB=<ip> /opt/kodi-artwork/catalogo.py`.
 
 ## Instalar
-1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.3.4.zip`,
-   después `skin.vidrio-1.3.0.zip` (versiones actuales: add-on 1.3.4, skin 1.3.0). La skin pide el add-on, por eso va
+1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.3.6.zip`,
+   después `skin.vidrio-1.3.1.zip` (versiones actuales: add-on 1.3.6, skin 1.3.1). La skin pide el add-on, por eso va
    primero.
 2. Para tráileres: instalar YouTube (`plugin.video.youtube`) del repositorio oficial. Funciona sin clave propia de la API.
 3. Interfaz → Skin → Vidrio.
@@ -181,13 +181,14 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 - Skin: ventana 1154 (`herramientas/guia_ventana.py` genera `Custom_1154_VidrioGuia.xml` e `Includes_Guia.xml`).
   En Android la pestaña se llama **DGO**: elegir un canal o "Abrir DGO" abre la app (`StartAndroidActivity
   (com.directv.dtvlatam)`), que se ve fuera de Kodi (DRM Widevine, sin API pública); "Atrás" vuelve a Kodi. En el
-  Apple TV la pestaña es **Guía**: solo la programación, porque Kodi para tvOS no tiene ningún comando para abrir
-  otra app (los `openURL` del binario son para recibir enlaces).
-- Experimento (plugin 1.3.4, `?abrir=<enlace>`, `resources/lib/abrir.py`): el Python de Kodi para tvOS trae
-  `ctypes`, y con el runtime de Objective-C se llama a `openURL:options:completionHandler:` en el hilo principal.
-  La llamada corre sin trabar Kodi, pero el 23/11 no abrió ni `dtvmobile://` ni `videos://` (app TV de Apple).
-  Falta saber si tvOS lo rechaza por estar la app en segundo plano o sin `LSApplicationQueriesSchemes`, y cuál es
-  el esquema de DGO en tvOS. La skin todavía no lo usa.
+  Apple TV la pestaña es **Guía** (Kodi para tvOS no tiene ningún comando para abrir otra app; ver abajo).
+- **Abrir DGO en el Apple TV** (plugin 1.3.6, skin 1.3.1): el Python de Kodi para tvOS trae `ctypes`, y
+  `resources/lib/abrir.py` llama a `openURL:options:completionHandler:` con el runtime de Objective-C, en el hilo
+  principal (`dispatch_async_f`), y arma a mano el block que devuelve el resultado. Lo ejecuta el **servicio**
+  (`Window(home).Property(Vidrio.Abrir)`; la ruta `?abrir=<enlace>` solo deja el pedido): si lo llamara el plugin,
+  tvOS respondería cuando el proceso ya terminó y Kodi se cierra. DGO no acepta ningún esquema propio (se probaron 25,
+  y `https://www.directvgo.com`), así que la guía abre su página de la App Store
+  (`itms-apps://apps.apple.com/ar/app/id1349939060`), que queda con el foco en "Abrir": un clic más y entra.
 
 ## Probado
 - Mac, Kodi 21.3: inicio, filas, datos en español, navegación con flechas, tráiler de YouTube de fondo con el
