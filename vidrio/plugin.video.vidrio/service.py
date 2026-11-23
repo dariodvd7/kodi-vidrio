@@ -136,14 +136,17 @@ def configurar_subtitulos():
 
 
 def configurar_trakt():
-    """Si está Trakt: que no cuente los tráileres de fondo (llegan por http) y sí lo que reproduce Vidrio."""
+    """Si está Trakt: que no cuente los tráileres de fondo (llegan por http), sí lo que reproduce Vidrio, y que no pida
+    puntuar al terminar."""
     if not instalado('script.trakt'):
         return
     try:
         trakt = xbmcaddon.Addon('script.trakt')
     except RuntimeError:
         return
-    for clave, valor in (('ExcludeHTTP', 'true'), ('ExcludePlugin', 'false')):
+    # sin la pregunta "¿qué te pareció?" al terminar una película o un episodio
+    for clave, valor in (('ExcludeHTTP', 'true'), ('ExcludePlugin', 'false'), ('rate_movie', 'false'),
+                         ('rate_episode', 'false')):
         if trakt.getSetting(clave) != valor:
             trakt.setSetting(clave, valor)
             log(f'Trakt: {clave} = {valor}')

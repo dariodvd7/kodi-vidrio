@@ -77,8 +77,8 @@ empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la to
 (sin ella usa la de ejemplo): en el cron, `VIDRIO_HOMELAB=<ip> /opt/kodi-artwork/catalogo.py`.
 
 ## Instalar
-1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.3.2.zip`,
-   después `skin.vidrio-1.3.0.zip` (versiones actuales: add-on 1.3.2, skin 1.3.0). La skin pide el add-on, por eso va
+1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.3.3.zip`,
+   después `skin.vidrio-1.3.0.zip` (versiones actuales: add-on 1.3.3, skin 1.3.0). La skin pide el add-on, por eso va
    primero.
 2. Para tráileres: instalar YouTube (`plugin.video.youtube`) del repositorio oficial. Funciona sin clave propia de la API.
 3. Interfaz → Skin → Vidrio.
@@ -103,7 +103,7 @@ su código para obtener el video es de 2021 y YouTube ya no le responde (`Conten
   con la propiedad `Window(home).script.trakt.ids`: el add-on Vidrio la pone al reproducir (`?reproducir=`) con los
   códigos de la película (TMDb, IMDb) o de la serie (TVDB, TMDb, IMDb); temporada y episodio salen del reproductor.
   Los códigos vienen del catálogo (Radarr/Sonarr, y Jellyfin si faltan): 252/252 películas, 90/91 series.
-- El servicio de Vidrio deja Trakt con **Excluir HTTP** activado (los tráileres de YouTube llegan por http y no deben
+- El servicio de Vidrio deja Trakt sin la pregunta para puntuar al terminar (`rate_movie`, `rate_episode`), con **Excluir HTTP** activado (los tráileres de YouTube llegan por http y no deben
   contar) y **Excluir plugins** desactivado.
 - **Siguiente episodio**: "Continuar viendo" suma, de las series del historial de Trakt (`/sync/history/episodes`),
   el episodio que sigue al último que terminaste (si no hay otro a medias de esa serie), todo ordenado por fecha.
