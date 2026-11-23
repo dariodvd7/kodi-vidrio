@@ -77,8 +77,8 @@ empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la to
 (sin ella usa la de ejemplo): en el cron, `VIDRIO_HOMELAB=<ip> /opt/kodi-artwork/catalogo.py`.
 
 ## Instalar
-1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.3.0.zip`,
-   después `skin.vidrio-1.3.0.zip` (versiones actuales: add-on 1.3.0, skin 1.3.0). La skin pide el add-on, por eso va
+1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.3.2.zip`,
+   después `skin.vidrio-1.3.0.zip` (versiones actuales: add-on 1.3.2, skin 1.3.0). La skin pide el add-on, por eso va
    primero.
 2. Para tráileres: instalar YouTube (`plugin.video.youtube`) del repositorio oficial. Funciona sin clave propia de la API.
 3. Interfaz → Skin → Vidrio.
@@ -105,6 +105,10 @@ su código para obtener el video es de 2021 y YouTube ya no le responde (`Conten
   Los códigos vienen del catálogo (Radarr/Sonarr, y Jellyfin si faltan): 252/252 películas, 90/91 series.
 - El servicio de Vidrio deja Trakt con **Excluir HTTP** activado (los tráileres de YouTube llegan por http y no deben
   contar) y **Excluir plugins** desactivado.
+- **Siguiente episodio**: "Continuar viendo" suma, de las series del historial de Trakt (`/sync/history/episodes`),
+  el episodio que sigue al último que terminaste (si no hay otro a medias de esa serie), todo ordenado por fecha.
+  La fila se recarga al volver Kodi de segundo plano o del reposo (Android deja Kodi vivo y el inicio no se recarga
+  solo), al arrancar el servicio y cada 5 minutos con el inicio en pantalla: lo visto en otro equipo aparece.
 - **Continuar viendo** (fila 5100, la primera del inicio) y pestaña **Trakt** (grilla 1151 con `lista=trakt`): salen de
   Trakt (`/sync/playback` y `/sync/watchlist`) con el token y el cliente de script.trakt (`resources/lib/trakt.py`, sin
   otra vinculación), cruzados con el catálogo por TMDb/IMDb/TVDB. Elegir uno reproduce con `?reproducir=…&desde=<%>`

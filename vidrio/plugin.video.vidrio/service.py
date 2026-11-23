@@ -10,6 +10,8 @@
    a4kSubtitles los busca y descarga solo.
 4. Trakt: al cortar o terminar algo que no sea un tráiler, unos segundos después (cuando script.trakt ya avisó a Trakt)
    borra la caché de Trakt de Vidrio y cambia Window(home).Property(Vidrio.Trakt): la skin recarga "Continuar viendo".
+   También al volver Kodi de segundo plano o del reposo, y cada 5 minutos con el inicio en pantalla: así aparece lo
+   que se vio en otro equipo.
 """
 import json
 import time
@@ -326,14 +328,47 @@ class Trailers:
             xbmc.executebuiltin(f'PlayMedia({trailer},1)')  # 1 = modo ventana, no pasa a pantalla completa
 
 
+class Monitor(xbmc.Monitor):
+    """Avisa cuando Kodi se despierta o sale el protector de pantalla: hay que recargar "Continuar viendo"."""
+    def __init__(self):
+        super().__init__()
+        self.despierto = False
+
+    def onNotification(self, sender, method, data):
+        if method in ('System.OnWake', 'GUI.OnScreensaverDeactivated'):
+            self.despierto = True
+
+
+RECARGA_PERIODICA = 5 * 60  # con el inicio en pantalla y nada sonando
+
+
+def recargar_trakt(trailers, motivo):
+    log(f'recargo Continuar viendo ({motivo})')
+    trailers.trakt_en = time.time()
+
+
 def main():
-    monitor = xbmc.Monitor()
+    monitor = Monitor()
     if monitor.waitForAbort(5):
         return
     configurar_subtitulos()
     trailers = Trailers()
     vueltas = 0
+    ultima_vuelta = time.time()
+    ultima_recarga = ultima_vuelta - RECARGA_PERIODICA  # la primera vez que esté el inicio en pantalla (al arrancar o al actualizar el add-on)
     while not monitor.abortRequested():
+        # Lo visto en otro equipo (Apple TV, TCL...) aparece al volver a Kodi: Android deja Kodi en segundo plano y
+        # al volver el inicio no se recarga solo.
+        ahora = time.time()
+        if ahora - ultima_vuelta > 60:  # el servicio estuvo pausado: Kodi estaba en segundo plano o dormido
+            recargar_trakt(trailers, 'Kodi volvió de segundo plano'); ultima_recarga = ahora
+        elif monitor.despierto:
+            recargar_trakt(trailers, 'Kodi se despertó'); ultima_recarga = ahora
+        elif (ahora - ultima_recarga > RECARGA_PERIODICA and xbmcgui.getCurrentWindowId() == 10000
+              and not xbmc.Player().isPlaying()):
+            recargar_trakt(trailers, 'cada 5 minutos en el inicio'); ultima_recarga = ahora
+        monitor.despierto = False
+        ultima_vuelta = ahora
         if vueltas % 1000 == 0:  # al arrancar y cada ~5 minutos: también toma add-ons instalados después
             configurar_trakt()
             if vueltas:

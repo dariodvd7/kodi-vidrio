@@ -134,9 +134,11 @@ def mismo(ids_trakt, ids_catalogo):
 
 
 def continuar(pelis, series):
-    """Películas y episodios a medias según Trakt, con el punto donde quedaron (se retoma desde ahí)."""
+    """Lo que hay para seguir viendo según Trakt, lo más reciente primero: películas y episodios a medias (se retoman
+    desde donde quedaron) y, de las series que venís viendo, el episodio que sigue al último que terminaste."""
     from resources.lib import trakt
-    items = []
+    items = []  # (fecha, item)
+    en_curso = set()
     for r in trakt.reproducciones():
         progreso = float(r.get('progress') or 0)
         if r.get('type') == 'movie':
@@ -168,8 +170,34 @@ def continuar(pelis, series):
         li.setProperty('vidrio.etiqueta', 'CONTINUAR VIENDO')
         li.setProperty('vidrio.continuar', '1')
         li.setProperty('vidrio.progreso', str(int(progreso)))
-        items.append((url(reproducir=archivo, desde=f'{progreso:.2f}'), li, carpeta))
-    return items
+        if r.get('type') == 'episode':
+            en_curso.add(s['carpeta'])
+        items.append((r.get('paused_at', ''), (url(reproducir=archivo, desde=f'{progreso:.2f}'), li, carpeta)))
+
+    # Siguiente episodio: por cada serie del historial (la más reciente primero), el que sigue al último que viste
+    vistas = set()
+    for h in trakt.historial():
+        s = next((s for s in series if mismo(h.get('show', {}).get('ids', {}), s.get('ids'))), None)
+        if not s or s['carpeta'] in vistas:
+            continue
+        vistas.add(s['carpeta'])
+        if s['carpeta'] in en_curso or len(vistas) > 15:
+            continue
+        t, n = h.get('episode', {}).get('season'), h.get('episode', {}).get('number')
+        eps = [e for tt in s['temporadas'] for e in tt['episodios'] if (e.get('temporada') or 0) > 0]
+        eps.sort(key=lambda e: (int(e.get('temporada') or 0), int(e.get('episodio') or 0)))
+        proximo = next((e for e in eps if (int(e.get('temporada') or 0), int(e.get('episodio') or 0)) > (int(t or 0), int(n or 0))), None)
+        if not proximo:
+            continue
+        u, li, carpeta = item_episodio(s, proximo)
+        li.setLabel(f"{s['titulo']} · T{proximo['temporada']} E{proximo['episodio']}")
+        li.setArt(arte(s, s['dir']))
+        li.setProperty('vidrio.etiqueta', 'SIGUIENTE EPISODIO')
+        li.setProperty('vidrio.continuar', '1')
+        li.setProperty('vidrio.meta', f"Siguiente episodio  ·  {li.getProperty('vidrio.meta')}")
+        items.append((h.get('watched_at', ''), (url(reproducir=proximo['archivo']), li, carpeta)))
+    items.sort(key=lambda x: x[0], reverse=True)
+    return [i for _, i in items]
 
 
 def mi_lista(pelis, series, ya):
