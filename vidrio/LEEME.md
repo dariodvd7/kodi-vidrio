@@ -187,7 +187,12 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   `watch`, `sports`, `kids`) abre esa pestaña; `…/home/lander/<canal>` la página de un canal; `…/player/<tipo>/<id>`
   y `…/home/pdp/<tipo>/<id>` un contenido. El canal y el id son internos de DGO (solo los da su API privada; los
   logos públicos `stations/<canal>.png` devuelven la misma imagen para cualquier nombre), así que la guía del TCL abre
-  **TV en vivo**: `StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)`.
+  **TV en vivo** (skin 1.3.4, probado en el TCL):
+  `StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)`.
+  Tres detalles: Kodi arma el intent con `setDataAndType(enlace, "")` y ese tipo vacío no coincide con el filtro de DGO,
+  así que hay que nombrar la clase (con la clase explícita Android no compara filtros; sin ella DGO abría su inicio);
+  las banderas `NEW_TASK | CLEAR_TASK` hacen que DGO arranque de cero y procese el enlace aunque ya estuviera abierta;
+  y `reopened=true` (solo en enlaces `/home/…`) saltea "¿Quién está viendo?" si ya hay un perfil activo.
   DGO no abre con la depuración USB activa. La app de tvOS no acepta ninguno de estos esquemas.
 - **Abrir DGO en el Apple TV** (plugin 1.3.6, skin 1.3.1): el Python de Kodi para tvOS trae `ctypes`, y
   `resources/lib/abrir.py` llama a `openURL:options:completionHandler:` con el runtime de Objective-C, en el hilo

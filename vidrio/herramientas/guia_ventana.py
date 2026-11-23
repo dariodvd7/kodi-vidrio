@@ -7,9 +7,23 @@ import sys
 GRUPOS = ['Aire', 'Noticias', 'Deportes', 'Películas y series', 'Infantiles', 'Documentales', 'Música',
           'Internacionales', 'Otros']
 FILAS = [(5601 + i, g) for i, g in enumerate(GRUPOS)]
-# Android: DGO acepta enlaces dtvmobile:// (DeepLinkKt.processDeepLink en su app): dtvmobile://live abre la pestaña
-# TV en vivo (su grilla). Un canal puntual pide el identificador interno de DGO, que solo da su API privada.
-ABRIR = 'StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://live)'
+# Android: DGO acepta enlaces dtvmobile:// (DeepLinkKt.processDeepLink en su app): dtvmobile://live y
+# dtvmobile://dgo/home/live piden la pestaña TV en vivo (su grilla). Un canal puntual pide el identificador interno de
+# DGO, que solo da su API privada.
+# Kodi arma el intent con setDataAndType(enlace, "") y un tipo vacío no coincide con el filtro de DGO (no declara
+# tipo), así que se nombra la actividad de enlaces (SplashRouterActivity, exportada): con la clase explícita Android no
+# compara filtros. Banderas 268468224 = NEW_TASK | CLEAR_TASK: DGO arranca de cero y procesa el enlace aunque ya
+# estuviera abierta. Parámetros de Kodi 21: paquete, intent, tipo, enlace, banderas, extras, acción, categoría, clase.
+DGO_CLASE = 'com.directvgo.presentation.tv.splash.router.SplashRouterActivity'
+
+
+def abrir_dgo(enlace):
+    return f'StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,{enlace},268468224,,,,{DGO_CLASE})'
+
+
+# reopened=true: ProfileActivity salta "¿Quién está viendo?" si ya hay un perfil activo y pasa el destino al inicio.
+# DeepLinkKt solo lee ese parámetro en los enlaces /home/<pestaña> (y /home/lander), no en dtvmobile://live.
+ABRIR_CANAL = ABRIR = abrir_dgo('dtvmobile://dgo/home/live?reopened=true')
 # tvOS: Kodi no abre apps, pero el servicio de Vidrio pide a tvOS (ctypes + openURL) la página de DGO en la App Store,
 # que queda con el foco en "Abrir": un clic más y entra a DGO. DGO no tiene un enlace propio que tvOS acepte.
 ABRIR_TVOS = 'RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)'
@@ -92,7 +106,7 @@ def fila(i, cid, grupo):
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					{'<onup>5690</onup>' if i == 0 else f'<onup>{arriba}</onup>'}
 					<ondown>{abajo}</ondown>
-					<onclick condition="System.Platform.Android">{ABRIR}</onclick>
+					<onclick condition="System.Platform.Android">{ABRIR_CANAL}</onclick>
 					<onclick condition="!System.Platform.Android">{ABRIR_TVOS}</onclick>
 					<itemlayout width="350" height="260">
 {tarjeta(cid, False)}					</itemlayout>
