@@ -64,3 +64,13 @@ def ahora_y_despues(canal, ahora=None):
             siguiente = p
             break
     return actual, siguiente
+
+
+# Clave de la página de cada canal en DGO (dtvmobile://dgo/home/lander/<clave>): las arma el CMS de DGO y solo las da
+# su API con sesión iniciada; una clave inexistente muestra "¡Ups! Algo pasó" (M2-1998). "espnpremium" y
+# "tntsportspremium" no existen (probado en el TCL). Solo van acá las confirmadas; sin clave, el canal abre TV en vivo.
+CLAVES_DGO = {}
+
+
+def clave_dgo(nombre):
+    return CLAVES_DGO.get(nombre, '')

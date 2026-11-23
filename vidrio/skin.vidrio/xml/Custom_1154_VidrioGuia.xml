@@ -177,7 +177,8 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5690</onup>
 					<ondown>5602</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/lander/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -258,7 +259,8 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5601</onup>
 					<ondown>5603</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/lander/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -339,7 +341,8 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5602</onup>
 					<ondown>5604</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/lander/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -420,7 +423,8 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5603</onup>
 					<ondown>5605</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/lander/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -501,7 +505,8 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5604</onup>
 					<ondown>5606</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/lander/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -582,7 +587,8 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5605</onup>
 					<ondown>5607</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/lander/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -663,7 +669,8 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5606</onup>
 					<ondown>5608</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/lander/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -744,7 +751,8 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5607</onup>
 					<ondown>5609</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/lander/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">
@@ -825,7 +833,8 @@
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					<onup>5608</onup>
 					<ondown>5609</ondown>
-					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/lander/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
 					<itemlayout width="350" height="260">
 					<control type="group">

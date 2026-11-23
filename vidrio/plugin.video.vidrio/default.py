@@ -236,6 +236,7 @@ def canales_guia(grupo):
         li.setProperty('vidrio.tipo', 'canal')
         li.setProperty('vidrio.canal_id', c['id'])
         li.setProperty('vidrio.grupo', c.get('grupo', ''))
+        li.setProperty('vidrio.dgo', guia.clave_dgo(c['nombre']))
         if actual:
             total, pasado = actual['fin'] - actual['inicio'], ahora - actual['inicio']
             tag.setTitle(actual['titulo'])

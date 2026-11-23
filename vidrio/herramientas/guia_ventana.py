@@ -23,7 +23,9 @@ def abrir_dgo(enlace):
 
 # reopened=true: ProfileActivity salta "¿Quién está viendo?" si ya hay un perfil activo y pasa el destino al inicio.
 # DeepLinkKt solo lee ese parámetro en los enlaces /home/<pestaña> (y /home/lander), no en dtvmobile://live.
-ABRIR_CANAL = ABRIR = abrir_dgo('dtvmobile://dgo/home/live?reopened=true')
+ABRIR = abrir_dgo('dtvmobile://dgo/home/live?reopened=true')
+# Un canal: su página en DGO (/home/lander/<clave>, propiedad vidrio.dgo del plugin); sin clave, TV en vivo.
+ABRIR_CANAL = abrir_dgo('dtvmobile://dgo/home/lander/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true')
 # tvOS: Kodi no abre apps, pero el servicio de Vidrio pide a tvOS (ctypes + openURL) la página de DGO en la App Store,
 # que queda con el foco en "Abrir": un clic más y entra a DGO. DGO no tiene un enlace propio que tvOS acepte.
 ABRIR_TVOS = 'RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)'
@@ -106,7 +108,8 @@ def fila(i, cid, grupo):
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
 					{'<onup>5690</onup>' if i == 0 else f'<onup>{arriba}</onup>'}
 					<ondown>{abajo}</ondown>
-					<onclick condition="System.Platform.Android">{ABRIR_CANAL}</onclick>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">{ABRIR_CANAL}</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">{ABRIR}</onclick>
 					<onclick condition="!System.Platform.Android">{ABRIR_TVOS}</onclick>
 					<itemlayout width="350" height="260">
 {tarjeta(cid, False)}					</itemlayout>
