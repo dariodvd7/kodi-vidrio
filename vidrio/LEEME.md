@@ -193,6 +193,11 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   así que hay que nombrar la clase (con la clase explícita Android no compara filtros; sin ella DGO abría su inicio);
   las banderas `NEW_TASK | CLEAR_TASK` hacen que DGO arranque de cero y procese el enlace aunque ya estuviera abierta;
   y `reopened=true` (solo en enlaces `/home/…`) saltea "¿Quién está viendo?" si ya hay un perfil activo.
+  Páginas de marca (plugin 1.3.9): `…/home/lander/<clave>` con las claves de `landerUris` del JS de la web
+  (`HBO`, `Universal`, `DISCOVERY`, `Lionsgate`, `ONDIRECTV`, `SERIES`, `movies`; distinguen mayúsculas). HBO,
+  Universal y DISCOVERY muestran sus canales en vivo; `guia.clave_dgo` las asigna a esos canales y el resto abre TV en
+  vivo. Una clave inexistente da "¡Ups! Algo pasó" (M2-1998). Un canal puntual sería `…/player/live/<id>`
+  (la web usa `/player/live/CH0100000000140`), pero los `CH01…` solo los da la API de DGO con sesión.
   DGO no abre con la depuración USB activa. La app de tvOS no acepta ninguno de estos esquemas.
 - **Abrir DGO en el Apple TV** (plugin 1.3.6, skin 1.3.1): el Python de Kodi para tvOS trae `ctypes`, y
   `resources/lib/abrir.py` llama a `openURL:options:completionHandler:` con el runtime de Objective-C, en el hilo
