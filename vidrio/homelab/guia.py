@@ -52,9 +52,37 @@ CANALES_DGO = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'canales_
 EQUIVALENTES_DGO = {
     'TN': 'Todo Noticias.', 'C5N': 'C5N Canal 5 Noticias', 'A24': 'AMERICA 24', 'F24': 'France 24',
     'Atres Series': 'Atreseries', 'Nat Geo': 'National Geographic', 'Home & Health': 'Discovery Home & Health',
-    'DHE': 'Discovery Home & Health', 'ID - Investigation Discovery': 'Discovery ID', 'Disney Junior': 'Disney Jr (Sur)',
+    'ID - Investigation Discovery': 'Discovery ID', 'Disney Junior': 'Disney Jr (Sur)',
     'Quiero': 'Quiero Musica en Mi Idioma',
 }
+# El mismo canal con dos nombres (las dos fuentes de open-epg los llaman distinto): se unen los que dan la misma clave
+# de DGO (clave_dgo, con EQUIVALENTES_DGO). Queda el que tiene más programación, con este nombre si figura acá.
+NOMBRE_UNIDO = {'america24': 'A24', 'cnn': 'CNN Internacional', 'foxsports': 'Fox Sports', 'disneyjr': 'Disney Junior',
+                'discoveryhome&health': 'Discovery Home & Health', 'discoveryid': 'Discovery ID'}
+
+
+def unir_duplicados(canales):
+    """Une los canales repetidos. El que queda lleva en "otros_ids" los de los que se unieron (para "Mis canales")."""
+    por_clave = {}
+    for c in canales:
+        por_clave.setdefault(clave_dgo(EQUIVALENTES_DGO.get(c['nombre'], c['nombre'])), []).append(c)
+    salida = []
+    for clave_canal, mismos in por_clave.items():
+        if len(mismos) == 1:
+            salida.append(mismos[0])
+            continue
+        queda = max(mismos, key=lambda c: len(c['programas']))
+        queda['nombre'] = NOMBRE_UNIDO.get(clave_canal, queda['nombre'])
+        queda['logo'] = queda.get('logo') or next((c['logo'] for c in mismos if c.get('logo')), '')
+        queda['dgo'] = any(c.get('dgo') for c in mismos) if any('dgo' in c for c in mismos) else None
+        if queda['dgo'] is None:
+            del queda['dgo']
+        queda['otros_ids'] = [c['id'] for c in mismos if c is not queda]
+        print(f"uno {' + '.join(c['nombre'] for c in mismos)} -> {queda['nombre']}")
+        salida.append(queda)
+    return salida
+
+
 ORDEN_GRUPOS = ['Aire', 'Noticias', 'Deportes', 'Películas y series', 'Infantiles', 'Documentales', 'Música',
                 'Internacionales', 'Otros']
 
@@ -183,6 +211,7 @@ def main():
         if dgo is not None:
             c['dgo'] = clave_dgo(EQUIVALENTES_DGO.get(c['nombre'], c['nombre'])) in dgo
         salida.append(c)
+    salida = unir_duplicados(salida)
     primero = {n.lower(): i for i, n in enumerate(PRIMERO)}
     salida.sort(key=lambda c: (ORDEN_GRUPOS.index(c['grupo']), primero.get(c['nombre'].lower(), len(primero)),
                                c['nombre'].lower()))

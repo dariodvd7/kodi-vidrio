@@ -227,10 +227,11 @@ def editar_mis_canales():
     g = guia.cargar()
     canales = g.get('canales', [])
     actuales = guia.mis_canales(g)
-    por_id = {c['id']: c for c in canales}
+    por_id = {i: c for c in canales for i in [c['id']] + c.get('otros_ids', [])}  # otros_ids: canales unidos
     elegidos = [por_id[i] for i in actuales if i in por_id]
     solo_dgo = xbmcaddon.Addon().getSettingBool('solo_dgo')
-    orden = elegidos + [c for c in canales if c['id'] not in set(actuales) and not (solo_dgo and c.get('dgo') is False)]
+    elegidos = list({id(c): c for c in elegidos}.values())  # dos ids que hoy son el mismo canal: una vez
+    orden = elegidos + [c for c in canales if c not in elegidos and not (solo_dgo and c.get('dgo') is False)]
     opciones = []
     for c in orden:
         li = xbmcgui.ListItem(c['nombre'], c.get('grupo', ''))
@@ -254,8 +255,8 @@ def canales_guia(grupo):
     items = []
     canales = g.get('canales', [])
     if grupo == MIS_CANALES:
-        por_id = {c['id']: c for c in canales}
-        canales = [por_id[i] for i in guia.mis_canales(g) if i in por_id]
+        por_id = {i: c for c in canales for i in [c['id']] + c.get('otros_ids', [])}  # otros_ids: canales unidos
+        canales = list({id(por_id[i]): por_id[i] for i in guia.mis_canales(g) if i in por_id}.values())
     solo_dgo = xbmcaddon.Addon().getSettingBool('solo_dgo')
     for c in canales:
         if grupo and grupo != MIS_CANALES and c.get('grupo') != grupo:
