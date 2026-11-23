@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generado por herramientas/guia_ventana.py: variables de la guía de TV. -->
+<includes>
+	<variable name="GuiaCanal">
+		<value condition="Control.HasFocus(5601)">$INFO[Container(5601).ListItem.Label]$INFO[Container(5601).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Control.HasFocus(5602)">$INFO[Container(5602).ListItem.Label]$INFO[Container(5602).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Control.HasFocus(5603)">$INFO[Container(5603).ListItem.Label]$INFO[Container(5603).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Control.HasFocus(5604)">$INFO[Container(5604).ListItem.Label]$INFO[Container(5604).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Control.HasFocus(5605)">$INFO[Container(5605).ListItem.Label]$INFO[Container(5605).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Control.HasFocus(5606)">$INFO[Container(5606).ListItem.Label]$INFO[Container(5606).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Control.HasFocus(5607)">$INFO[Container(5607).ListItem.Label]$INFO[Container(5607).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Control.HasFocus(5608)">$INFO[Container(5608).ListItem.Label]$INFO[Container(5608).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Control.HasFocus(5609)">$INFO[Container(5609).ListItem.Label]$INFO[Container(5609).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Integer.IsGreater(Container(5601).NumItems,0)">$INFO[Container(5601).ListItem.Label]$INFO[Container(5601).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Integer.IsGreater(Container(5602).NumItems,0)">$INFO[Container(5602).ListItem.Label]$INFO[Container(5602).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Integer.IsGreater(Container(5603).NumItems,0)">$INFO[Container(5603).ListItem.Label]$INFO[Container(5603).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Integer.IsGreater(Container(5604).NumItems,0)">$INFO[Container(5604).ListItem.Label]$INFO[Container(5604).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Integer.IsGreater(Container(5605).NumItems,0)">$INFO[Container(5605).ListItem.Label]$INFO[Container(5605).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Integer.IsGreater(Container(5606).NumItems,0)">$INFO[Container(5606).ListItem.Label]$INFO[Container(5606).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Integer.IsGreater(Container(5607).NumItems,0)">$INFO[Container(5607).ListItem.Label]$INFO[Container(5607).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Integer.IsGreater(Container(5608).NumItems,0)">$INFO[Container(5608).ListItem.Label]$INFO[Container(5608).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value condition="Integer.IsGreater(Container(5609).NumItems,0)">$INFO[Container(5609).ListItem.Label]$INFO[Container(5609).ListItem.Property(vidrio.grupo),  ·  ,]</value>
+		<value>Guía de TV</value>
+	</variable>
+	<variable name="GuiaAhora">
+		<value condition="Control.HasFocus(5601)">$INFO[Container(5601).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Control.HasFocus(5602)">$INFO[Container(5602).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Control.HasFocus(5603)">$INFO[Container(5603).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Control.HasFocus(5604)">$INFO[Container(5604).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Control.HasFocus(5605)">$INFO[Container(5605).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Control.HasFocus(5606)">$INFO[Container(5606).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Control.HasFocus(5607)">$INFO[Container(5607).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Control.HasFocus(5608)">$INFO[Container(5608).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Control.HasFocus(5609)">$INFO[Container(5609).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Integer.IsGreater(Container(5601).NumItems,0)">$INFO[Container(5601).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Integer.IsGreater(Container(5602).NumItems,0)">$INFO[Container(5602).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Integer.IsGreater(Container(5603).NumItems,0)">$INFO[Container(5603).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Integer.IsGreater(Container(5604).NumItems,0)">$INFO[Container(5604).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Integer.IsGreater(Container(5605).NumItems,0)">$INFO[Container(5605).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Integer.IsGreater(Container(5606).NumItems,0)">$INFO[Container(5606).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Integer.IsGreater(Container(5607).NumItems,0)">$INFO[Container(5607).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Integer.IsGreater(Container(5608).NumItems,0)">$INFO[Container(5608).ListItem.Property(vidrio.ahora)]</value>
+		<value condition="Integer.IsGreater(Container(5609).NumItems,0)">$INFO[Container(5609).ListItem.Property(vidrio.ahora)]</value>
+		<value></value>
+	</variable>
+	<variable name="GuiaHorario">
+		<value condition="Control.HasFocus(5601)">$INFO[Container(5601).ListItem.Property(vidrio.horario)]$INFO[Container(5601).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Control.HasFocus(5602)">$INFO[Container(5602).ListItem.Property(vidrio.horario)]$INFO[Container(5602).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Control.HasFocus(5603)">$INFO[Container(5603).ListItem.Property(vidrio.horario)]$INFO[Container(5603).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Control.HasFocus(5604)">$INFO[Container(5604).ListItem.Property(vidrio.horario)]$INFO[Container(5604).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Control.HasFocus(5605)">$INFO[Container(5605).ListItem.Property(vidrio.horario)]$INFO[Container(5605).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Control.HasFocus(5606)">$INFO[Container(5606).ListItem.Property(vidrio.horario)]$INFO[Container(5606).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Control.HasFocus(5607)">$INFO[Container(5607).ListItem.Property(vidrio.horario)]$INFO[Container(5607).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Control.HasFocus(5608)">$INFO[Container(5608).ListItem.Property(vidrio.horario)]$INFO[Container(5608).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Control.HasFocus(5609)">$INFO[Container(5609).ListItem.Property(vidrio.horario)]$INFO[Container(5609).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Integer.IsGreater(Container(5601).NumItems,0)">$INFO[Container(5601).ListItem.Property(vidrio.horario)]$INFO[Container(5601).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Integer.IsGreater(Container(5602).NumItems,0)">$INFO[Container(5602).ListItem.Property(vidrio.horario)]$INFO[Container(5602).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Integer.IsGreater(Container(5603).NumItems,0)">$INFO[Container(5603).ListItem.Property(vidrio.horario)]$INFO[Container(5603).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Integer.IsGreater(Container(5604).NumItems,0)">$INFO[Container(5604).ListItem.Property(vidrio.horario)]$INFO[Container(5604).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Integer.IsGreater(Container(5605).NumItems,0)">$INFO[Container(5605).ListItem.Property(vidrio.horario)]$INFO[Container(5605).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Integer.IsGreater(Container(5606).NumItems,0)">$INFO[Container(5606).ListItem.Property(vidrio.horario)]$INFO[Container(5606).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Integer.IsGreater(Container(5607).NumItems,0)">$INFO[Container(5607).ListItem.Property(vidrio.horario)]$INFO[Container(5607).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Integer.IsGreater(Container(5608).NumItems,0)">$INFO[Container(5608).ListItem.Property(vidrio.horario)]$INFO[Container(5608).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value condition="Integer.IsGreater(Container(5609).NumItems,0)">$INFO[Container(5609).ListItem.Property(vidrio.horario)]$INFO[Container(5609).ListItem.Property(vidrio.quedan),   ·   ,]</value>
+		<value></value>
+	</variable>
+	<variable name="GuiaSinopsis">
+		<value condition="Control.HasFocus(5601)">$INFO[Container(5601).ListItem.Plot]</value>
+		<value condition="Control.HasFocus(5602)">$INFO[Container(5602).ListItem.Plot]</value>
+		<value condition="Control.HasFocus(5603)">$INFO[Container(5603).ListItem.Plot]</value>
+		<value condition="Control.HasFocus(5604)">$INFO[Container(5604).ListItem.Plot]</value>
+		<value condition="Control.HasFocus(5605)">$INFO[Container(5605).ListItem.Plot]</value>
+		<value condition="Control.HasFocus(5606)">$INFO[Container(5606).ListItem.Plot]</value>
+		<value condition="Control.HasFocus(5607)">$INFO[Container(5607).ListItem.Plot]</value>
+		<value condition="Control.HasFocus(5608)">$INFO[Container(5608).ListItem.Plot]</value>
+		<value condition="Control.HasFocus(5609)">$INFO[Container(5609).ListItem.Plot]</value>
+		<value condition="Integer.IsGreater(Container(5601).NumItems,0)">$INFO[Container(5601).ListItem.Plot]</value>
+		<value condition="Integer.IsGreater(Container(5602).NumItems,0)">$INFO[Container(5602).ListItem.Plot]</value>
+		<value condition="Integer.IsGreater(Container(5603).NumItems,0)">$INFO[Container(5603).ListItem.Plot]</value>
+		<value condition="Integer.IsGreater(Container(5604).NumItems,0)">$INFO[Container(5604).ListItem.Plot]</value>
+		<value condition="Integer.IsGreater(Container(5605).NumItems,0)">$INFO[Container(5605).ListItem.Plot]</value>
+		<value condition="Integer.IsGreater(Container(5606).NumItems,0)">$INFO[Container(5606).ListItem.Plot]</value>
+		<value condition="Integer.IsGreater(Container(5607).NumItems,0)">$INFO[Container(5607).ListItem.Plot]</value>
+		<value condition="Integer.IsGreater(Container(5608).NumItems,0)">$INFO[Container(5608).ListItem.Plot]</value>
+		<value condition="Integer.IsGreater(Container(5609).NumItems,0)">$INFO[Container(5609).ListItem.Plot]</value>
+		<value></value>
+	</variable>
+	<variable name="GuiaSiguiente">
+		<value condition="Control.HasFocus(5601)">$INFO[Container(5601).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Control.HasFocus(5602)">$INFO[Container(5602).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Control.HasFocus(5603)">$INFO[Container(5603).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Control.HasFocus(5604)">$INFO[Container(5604).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Control.HasFocus(5605)">$INFO[Container(5605).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Control.HasFocus(5606)">$INFO[Container(5606).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Control.HasFocus(5607)">$INFO[Container(5607).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Control.HasFocus(5608)">$INFO[Container(5608).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Control.HasFocus(5609)">$INFO[Container(5609).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Integer.IsGreater(Container(5601).NumItems,0)">$INFO[Container(5601).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Integer.IsGreater(Container(5602).NumItems,0)">$INFO[Container(5602).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Integer.IsGreater(Container(5603).NumItems,0)">$INFO[Container(5603).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Integer.IsGreater(Container(5604).NumItems,0)">$INFO[Container(5604).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Integer.IsGreater(Container(5605).NumItems,0)">$INFO[Container(5605).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Integer.IsGreater(Container(5606).NumItems,0)">$INFO[Container(5606).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Integer.IsGreater(Container(5607).NumItems,0)">$INFO[Container(5607).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Integer.IsGreater(Container(5608).NumItems,0)">$INFO[Container(5608).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value condition="Integer.IsGreater(Container(5609).NumItems,0)">$INFO[Container(5609).ListItem.Property(vidrio.siguiente),Después:  ,]</value>
+		<value></value>
+	</variable>
+	<variable name="GuiaLogo">
+		<value condition="Control.HasFocus(5601)">$INFO[Container(5601).ListItem.Art(thumb)]</value>
+		<value condition="Control.HasFocus(5602)">$INFO[Container(5602).ListItem.Art(thumb)]</value>
+		<value condition="Control.HasFocus(5603)">$INFO[Container(5603).ListItem.Art(thumb)]</value>
+		<value condition="Control.HasFocus(5604)">$INFO[Container(5604).ListItem.Art(thumb)]</value>
+		<value condition="Control.HasFocus(5605)">$INFO[Container(5605).ListItem.Art(thumb)]</value>
+		<value condition="Control.HasFocus(5606)">$INFO[Container(5606).ListItem.Art(thumb)]</value>
+		<value condition="Control.HasFocus(5607)">$INFO[Container(5607).ListItem.Art(thumb)]</value>
+		<value condition="Control.HasFocus(5608)">$INFO[Container(5608).ListItem.Art(thumb)]</value>
+		<value condition="Control.HasFocus(5609)">$INFO[Container(5609).ListItem.Art(thumb)]</value>
+		<value condition="Integer.IsGreater(Container(5601).NumItems,0)">$INFO[Container(5601).ListItem.Art(thumb)]</value>
+		<value condition="Integer.IsGreater(Container(5602).NumItems,0)">$INFO[Container(5602).ListItem.Art(thumb)]</value>
+		<value condition="Integer.IsGreater(Container(5603).NumItems,0)">$INFO[Container(5603).ListItem.Art(thumb)]</value>
+		<value condition="Integer.IsGreater(Container(5604).NumItems,0)">$INFO[Container(5604).ListItem.Art(thumb)]</value>
+		<value condition="Integer.IsGreater(Container(5605).NumItems,0)">$INFO[Container(5605).ListItem.Art(thumb)]</value>
+		<value condition="Integer.IsGreater(Container(5606).NumItems,0)">$INFO[Container(5606).ListItem.Art(thumb)]</value>
+		<value condition="Integer.IsGreater(Container(5607).NumItems,0)">$INFO[Container(5607).ListItem.Art(thumb)]</value>
+		<value condition="Integer.IsGreater(Container(5608).NumItems,0)">$INFO[Container(5608).ListItem.Art(thumb)]</value>
+		<value condition="Integer.IsGreater(Container(5609).NumItems,0)">$INFO[Container(5609).ListItem.Art(thumb)]</value>
+		<value></value>
+	</variable>
+</includes>

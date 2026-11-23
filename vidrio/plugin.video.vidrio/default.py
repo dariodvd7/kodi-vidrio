@@ -189,6 +189,42 @@ def mi_lista(pelis, series, ya):
     return items
 
 
+def canales_guia(grupo):
+    """Canales de un grupo de la guía de TV con lo que dan ahora (para la ventana Guía de la skin)."""
+    import time
+    from resources.lib import guia
+    g = guia.cargar()
+    ahora = time.time()
+    items = []
+    for c in g.get('canales', []):
+        if grupo and c.get('grupo') != grupo:
+            continue
+        actual, siguiente = guia.ahora_y_despues(c, ahora)
+        li = xbmcgui.ListItem(c['nombre'], offscreen=True)
+        tag = li.getVideoInfoTag()
+        tag.setMediaType('video')
+        if c.get('logo'):
+            li.setArt({'icon': c['logo'], 'thumb': c['logo'], 'logo': c['logo']})
+        li.setProperty('vidrio.tipo', 'canal')
+        li.setProperty('vidrio.canal_id', c['id'])
+        li.setProperty('vidrio.grupo', c.get('grupo', ''))
+        if actual:
+            total, pasado = actual['fin'] - actual['inicio'], ahora - actual['inicio']
+            tag.setTitle(actual['titulo'])
+            tag.setPlot(actual.get('sinopsis', ''))
+            tag.setResumePoint(pasado, total)  # barra de progreso del programa (ListItem.PercentPlayed)
+            li.setProperty('vidrio.ahora', actual['titulo'])
+            li.setProperty('vidrio.horario', f"{guia.hora(actual['inicio'])} – {guia.hora(actual['fin'])}")
+            quedan = max(1, round((actual['fin'] - ahora) / 60))
+            li.setProperty('vidrio.quedan', f'Quedan {duracion(quedan)}')
+        else:
+            li.setProperty('vidrio.ahora', 'Sin programación')
+        if siguiente:
+            li.setProperty('vidrio.siguiente', f"{guia.hora(siguiente['inicio'])}  {siguiente['titulo']}")
+        items.append((url(canal=c['id']), li, False))
+    return items
+
+
 def terminar(items, contenido, orden=True):
     limite = int(P.get('limite', 0) or 0)
     if limite:
@@ -288,6 +324,10 @@ def main():
     if lista == 'recientes':
         todo = [(p['agregada'], item_pelicula(p)) for p in pelis] + [(s['agregada'], item_serie(s)) for s in series]
         return terminar([i for _, i in sorted(todo, key=lambda x: -x[0])], 'movies', orden=False)
+    if lista == 'guia':  # ventana Guía de la skin: una fila por grupo
+        return terminar(canales_guia(P.get('grupo', '')), 'videos', orden=False)
+    if 'canal' in P:  # elegir un canal desde una lista común: la skin lo maneja; acá no hay nada que reproducir
+        return xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
     if lista in ('continuar', 'trakt'):
         items = continuar(pelis, series)
         if lista == 'trakt':

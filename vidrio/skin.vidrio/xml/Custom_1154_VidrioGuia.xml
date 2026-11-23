@@ -1,0 +1,897 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Vidrio: guía de TV (generada por herramientas/guia_ventana.py; no editar a mano).
+	Datos: guia.json del homelab (homelab/guia.py, open-epg.com). Arriba, el programa del canal con foco; abajo, una
+	fila de canales por grupo. En Android, elegir un canal (o "Abrir DGO") abre la app de DGO; en el Apple TV Kodi no
+	puede abrir otras apps y solo se ve la programación.
+-->
+<window id="1154" type="window">
+	<defaultcontrol always="true">5600</defaultcontrol>
+	<backgroundcolor>FF0A0A0E</backgroundcolor>
+	<controls>
+		<control type="image">
+			<left>0</left><top>0</top><width>1920</width><height>1080</height>
+			<texture colordiffuse="FF0A0A0E">vidrio/white.png</texture>
+		</control>
+		<control type="image">
+			<left>0</left><top>0</top><width>1920</width><height>640</height>
+			<texture colordiffuse="FF16213A">vidrio/white.png</texture>
+		</control>
+		<control type="image">
+			<left>0</left><top>200</top><width>1920</width><height>460</height>
+			<texture>vidrio/fade_bottom.png</texture>
+		</control>
+
+		<!-- Encabezado -->
+		<control type="label">
+			<left>110</left><top>44</top><width>900</width><height>60</height>
+			<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+			<label>Guía de TV</label>
+		</control>
+		<control type="button" id="5690">
+			<right>420</right><top>44</top><width>260</width><height>60</height>
+			<font>vidrio_tab</font><label>Abrir DGO</label>
+			<align>center</align><aligny>center</aligny>
+			<textcolor>E6FFFFFF</textcolor><focusedcolor>FF101014</focusedcolor>
+			<texturefocus border="30">vidrio/pill_focus.png</texturefocus>
+			<texturenofocus border="30">vidrio/glass_pill.png</texturenofocus>
+			<onclick>StartAndroidActivity(com.directv.dtvlatam)</onclick>
+			<ondown>5600</ondown>
+			<visible>System.Platform.Android</visible>
+		</control>
+		<control type="label">
+			<right>80</right><top>48</top><width>300</width><height>52</height>
+			<align>right</align><aligny>center</aligny>
+			<font>vidrio_tab</font><textcolor>E6FFFFFF</textcolor>
+			<label>$INFO[System.Time]</label>
+		</control>
+
+		<!-- Programa del canal con foco -->
+		<control type="group">
+			<left>110</left><top>130</top>
+			<control type="image">
+				<left>1400</left><top>0</top><width>300</width><height>170</height>
+				<aspectratio>keep</aspectratio>
+				<texture background="true">$VAR[GuiaLogo]</texture>
+			</control>
+			<control type="label">
+				<width>1250</width><height>36</height>
+				<font>vidrio_kicker</font><textcolor>B3FFFFFF</textcolor>
+				<label>$VAR[GuiaCanal]</label>
+			</control>
+			<control type="label">
+				<top>36</top><width>1250</width><height>90</height>
+				<font>vidrio_hero</font><textcolor>FFFFFFFF</textcolor>
+				<label>$VAR[GuiaAhora]</label>
+			</control>
+			<control type="label">
+				<top>130</top><width>1250</width><height>40</height>
+				<font>vidrio_meta</font><textcolor>D9FFFFFF</textcolor>
+				<label>$VAR[GuiaHorario]</label>
+			</control>
+			<control type="group">
+				<top>182</top>
+				<control type="progress">
+					<width>700</width><height>8</height>
+					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+					<lefttexture/><righttexture/>
+					<midtexture border="4">vidrio/pill_focus.png</midtexture>
+					<info>Container(5601).ListItem.PercentPlayed</info>
+					<visible>Control.HasFocus(5601) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5601,5601)]</visible>
+				</control>
+				<control type="progress">
+					<width>700</width><height>8</height>
+					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+					<lefttexture/><righttexture/>
+					<midtexture border="4">vidrio/pill_focus.png</midtexture>
+					<info>Container(5602).ListItem.PercentPlayed</info>
+					<visible>Control.HasFocus(5602) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5602,5601)]</visible>
+				</control>
+				<control type="progress">
+					<width>700</width><height>8</height>
+					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+					<lefttexture/><righttexture/>
+					<midtexture border="4">vidrio/pill_focus.png</midtexture>
+					<info>Container(5603).ListItem.PercentPlayed</info>
+					<visible>Control.HasFocus(5603) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5603,5601)]</visible>
+				</control>
+				<control type="progress">
+					<width>700</width><height>8</height>
+					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+					<lefttexture/><righttexture/>
+					<midtexture border="4">vidrio/pill_focus.png</midtexture>
+					<info>Container(5604).ListItem.PercentPlayed</info>
+					<visible>Control.HasFocus(5604) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5604,5601)]</visible>
+				</control>
+				<control type="progress">
+					<width>700</width><height>8</height>
+					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+					<lefttexture/><righttexture/>
+					<midtexture border="4">vidrio/pill_focus.png</midtexture>
+					<info>Container(5605).ListItem.PercentPlayed</info>
+					<visible>Control.HasFocus(5605) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5605,5601)]</visible>
+				</control>
+				<control type="progress">
+					<width>700</width><height>8</height>
+					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+					<lefttexture/><righttexture/>
+					<midtexture border="4">vidrio/pill_focus.png</midtexture>
+					<info>Container(5606).ListItem.PercentPlayed</info>
+					<visible>Control.HasFocus(5606) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5606,5601)]</visible>
+				</control>
+				<control type="progress">
+					<width>700</width><height>8</height>
+					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+					<lefttexture/><righttexture/>
+					<midtexture border="4">vidrio/pill_focus.png</midtexture>
+					<info>Container(5607).ListItem.PercentPlayed</info>
+					<visible>Control.HasFocus(5607) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5607,5601)]</visible>
+				</control>
+				<control type="progress">
+					<width>700</width><height>8</height>
+					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+					<lefttexture/><righttexture/>
+					<midtexture border="4">vidrio/pill_focus.png</midtexture>
+					<info>Container(5608).ListItem.PercentPlayed</info>
+					<visible>Control.HasFocus(5608) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5608,5601)]</visible>
+				</control>
+				<control type="progress">
+					<width>700</width><height>8</height>
+					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+					<lefttexture/><righttexture/>
+					<midtexture border="4">vidrio/pill_focus.png</midtexture>
+					<info>Container(5609).ListItem.PercentPlayed</info>
+					<visible>Control.HasFocus(5609) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5609,5601)]</visible>
+				</control>
+
+			</control>
+			<control type="textbox">
+				<top>210</top><width>1150</width><height>120</height>
+				<font>vidrio_plot</font><textcolor>CCFFFFFF</textcolor>
+				<label>$VAR[GuiaSinopsis]</label>
+			</control>
+			<control type="label">
+				<top>340</top><width>1250</width><height>36</height>
+				<font>vidrio_small</font><textcolor>99FFFFFF</textcolor>
+				<label>$VAR[GuiaSiguiente]</label>
+			</control>
+		</control>
+
+		<!-- Filas de canales -->
+		<control type="grouplist" id="5600">
+			<left>0</left><top>530</top><width>1920</width><height>550</height>
+			<orientation>vertical</orientation>
+			<itemgap>0</itemgap>
+			<scrolltime tween="cubic" easing="out">350</scrolltime>
+			<control type="group">
+				<height>300</height>
+				<visible>Integer.IsGreater(Container(5601).NumItems,0) | Container(5601).IsUpdating</visible>
+				<control type="label">
+					<left>110</left><width>800</width><height>44</height>
+					<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+					<label>Aire</label>
+				</control>
+				<control type="list" id="5601">
+					<left>90</left><top>40</top><width>1830</width><height>260</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup condition="System.Platform.Android">5690</onup>
+					<ondown>5602</ondown>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="!System.Platform.Android">Notification(DGO,Abrilo desde el inicio del Apple TV,5000)</onclick>
+					<itemlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>D9FFFFFF</textcolor>
+						
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</itemlayout>
+					<focusedlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<animation effect="zoom" start="100" end="108" center="160,95" time="200" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5601)">Conditional</animation>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+						<control type="image"><width>320</width><height>190</height><texture>vidrio/card_focus.png</texture><visible>Control.HasFocus(5601)</visible></control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+						<scroll>true</scroll>
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo=Aire&amp;h=$INFO[System.Time(hh)]</content>
+				</control>
+			</control>
+			<control type="group">
+				<height>300</height>
+				<visible>Integer.IsGreater(Container(5602).NumItems,0) | Container(5602).IsUpdating</visible>
+				<control type="label">
+					<left>110</left><width>800</width><height>44</height>
+					<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+					<label>Noticias</label>
+				</control>
+				<control type="list" id="5602">
+					<left>90</left><top>40</top><width>1830</width><height>260</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup>5601</onup>
+					<ondown>5603</ondown>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="!System.Platform.Android">Notification(DGO,Abrilo desde el inicio del Apple TV,5000)</onclick>
+					<itemlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>D9FFFFFF</textcolor>
+						
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</itemlayout>
+					<focusedlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<animation effect="zoom" start="100" end="108" center="160,95" time="200" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5602)">Conditional</animation>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+						<control type="image"><width>320</width><height>190</height><texture>vidrio/card_focus.png</texture><visible>Control.HasFocus(5602)</visible></control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+						<scroll>true</scroll>
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo=Noticias&amp;h=$INFO[System.Time(hh)]</content>
+				</control>
+			</control>
+			<control type="group">
+				<height>300</height>
+				<visible>Integer.IsGreater(Container(5603).NumItems,0) | Container(5603).IsUpdating</visible>
+				<control type="label">
+					<left>110</left><width>800</width><height>44</height>
+					<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+					<label>Deportes</label>
+				</control>
+				<control type="list" id="5603">
+					<left>90</left><top>40</top><width>1830</width><height>260</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup>5602</onup>
+					<ondown>5604</ondown>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="!System.Platform.Android">Notification(DGO,Abrilo desde el inicio del Apple TV,5000)</onclick>
+					<itemlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>D9FFFFFF</textcolor>
+						
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</itemlayout>
+					<focusedlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<animation effect="zoom" start="100" end="108" center="160,95" time="200" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5603)">Conditional</animation>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+						<control type="image"><width>320</width><height>190</height><texture>vidrio/card_focus.png</texture><visible>Control.HasFocus(5603)</visible></control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+						<scroll>true</scroll>
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo=Deportes&amp;h=$INFO[System.Time(hh)]</content>
+				</control>
+			</control>
+			<control type="group">
+				<height>300</height>
+				<visible>Integer.IsGreater(Container(5604).NumItems,0) | Container(5604).IsUpdating</visible>
+				<control type="label">
+					<left>110</left><width>800</width><height>44</height>
+					<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+					<label>Películas y series</label>
+				</control>
+				<control type="list" id="5604">
+					<left>90</left><top>40</top><width>1830</width><height>260</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup>5603</onup>
+					<ondown>5605</ondown>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="!System.Platform.Android">Notification(DGO,Abrilo desde el inicio del Apple TV,5000)</onclick>
+					<itemlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>D9FFFFFF</textcolor>
+						
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</itemlayout>
+					<focusedlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<animation effect="zoom" start="100" end="108" center="160,95" time="200" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5604)">Conditional</animation>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+						<control type="image"><width>320</width><height>190</height><texture>vidrio/card_focus.png</texture><visible>Control.HasFocus(5604)</visible></control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+						<scroll>true</scroll>
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo=Películas%20y%20series&amp;h=$INFO[System.Time(hh)]</content>
+				</control>
+			</control>
+			<control type="group">
+				<height>300</height>
+				<visible>Integer.IsGreater(Container(5605).NumItems,0) | Container(5605).IsUpdating</visible>
+				<control type="label">
+					<left>110</left><width>800</width><height>44</height>
+					<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+					<label>Infantiles</label>
+				</control>
+				<control type="list" id="5605">
+					<left>90</left><top>40</top><width>1830</width><height>260</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup>5604</onup>
+					<ondown>5606</ondown>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="!System.Platform.Android">Notification(DGO,Abrilo desde el inicio del Apple TV,5000)</onclick>
+					<itemlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>D9FFFFFF</textcolor>
+						
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</itemlayout>
+					<focusedlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<animation effect="zoom" start="100" end="108" center="160,95" time="200" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5605)">Conditional</animation>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+						<control type="image"><width>320</width><height>190</height><texture>vidrio/card_focus.png</texture><visible>Control.HasFocus(5605)</visible></control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+						<scroll>true</scroll>
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo=Infantiles&amp;h=$INFO[System.Time(hh)]</content>
+				</control>
+			</control>
+			<control type="group">
+				<height>300</height>
+				<visible>Integer.IsGreater(Container(5606).NumItems,0) | Container(5606).IsUpdating</visible>
+				<control type="label">
+					<left>110</left><width>800</width><height>44</height>
+					<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+					<label>Documentales</label>
+				</control>
+				<control type="list" id="5606">
+					<left>90</left><top>40</top><width>1830</width><height>260</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup>5605</onup>
+					<ondown>5607</ondown>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="!System.Platform.Android">Notification(DGO,Abrilo desde el inicio del Apple TV,5000)</onclick>
+					<itemlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>D9FFFFFF</textcolor>
+						
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</itemlayout>
+					<focusedlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<animation effect="zoom" start="100" end="108" center="160,95" time="200" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5606)">Conditional</animation>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+						<control type="image"><width>320</width><height>190</height><texture>vidrio/card_focus.png</texture><visible>Control.HasFocus(5606)</visible></control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+						<scroll>true</scroll>
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo=Documentales&amp;h=$INFO[System.Time(hh)]</content>
+				</control>
+			</control>
+			<control type="group">
+				<height>300</height>
+				<visible>Integer.IsGreater(Container(5607).NumItems,0) | Container(5607).IsUpdating</visible>
+				<control type="label">
+					<left>110</left><width>800</width><height>44</height>
+					<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+					<label>Música</label>
+				</control>
+				<control type="list" id="5607">
+					<left>90</left><top>40</top><width>1830</width><height>260</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup>5606</onup>
+					<ondown>5608</ondown>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="!System.Platform.Android">Notification(DGO,Abrilo desde el inicio del Apple TV,5000)</onclick>
+					<itemlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>D9FFFFFF</textcolor>
+						
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</itemlayout>
+					<focusedlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<animation effect="zoom" start="100" end="108" center="160,95" time="200" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5607)">Conditional</animation>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+						<control type="image"><width>320</width><height>190</height><texture>vidrio/card_focus.png</texture><visible>Control.HasFocus(5607)</visible></control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+						<scroll>true</scroll>
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo=Música&amp;h=$INFO[System.Time(hh)]</content>
+				</control>
+			</control>
+			<control type="group">
+				<height>300</height>
+				<visible>Integer.IsGreater(Container(5608).NumItems,0) | Container(5608).IsUpdating</visible>
+				<control type="label">
+					<left>110</left><width>800</width><height>44</height>
+					<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+					<label>Internacionales</label>
+				</control>
+				<control type="list" id="5608">
+					<left>90</left><top>40</top><width>1830</width><height>260</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup>5607</onup>
+					<ondown>5609</ondown>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="!System.Platform.Android">Notification(DGO,Abrilo desde el inicio del Apple TV,5000)</onclick>
+					<itemlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>D9FFFFFF</textcolor>
+						
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</itemlayout>
+					<focusedlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<animation effect="zoom" start="100" end="108" center="160,95" time="200" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5608)">Conditional</animation>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+						<control type="image"><width>320</width><height>190</height><texture>vidrio/card_focus.png</texture><visible>Control.HasFocus(5608)</visible></control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+						<scroll>true</scroll>
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo=Internacionales&amp;h=$INFO[System.Time(hh)]</content>
+				</control>
+			</control>
+			<control type="group">
+				<height>300</height>
+				<visible>Integer.IsGreater(Container(5609).NumItems,0) | Container(5609).IsUpdating</visible>
+				<control type="label">
+					<left>110</left><width>800</width><height>44</height>
+					<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+					<label>Otros</label>
+				</control>
+				<control type="list" id="5609">
+					<left>90</left><top>40</top><width>1830</width><height>260</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup>5608</onup>
+					<ondown>5609</ondown>
+					<onclick condition="System.Platform.Android">StartAndroidActivity(com.directv.dtvlatam)</onclick>
+					<onclick condition="!System.Platform.Android">Notification(DGO,Abrilo desde el inicio del Apple TV,5000)</onclick>
+					<itemlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>D9FFFFFF</textcolor>
+						
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</itemlayout>
+					<focusedlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<animation effect="zoom" start="100" end="108" center="160,95" time="200" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5609)">Conditional</animation>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+						<control type="image"><width>320</width><height>190</height><texture>vidrio/card_focus.png</texture><visible>Control.HasFocus(5609)</visible></control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+						<scroll>true</scroll>
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo=Otros&amp;h=$INFO[System.Time(hh)]</content>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

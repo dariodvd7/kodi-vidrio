@@ -77,8 +77,8 @@ empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la to
 (sin ella usa la de ejemplo): en el cron, `VIDRIO_HOMELAB=<ip> /opt/kodi-artwork/catalogo.py`.
 
 ## Instalar
-1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.2.6.zip`,
-   después `skin.vidrio-1.2.3.zip` (versiones actuales: add-on 1.2.6, skin 1.2.3). La skin pide el add-on, por eso va
+1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.3.0.zip`,
+   después `skin.vidrio-1.3.0.zip` (versiones actuales: add-on 1.3.0, skin 1.3.0). La skin pide el add-on, por eso va
    primero.
 2. Para tráileres: instalar YouTube (`plugin.video.youtube`) del repositorio oficial. Funciona sin clave propia de la API.
 3. Interfaz → Skin → Vidrio.
@@ -166,11 +166,19 @@ Kodi 21.2 en un TCL Smart TV Pro (Android TV 11): solo la skin y el plugin, sin 
 a4kSubtitles (repositorio y add-on) desde zip; país Argentina, subtítulos en español, sin cambio de frecuencia; skin
 Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de tvOS; el parche de YouTube no molesta.
 
-## DGO (DIRECTV GO)
-Pestaña "DGO" en la barra (solo en Android, `System.Platform.Android`): `StartAndroidActivity(com.directv.dtvlatam)`
-abre la app; DGO se ve fuera de Kodi (DRM Widevine, sin API pública) y "Atrás" vuelve a Kodi. En el Apple TV no
-aparece: Kodi para tvOS no tiene ningún comando para abrir otra app (los `openURL` del binario son para recibir
-enlaces) y un add-on en Python no puede llamar a UIApplication.
+## Guía de TV y DGO
+- `homelab/guia.py` (cron cada 3 h, `/etc/cron.d/kodi-guia`) arma `guia.json` al lado del catálogo con la programación
+  de open-epg.com (XMLTV públicos `argentina1` y `argentina3`, horarios en UTC; `argentina2` repite canales) y los
+  logos de la lista pública de canales de DIRECTV Argentina (iptv-org/epg). Desde una hora antes hasta 36 horas
+  después, canales agrupados (Aire, Noticias, Deportes, Películas y series, Infantiles, Documentales, Música,
+  Internacionales, Otros), sin entradas de apps ni canales para adultos. Rechaza XML con DOCTYPE/ENTITY.
+- Plugin: `?lista=guia&grupo=<grupo>` (canales con el programa al aire, horario, "Quedan …", lo que sigue y la barra
+  de progreso por `setResumePoint`). La guía se guarda 10 min en el perfil.
+- Skin: ventana 1154 (`herramientas/guia_ventana.py` genera `Custom_1154_VidrioGuia.xml` e `Includes_Guia.xml`).
+  En Android la pestaña se llama **DGO**: elegir un canal o "Abrir DGO" abre la app (`StartAndroidActivity
+  (com.directv.dtvlatam)`), que se ve fuera de Kodi (DRM Widevine, sin API pública); "Atrás" vuelve a Kodi. En el
+  Apple TV la pestaña es **Guía**: solo la programación, porque Kodi para tvOS no tiene ningún comando para abrir
+  otra app (los `openURL` del binario son para recibir enlaces).
 
 ## Probado
 - Mac, Kodi 21.3: inicio, filas, datos en español, navegación con flechas, tráiler de YouTube de fondo con el

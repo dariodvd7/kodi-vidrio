@@ -125,8 +125,10 @@
 			<include content="VidrioTab"><param name="id" value="9004"/><param name="label" value="Géneros"/><param name="action" value="ActivateWindow(1153)"/></include>
 			<include content="VidrioTab"><param name="id" value="9005"/><param name="label" value="Buscar"/><param name="action" value="ActivateWindow(1152)"/></include>
 			<include content="VidrioTab"><param name="id" value="9009"/><param name="label" value="Trakt"/><param name="previo" value="SetProperty(Vidrio.GrillaQ,lista=trakt,home)"/><param name="previo2" value="SetProperty(Vidrio.GrillaTitulo,Trakt,home)"/><param name="action" value="ActivateWindow(1151)"/></include>
-			<!-- DGO (DIRECTV GO): abre la app, que se ve fuera de Kodi; Kodi solo puede abrir otras apps en Android -->
-			<include content="VidrioTab"><param name="id" value="9010"/><param name="label" value="DGO"/><param name="action" value="StartAndroidActivity(com.directv.dtvlatam)"/><param name="visible" value="System.Platform.Android"/></include>
+			<!-- Guía de TV (ventana 1154). En Android se llama DGO: desde la guía se abre la app de DGO, que se ve fuera de
+			     Kodi; en el Apple TV Kodi no puede abrir otras apps y la pestaña es solo la guía. -->
+			<include content="VidrioTab"><param name="id" value="9010"/><param name="label" value="DGO"/><param name="action" value="ActivateWindow(1154)"/><param name="visible" value="System.Platform.Android"/></include>
+			<include content="VidrioTab"><param name="id" value="9011"/><param name="label" value="Guía"/><param name="action" value="ActivateWindow(1154)"/><param name="visible" value="!System.Platform.Android"/></include>
 			<include content="VidrioTab"><param name="id" value="9006"/><param name="label" value="Archivos"/><param name="action" value="ActivateWindow(Videos,sources://video/,return)"/></include>
 			<include content="VidrioTab"><param name="id" value="9007"/><param name="label" value="Ajustes"/><param name="action" value="ActivateWindow(Settings)"/></include>
 			<include content="VidrioTab"><param name="id" value="9008"/><param name="label" value="Salir"/><param name="action" value="Quit"/></include>
