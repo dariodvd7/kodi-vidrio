@@ -66,18 +66,27 @@ def ahora_y_despues(canal, ahora=None):
     return actual, siguiente
 
 
-# Página de cada canal en DGO (dtvmobile://dgo/home/lander/<clave>). Las claves las arma el CMS de DGO; las de marca
-# están en la web (landerUris en su JS) y distinguen mayúsculas. Se probaron en directvgo.com con sesión iniciada:
-# HBO, Universal y DISCOVERY muestran sus canales en vivo (Lionsgate solo películas). Una clave inexistente muestra
-# "¡Ups! Algo pasó" (M2-1998; pasó con "espnpremium" y "tntsportspremium"). Sin clave, el canal abre TV en vivo.
-CLAVES_DGO = {
+# Destino de cada canal en DGO, como ruta de dtvmobile://dgo/<ruta> (DeepLinkKt.processDeepLink en la app de Android).
+# - player/live/<id>: abre el canal directo. Los id (CH01…) salen de la web de DGO con sesión iniciada: la dirección al
+#   tocar el canal en su grilla (/player/live/<id>), confirmada en su ficha (/home/pdp/live/<id>). Son de Argentina.
+# - home/lander/<clave>: página de marca con sus canales en vivo. Claves de landerUris en el JS de la web; distinguen
+#   mayúsculas (HBO, Universal, DISCOVERY). Una clave inexistente da "¡Ups! Algo pasó" (M2-1998).
+# Sin destino, el canal abre TV en vivo.
+CANALES_DGO = {
+    'Telefe': '051', 'El Trece': '152', 'America TV': '071', 'TV Publica': '214', 'TN': '048', 'C5N': '089',
+    'ESPN': '162', 'ESPN Premium': '182', 'TNT Sports': '040', 'TYC Sports': '036', 'Fox Sports': '177',
+    'Fox Sports Argentina': '177', 'Fox Sports 2': '335', 'Discovery Turbo': '140',
+}
+PAGINAS_DGO = {
     'Universal Channel': 'Universal',
-    'Discovery Channel': 'DISCOVERY', 'Discovery Turbo': 'DISCOVERY', 'Discovery World': 'DISCOVERY',
-    'Discovery Home And Health': 'DISCOVERY', 'Animal Planet': 'DISCOVERY', 'Discovery Kids': 'DISCOVERY',
+    'Discovery Channel': 'DISCOVERY', 'Discovery World': 'DISCOVERY', 'Discovery Home And Health': 'DISCOVERY',
+    'Animal Planet': 'DISCOVERY', 'Discovery Kids': 'DISCOVERY',
 }
 
 
-def clave_dgo(nombre):
+def destino_dgo(nombre):
+    if nombre in CANALES_DGO:
+        return f'player/live/CH0100000000{CANALES_DGO[nombre]}'
     if nombre.startswith('HBO'):  # la página HBO trae HBO, HBO 2, HBO Family y HBO Signature en vivo
-        return 'HBO'
-    return CLAVES_DGO.get(nombre, '')
+        return 'home/lander/HBO'
+    return f'home/lander/{PAGINAS_DGO[nombre]}' if nombre in PAGINAS_DGO else ''
