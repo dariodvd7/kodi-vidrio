@@ -76,6 +76,13 @@ CANALES_DGO = {
     'Telefe': '051', 'El Trece': '152', 'America TV': '071', 'TV Publica': '214', 'TN': '048', 'C5N': '089',
     'ESPN': '162', 'ESPN Premium': '182', 'TNT Sports': '040', 'TYC Sports': '036', 'Fox Sports': '177',
     'Fox Sports Argentina': '177', 'Fox Sports 2': '335', 'Discovery Turbo': '140',
+    # plugin 1.4.1
+    'ESPN 2': '016', 'ESPN 3': '163', 'ESPN 4': '161', 'Fox Sports 3': '336',
+    'A24': '070', 'America 24': '070',  # A24 es América 24: en DGO, "AMERICA 24"
+    'La Nacion+': '210', 'LN+': '210', 'El Nueve': '093', 'Cronica TV': '116', 'Canal 26': '092',
+    'TNT': '046', 'TNT Series': '044', 'Warner Channel': '026', 'Star Channel': '249', 'AXN': '080', 'Sony': '247',
+    'FX': '186',  # en DGO, "FX Colombia"
+    'Cinecanal': '104',  # en DGO, "Cinecanal Colombia"
 }
 PAGINAS_DGO = {
     'Universal Channel': 'Universal',
