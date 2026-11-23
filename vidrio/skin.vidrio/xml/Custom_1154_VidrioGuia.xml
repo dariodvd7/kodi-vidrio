@@ -28,7 +28,20 @@
 			<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
 			<label>Guía de TV</label>
 		</control>
+		<!-- Elegir los canales de la fila "Mis canales" (diálogo del plugin) -->
+		<control type="button" id="5691">
+			<right>700</right><top>44</top><width>300</width><height>60</height>
+			<font>vidrio_tab</font><label>Mis canales</label>
+			<align>center</align><aligny>center</aligny>
+			<textcolor>E6FFFFFF</textcolor><focusedcolor>FF101014</focusedcolor>
+			<texturefocus border="30">vidrio/pill_focus.png</texturefocus>
+			<texturenofocus border="30">vidrio/glass_pill.png</texturenofocus>
+			<onclick>RunPlugin(plugin://plugin.video.vidrio/?editar_mis_canales=1)</onclick>
+			<onright>5690</onright>
+			<ondown>5600</ondown>
+		</control>
 		<control type="button" id="5690">
+			<onleft>5691</onleft>
 			<right>420</right><top>44</top><width>260</width><height>60</height>
 			<font>vidrio_tab</font><label>Abrir DGO</label>
 			<align>center</align><aligny>center</aligny>
@@ -76,8 +89,16 @@
 					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
 					<lefttexture/><righttexture/>
 					<midtexture border="4">vidrio/pill_focus.png</midtexture>
+					<info>Container(5610).ListItem.PercentPlayed</info>
+					<visible>Control.HasFocus(5610) | [!Control.HasFocus(5610) + !Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5610,5610)]</visible>
+				</control>
+				<control type="progress">
+					<width>700</width><height>8</height>
+					<texturebg border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+					<lefttexture/><righttexture/>
+					<midtexture border="4">vidrio/pill_focus.png</midtexture>
 					<info>Container(5601).ListItem.PercentPlayed</info>
-					<visible>Control.HasFocus(5601) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5601,5601)]</visible>
+					<visible>Control.HasFocus(5601) | [!Control.HasFocus(5610) + !Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5601,5610)]</visible>
 				</control>
 				<control type="progress">
 					<width>700</width><height>8</height>
@@ -85,7 +106,7 @@
 					<lefttexture/><righttexture/>
 					<midtexture border="4">vidrio/pill_focus.png</midtexture>
 					<info>Container(5602).ListItem.PercentPlayed</info>
-					<visible>Control.HasFocus(5602) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5602,5601)]</visible>
+					<visible>Control.HasFocus(5602) | [!Control.HasFocus(5610) + !Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5602,5610)]</visible>
 				</control>
 				<control type="progress">
 					<width>700</width><height>8</height>
@@ -93,7 +114,7 @@
 					<lefttexture/><righttexture/>
 					<midtexture border="4">vidrio/pill_focus.png</midtexture>
 					<info>Container(5603).ListItem.PercentPlayed</info>
-					<visible>Control.HasFocus(5603) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5603,5601)]</visible>
+					<visible>Control.HasFocus(5603) | [!Control.HasFocus(5610) + !Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5603,5610)]</visible>
 				</control>
 				<control type="progress">
 					<width>700</width><height>8</height>
@@ -101,7 +122,7 @@
 					<lefttexture/><righttexture/>
 					<midtexture border="4">vidrio/pill_focus.png</midtexture>
 					<info>Container(5604).ListItem.PercentPlayed</info>
-					<visible>Control.HasFocus(5604) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5604,5601)]</visible>
+					<visible>Control.HasFocus(5604) | [!Control.HasFocus(5610) + !Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5604,5610)]</visible>
 				</control>
 				<control type="progress">
 					<width>700</width><height>8</height>
@@ -109,7 +130,7 @@
 					<lefttexture/><righttexture/>
 					<midtexture border="4">vidrio/pill_focus.png</midtexture>
 					<info>Container(5605).ListItem.PercentPlayed</info>
-					<visible>Control.HasFocus(5605) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5605,5601)]</visible>
+					<visible>Control.HasFocus(5605) | [!Control.HasFocus(5610) + !Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5605,5610)]</visible>
 				</control>
 				<control type="progress">
 					<width>700</width><height>8</height>
@@ -117,7 +138,7 @@
 					<lefttexture/><righttexture/>
 					<midtexture border="4">vidrio/pill_focus.png</midtexture>
 					<info>Container(5606).ListItem.PercentPlayed</info>
-					<visible>Control.HasFocus(5606) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5606,5601)]</visible>
+					<visible>Control.HasFocus(5606) | [!Control.HasFocus(5610) + !Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5606,5610)]</visible>
 				</control>
 				<control type="progress">
 					<width>700</width><height>8</height>
@@ -125,7 +146,7 @@
 					<lefttexture/><righttexture/>
 					<midtexture border="4">vidrio/pill_focus.png</midtexture>
 					<info>Container(5607).ListItem.PercentPlayed</info>
-					<visible>Control.HasFocus(5607) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5607,5601)]</visible>
+					<visible>Control.HasFocus(5607) | [!Control.HasFocus(5610) + !Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5607,5610)]</visible>
 				</control>
 				<control type="progress">
 					<width>700</width><height>8</height>
@@ -133,7 +154,7 @@
 					<lefttexture/><righttexture/>
 					<midtexture border="4">vidrio/pill_focus.png</midtexture>
 					<info>Container(5608).ListItem.PercentPlayed</info>
-					<visible>Control.HasFocus(5608) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5608,5601)]</visible>
+					<visible>Control.HasFocus(5608) | [!Control.HasFocus(5610) + !Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5608,5610)]</visible>
 				</control>
 				<control type="progress">
 					<width>700</width><height>8</height>
@@ -141,7 +162,7 @@
 					<lefttexture/><righttexture/>
 					<midtexture border="4">vidrio/pill_focus.png</midtexture>
 					<info>Container(5609).ListItem.PercentPlayed</info>
-					<visible>Control.HasFocus(5609) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5609,5601)]</visible>
+					<visible>Control.HasFocus(5609) | [!Control.HasFocus(5610) + !Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual(5609,5610)]</visible>
 				</control>
 
 			</control>
@@ -165,6 +186,88 @@
 			<scrolltime tween="cubic" easing="out">350</scrolltime>
 			<control type="group">
 				<height>300</height>
+				<visible>Integer.IsGreater(Container(5610).NumItems,0) | Container(5610).IsUpdating</visible>
+				<control type="label">
+					<left>110</left><width>800</width><height>44</height>
+					<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+					<label>Mis canales</label>
+				</control>
+				<control type="list" id="5610">
+					<left>90</left><top>40</top><width>1830</width><height>260</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup>5690</onup>
+					<ondown>5601</ondown>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
+					<itemlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>D9FFFFFF</textcolor>
+						
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</itemlayout>
+					<focusedlayout width="350" height="260">
+					<control type="group">
+						<left>14</left><top>16</top>
+						<animation effect="zoom" start="100" end="108" center="160,95" time="200" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5610)">Conditional</animation>
+						<control type="image"><width>320</width><height>190</height><texture border="30">vidrio/glass_nofo.png</texture></control>
+						<control type="image">
+							<left>60</left><top>30</top><width>200</width><height>110</height>
+							<aspectratio>keep</aspectratio>
+							<texture background="true">$INFO[ListItem.Art(thumb)]</texture>
+						</control>
+						<control type="label">
+							<left>20</left><top>60</top><width>280</width><height>60</height><align>center</align><aligny>center</aligny>
+							<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label]</label>
+							<visible>String.IsEmpty(ListItem.Art(thumb))</visible>
+						</control>
+						<control type="progress">
+							<left>24</left><top>166</top><width>272</width><height>6</height>
+							<texturebg border="3" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texturebg>
+							<lefttexture/><righttexture/>
+							<midtexture border="3">vidrio/pill_focus.png</midtexture>
+							<info>ListItem.PercentPlayed</info>
+						</control>
+						<control type="image"><width>320</width><height>190</height><texture>vidrio/card_focus.png</texture><visible>Control.HasFocus(5610)</visible></control>
+					</control>
+					<control type="label">
+						<left>20</left><top>214</top><width>310</width><height>34</height>
+						<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+						<scroll>true</scroll>
+						<label>$INFO[ListItem.Property(vidrio.ahora)]</label>
+					</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo=Mis%20canales&amp;h=$INFO[System.Time(hh)]&amp;v=$INFO[Window(home).Property(Vidrio.MisCanales)]</content>
+				</control>
+			</control>
+			<control type="group">
+				<height>300</height>
 				<visible>Integer.IsGreater(Container(5601).NumItems,0) | Container(5601).IsUpdating</visible>
 				<control type="label">
 					<left>110</left><width>800</width><height>44</height>
@@ -175,7 +278,7 @@
 					<left>90</left><top>40</top><width>1830</width><height>260</height>
 					<orientation>horizontal</orientation>
 					<scrolltime tween="cubic" easing="out">300</scrolltime>
-					<onup>5690</onup>
+					<onup>5610</onup>
 					<ondown>5602</ondown>
 					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>

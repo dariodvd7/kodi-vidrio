@@ -6,7 +6,9 @@ import sys
 
 GRUPOS = ['Aire', 'Noticias', 'Deportes', 'Películas y series', 'Infantiles', 'Documentales', 'Música',
           'Internacionales', 'Otros']
-FILAS = [(5601 + i, g) for i, g in enumerate(GRUPOS)]
+# "Mis canales" (5610) va primero: la arma el plugin con los canales que eligió cada equipo (botón 5691)
+FILAS = [(5610, 'Mis canales')] + [(5601 + i, g) for i, g in enumerate(GRUPOS)]
+SIN_FOCO = ' + '.join(f'!Control.HasFocus({cid})' for cid, _ in FILAS)
 # Android: DGO acepta enlaces dtvmobile:// (DeepLinkKt.processDeepLink en su app): dtvmobile://live y
 # dtvmobile://dgo/home/live piden la pestaña TV en vivo (su grilla). Un canal puntual pide el identificador interno de
 # DGO, que solo da su API privada.
@@ -87,7 +89,7 @@ def barra(cid):
 					<lefttexture/><righttexture/>
 					<midtexture border="4">vidrio/pill_focus.png</midtexture>
 					<info>Container({cid}).ListItem.PercentPlayed</info>
-					<visible>Control.HasFocus({cid}) | [!Control.HasFocus(5601) + !Control.HasFocus(5602) + !Control.HasFocus(5603) + !Control.HasFocus(5604) + !Control.HasFocus(5605) + !Control.HasFocus(5606) + !Control.HasFocus(5607) + !Control.HasFocus(5608) + !Control.HasFocus(5609) + String.IsEqual({cid},5601)]</visible>
+					<visible>Control.HasFocus({cid}) | [{SIN_FOCO} + String.IsEqual({cid},{FILAS[0][0]})]</visible>
 				</control>
 '''
 
@@ -116,7 +118,7 @@ def fila(i, cid, grupo):
 {tarjeta(cid, False)}					</itemlayout>
 					<focusedlayout width="350" height="260">
 {tarjeta(cid, True)}					</focusedlayout>
-					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo={grupo.replace(' ', '%20')}&amp;h=$INFO[System.Time(hh)]</content>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=guia&amp;grupo={grupo.replace(' ', '%20')}&amp;h=$INFO[System.Time(hh)]{'&amp;v=$INFO[Window(home).Property(Vidrio.MisCanales)]' if cid == 5610 else ''}</content>
 				</control>
 			</control>
 '''
@@ -152,7 +154,20 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 			<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
 			<label>Guía de TV</label>
 		</control>
+		<!-- Elegir los canales de la fila "Mis canales" (diálogo del plugin) -->
+		<control type="button" id="5691">
+			<right>700</right><top>44</top><width>300</width><height>60</height>
+			<font>vidrio_tab</font><label>Mis canales</label>
+			<align>center</align><aligny>center</aligny>
+			<textcolor>E6FFFFFF</textcolor><focusedcolor>FF101014</focusedcolor>
+			<texturefocus border="30">vidrio/pill_focus.png</texturefocus>
+			<texturenofocus border="30">vidrio/glass_pill.png</texturenofocus>
+			<onclick>RunPlugin(plugin://plugin.video.vidrio/?editar_mis_canales=1)</onclick>
+			<onright>5690</onright>
+			<ondown>5600</ondown>
+		</control>
 		<control type="button" id="5690">
+			<onleft>5691</onleft>
 			<right>420</right><top>44</top><width>260</width><height>60</height>
 			<font>vidrio_tab</font><label>Abrir DGO</label>
 			<align>center</align><aligny>center</aligny>

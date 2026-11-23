@@ -15,6 +15,10 @@ ADDON = xbmcaddon.Addon('plugin.video.vidrio')
 PERFIL = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
 CACHE = os.path.join(PERFIL, 'guia.json')
 VIGENCIA = 10 * 60
+MIS_CANALES = os.path.join(PERFIL, 'mis_canales.json')
+# "Mis canales" antes de elegirlos: los de aire, noticias y deportes más vistos (por nombre en la guía)
+MIS_INICIALES = ['Telefe', 'El Trece', 'America TV', 'TV Publica', 'TN', 'C5N', 'ESPN', 'ESPN Premium', 'TNT Sports',
+                 'TYC Sports', 'Fox Sports']
 
 
 def log(msg, nivel=xbmc.LOGINFO):
@@ -97,3 +101,20 @@ def destino_dgo(nombre):
     if nombre.startswith('HBO'):  # la página HBO trae HBO, HBO 2, HBO Family y HBO Signature en vivo
         return 'home/lander/HBO'
     return f'home/lander/{PAGINAS_DGO[nombre]}' if nombre in PAGINAS_DGO else ''
+
+
+def mis_canales(guia=None):
+    """Identificadores de "Mis canales" en el orden elegido (cada equipo guarda los suyos en el perfil del plugin)."""
+    try:
+        with open(MIS_CANALES, encoding='utf-8') as fh:
+            return [str(i) for i in json.load(fh)]
+    except (OSError, ValueError):
+        por_nombre = {c['nombre']: c['id'] for c in (guia or cargar()).get('canales', [])}
+        return [por_nombre[n] for n in MIS_INICIALES if n in por_nombre]
+
+
+def guardar_mis_canales(ids):
+    os.makedirs(PERFIL, exist_ok=True)
+    with open(MIS_CANALES + '.tmp', 'w', encoding='utf-8') as fh:
+        json.dump(list(ids), fh, ensure_ascii=False)
+    os.replace(MIS_CANALES + '.tmp', MIS_CANALES)

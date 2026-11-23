@@ -217,6 +217,33 @@ def mi_lista(pelis, series, ya):
     return items
 
 
+MIS_CANALES = 'Mis canales'
+
+
+def editar_mis_canales():
+    """Botón "Mis canales" de la guía: marcar y desmarcar canales. Los elegidos quedan primero, en su orden."""
+    import time
+    from resources.lib import guia
+    g = guia.cargar()
+    canales = g.get('canales', [])
+    actuales = guia.mis_canales(g)
+    por_id = {c['id']: c for c in canales}
+    elegidos = [por_id[i] for i in actuales if i in por_id]
+    orden = elegidos + [c for c in canales if c['id'] not in set(actuales)]
+    opciones = []
+    for c in orden:
+        li = xbmcgui.ListItem(c['nombre'], c.get('grupo', ''))
+        if c.get('logo'):
+            li.setArt({'icon': c['logo'], 'thumb': c['logo']})
+        opciones.append(li)
+    sel = xbmcgui.Dialog().multiselect('Mis canales', opciones, preselect=list(range(len(elegidos))), useDetails=True)
+    if sel is None:  # canceló
+        return
+    guia.guardar_mis_canales([orden[i]['id'] for i in sel])
+    # la skin pone esta propiedad en la dirección de la fila: al cambiar, Kodi la vuelve a cargar
+    xbmcgui.Window(10000).setProperty('Vidrio.MisCanales', str(int(time.time())))
+
+
 def canales_guia(grupo):
     """Canales de un grupo de la guía de TV con lo que dan ahora (para la ventana Guía de la skin)."""
     import time
@@ -224,8 +251,12 @@ def canales_guia(grupo):
     g = guia.cargar()
     ahora = time.time()
     items = []
-    for c in g.get('canales', []):
-        if grupo and c.get('grupo') != grupo:
+    canales = g.get('canales', [])
+    if grupo == MIS_CANALES:
+        por_id = {c['id']: c for c in canales}
+        canales = [por_id[i] for i in guia.mis_canales(g) if i in por_id]
+    for c in canales:
+        if grupo and grupo != MIS_CANALES and c.get('grupo') != grupo:
             continue
         actual, siguiente = guia.ahora_y_despues(c, ahora)
         li = xbmcgui.ListItem(c['nombre'], offscreen=True)
@@ -283,6 +314,11 @@ def raiz():
 
 
 def main():
+    if P.get('editar_mis_canales'):
+        editar_mis_canales()
+        if HANDLE >= 0:
+            xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
+        return
     if P.get('abrir'):  # abrir otra app por su enlace (tvOS: DGO desde la guía); ver resources/lib/abrir.py
         # Lo hace el servicio, que sigue vivo cuando tvOS avisa el resultado (este proceso termina enseguida y tvOS
         # llamaría a una función que ya no existe: Kodi se cierra).
