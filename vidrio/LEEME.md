@@ -259,3 +259,20 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 - El plugin oculta los `"dgo": false` en todas las filas menos "Mis canales" (ajuste "Mostrar en la guía solo los
   canales de DGO", activado por defecto). Sin el archivo, la guía muestra todo.
 - Al copiar `guia.py` al homelab hay que dejarlo ejecutable (`chmod 755`): el cron lo corre directo.
+
+## Un canal por señal (plugin 1.6.1)
+
+- Las dos fuentes de open-epg llaman distinto al mismo canal. `homelab/guia.py` (`unir_duplicados`) une los que dan
+  la misma `clave_dgo` (con `EQUIVALENTES_DGO`): queda el de más programación, con el logo de cualquiera y el nombre
+  de `NOMBRE_UNIDO`; los ids de los otros van en `otros_ids` para que "Mis canales" no pierda ninguno. 163 -> 157.
+- Unidos: A24 / América 24, CNN Internacional / CNN, Fox Sports / Fox Sports Argentina, Disney Junior / Disney Jr,
+  Discovery Home & Health / Home & Health, Discovery ID / ID - Investigation Discovery. DHE no es Discovery Home &
+  Health (otra programación) y queda aparte, oculto por no estar en DGO.
+- Para buscar duplicados nuevos sirve comparar la programación: mismo programa a la misma hora (ojo, una fuente agrega
+  ": subtítulo" al título).
+
+## Trakt y el 80 %
+
+- Trakt da por vista una película que se corta pasado el 80 % y la saca de "Continuar viendo" (pasó con Men in Black:
+  retomada en 79 %, cortada en 85 %). Para devolverla: quitar esa vista (`/sync/history/remove` con su id) y guardar
+  el progreso con `/scrobble/pause`; Trakt rechaza (422) un progreso de pausa mayor al 80 %, así que va 79,9 %.
