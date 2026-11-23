@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="repository.vidrio" name="Vidrio (homelab)" version="1.0.0" provider-name="Dario">
+	<extension point="xbmc.addon.repository" name="Vidrio (homelab)">
+		<!-- Lo sirve el homelab (herramientas/repo.py lo arma y lo sube; nginx en el puerto 8099). La IP es de ejemplo:
+		     al empaquetar se pone la de vidrio/local.json. -->
+		<dir>
+			<info compressed="false">http://192.168.1.50:8099/addons.xml</info>
+			<checksum>http://192.168.1.50:8099/addons.xml.md5</checksum>
+			<datadir zip="true">http://192.168.1.50:8099/</datadir>
+			<hashes>sha256</hashes>
+		</dir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary lang="es_ES">Actualizaciones de Vidrio desde el homelab</summary>
+		<summary lang="en_GB">Vidrio updates from the home server</summary>
+		<description lang="es_ES">Repositorio de la skin y el plugin Vidrio, servido desde el homelab. Con Kodi en "Instalar actualizaciones automáticamente", cada versión nueva llega sola.</description>
+		<description lang="en_GB">Repository for the Vidrio skin and plugin, served from the home server. With Kodi set to install updates automatically, each new version arrives on its own.</description>
+		<platform>all</platform>
+		<license>GPL-2.0-only</license>
+		<source>https://github.com/dariodvd7/kodi-vidrio</source>
+		<assets>
+			<icon>icon.png</icon>
+		</assets>
+	</extension>
+</addon>

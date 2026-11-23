@@ -345,6 +345,20 @@ class Monitor(xbmc.Monitor):
 RECARGA_PERIODICA = 5 * 60  # con el inicio en pantalla y nada sonando
 
 
+def buscar_actualizaciones(motivo):
+    """Pide a Kodi que revise los repositorios ya, para que una versión nueva de Vidrio (repository.vidrio, en el
+    homelab) llegue al abrir Kodi y no recién en la revisión diaria. Como mucho cada 30 minutos: al actualizarse, el
+    servicio arranca de nuevo y no tiene que volver a pedirlo."""
+    if not instalado('repository.vidrio'):
+        return
+    ultima = HOME.getProperty('Vidrio.ReposRevisados')
+    if ultima and time.time() - float(ultima) < 30 * 60:
+        return
+    HOME.setProperty('Vidrio.ReposRevisados', str(time.time()))
+    log(f'reviso los repositorios de add-ons ({motivo})')
+    xbmc.executebuiltin('UpdateAddonRepos')
+
+
 def recargar_trakt(trailers, motivo):
     log(f'recargo Continuar viendo ({motivo})')
     trailers.trakt_en = time.time()
@@ -355,6 +369,7 @@ def main():
     if monitor.waitForAbort(5):
         return
     configurar_subtitulos()
+    buscar_actualizaciones('Kodi arrancó')
     trailers = Trailers()
     vueltas = 0
     ultima_vuelta = time.time()
@@ -365,6 +380,7 @@ def main():
         ahora = time.time()
         if ahora - ultima_vuelta > 60:  # el servicio estuvo pausado: Kodi estaba en segundo plano o dormido
             recargar_trakt(trailers, 'Kodi volvió de segundo plano'); ultima_recarga = ahora
+            buscar_actualizaciones('Kodi volvió de segundo plano')
         elif monitor.despierto:
             recargar_trakt(trailers, 'Kodi se despertó'); ultima_recarga = ahora
         elif (ahora - ultima_recarga > RECARGA_PERIODICA and xbmcgui.getCurrentWindowId() == 10000

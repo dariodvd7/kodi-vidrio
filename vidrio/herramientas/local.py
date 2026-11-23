@@ -28,3 +28,14 @@ def aplicar(carpeta_plugin, ip=None):
     with open(ruta, 'w', encoding='utf-8') as fh:
         fh.write(xml.replace(f'smb://{EJEMPLO}/', f'smb://{ip}/'))
     return ip
+
+
+def aplicar_repositorio(carpeta_repo, ip=None):
+    """Pone la IP del homelab en las direcciones del repositorio (repository.vidrio) ya copiado."""
+    ip = ip or homelab()
+    ruta = os.path.join(carpeta_repo, 'addon.xml')
+    with open(ruta, encoding='utf-8') as fh:
+        xml = fh.read()
+    with open(ruta, 'w', encoding='utf-8') as fh:
+        fh.write(xml.replace(f'http://{EJEMPLO}:', f'http://{ip}:'))
+    return ip
