@@ -1,0 +1,14 @@
+# Binarios grandes: IPA y paquetes de Kodi (se bajan de kodi.tv), IPA desarmado del análisis, IPA armado
+*.ipa
+*.deb
+analisis/ipa/
+vidrio/dist/
+# Zips de add-ons de terceros bajados durante las pruebas
+addons/
+# Generados
+__pycache__/
+*.pyc
+.DS_Store
+
+# Datos de la red de casa (IP real del homelab): ver vidrio/local.ejemplo.json
+vidrio/local.json

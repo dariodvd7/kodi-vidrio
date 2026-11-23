@@ -1,0 +1,26 @@
+# Kodi Media Center language file
+# Addon id: plugin.video.vidrio
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en_GB\n"
+
+msgctxt "#30000"
+msgid "General"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Catalogue file"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Play trailers in the background on Home"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Seconds on an item before the trailer starts"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Search Spanish subtitles automatically"
+msgstr ""

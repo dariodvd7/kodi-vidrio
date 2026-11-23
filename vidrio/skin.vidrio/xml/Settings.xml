@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Vidrio: ajustes al estilo del Apple TV. Fondo oscuro con brillo suave y tarjetas de vidrio en tres secciones:
+	Vidrio (tráileres, subtítulos, catálogo), Kodi (reproductor, medios, interfaz, servicios, sistema...) y
+	Herramientas. La original de Estuary está en herramientas/Settings.estuary.xml.orig.
+-->
+<window>
+	<defaultcontrol always="true">9000</defaultcontrol>
+	<backgroundcolor>FF0A0A0E</backgroundcolor>
+	<controls>
+		<control type="image">
+			<left>0</left><top>0</top><width>1920</width><height>1080</height>
+			<texture colordiffuse="FF0A0A0E">vidrio/white.png</texture>
+		</control>
+		<control type="image">
+			<left>0</left><top>0</top><width>1920</width><height>1080</height>
+			<aspectratio>scale</aspectratio>
+			<texture colordiffuse="40FFFFFF" background="true">$INFO[Container(5101).ListItem.Art(fanart)]</texture>
+			<animation effect="fade" start="0" end="100" time="400">WindowOpen</animation>
+		</control>
+		<control type="image">
+			<left>0</left><top>0</top><width>1920</width><height>1080</height>
+			<texture colordiffuse="B3000000">vidrio/white.png</texture>
+		</control>
+
+		<control type="label">
+			<left>110</left><top>50</top><width>800</width><height>90</height>
+			<font>vidrio_hero</font><textcolor>FFFFFFFF</textcolor>
+			<label>Ajustes</label>
+		</control>
+		<control type="label">
+			<right>80</right><top>48</top><width>300</width><height>52</height>
+			<align>right</align><aligny>center</aligny>
+			<font>vidrio_tab</font><textcolor>E6FFFFFF</textcolor>
+			<label>$INFO[System.Time]</label>
+		</control>
+
+		<control type="label">
+			<left>110</left><top>160</top><width>800</width><height>40</height>
+			<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+			<label>Vidrio</label>
+		</control>
+		<control type="panel" id="9000">
+			<left>96</left><top>204</top><width>1740</width><height>230</height>
+			<orientation>horizontal</orientation>
+			<ondown>9001</ondown>
+			<include content="VidrioAjustesPanel"><param name="id" value="9000"/></include>
+			<content>
+				<item>
+					<label>Tráileres y subtítulos</label>
+					<label2>Vidrio</label2>
+					<onclick>Addon.OpenSettings(plugin.video.vidrio)</onclick>
+					<icon>icons/settings/player.png</icon>
+				</item>
+				<item>
+					<label>Proveedores de subtítulos</label>
+					<label2>a4kSubtitles</label2>
+					<onclick>Addon.OpenSettings(service.subtitles.a4ksubtitles)</onclick>
+					<icon>icons/settings/media.png</icon>
+					<visible>System.HasAddon(service.subtitles.a4ksubtitles)</visible>
+				</item>
+				<item>
+					<label>Actualizar catálogo</label>
+					<label2>Homelab</label2>
+					<onclick>RunPlugin(plugin://plugin.video.vidrio/?refrescar=1)</onclick>
+					<icon>icons/settings/network.png</icon>
+				</item>
+				<item>
+					<label>YouTube</label>
+					<label2>Tráileres</label2>
+					<onclick>Addon.OpenSettings(plugin.video.youtube)</onclick>
+					<icon>icons/settings/addons.png</icon>
+					<visible>System.HasAddon(plugin.video.youtube)</visible>
+				</item>
+			</content>
+		</control>
+
+		<control type="label">
+			<left>110</left><top>456</top><width>800</width><height>40</height>
+			<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+			<label>Kodi</label>
+		</control>
+		<control type="panel" id="9001">
+			<left>96</left><top>500</top><width>1740</width><height>230</height>
+			<orientation>horizontal</orientation>
+			<onup>9000</onup>
+			<ondown>9002</ondown>
+			<include content="VidrioAjustesPanel"><param name="id" value="9001"/></include>
+			<content>
+				<item>
+					<label>$LOCALIZE[14200]</label>
+					<onclick>ActivateWindow(PlayerSettings)</onclick>
+					<icon>icons/settings/player.png</icon>
+				</item>
+				<item>
+					<label>$LOCALIZE[14211]</label>
+					<onclick>ActivateWindow(MediaSettings)</onclick>
+					<icon>icons/settings/media.png</icon>
+				</item>
+				<item>
+					<label>$LOCALIZE[14206]</label>
+					<onclick>ActivateWindow(InterfaceSettings)</onclick>
+					<icon>icons/settings/interface.png</icon>
+				</item>
+				<item>
+					<label>$LOCALIZE[14036]</label>
+					<onclick>ActivateWindow(ServiceSettings)</onclick>
+					<icon>icons/settings/network.png</icon>
+				</item>
+				<item>
+					<label>$LOCALIZE[13000]</label>
+					<onclick>ActivateWindow(SystemSettings)</onclick>
+					<icon>icons/settings/system.png</icon>
+				</item>
+				<item>
+					<label>$LOCALIZE[13200]</label>
+					<onclick>ActivateWindow(Profiles)</onclick>
+					<icon>icons/settings/profiles.png</icon>
+				</item>
+				<item>
+					<label>$LOCALIZE[14204]</label>
+					<onclick>ActivateWindow(PVRSettings)</onclick>
+					<icon>icons/settings/livetv.png</icon>
+				</item>
+			</content>
+		</control>
+
+		<control type="label">
+			<left>110</left><top>752</top><width>800</width><height>40</height>
+			<font>vidrio_row</font><textcolor>F2FFFFFF</textcolor>
+			<label>Herramientas</label>
+		</control>
+		<control type="panel" id="9002">
+			<left>96</left><top>796</top><width>1740</width><height>230</height>
+			<orientation>horizontal</orientation>
+			<onup>9001</onup>
+			<include content="VidrioAjustesPanel"><param name="id" value="9002"/></include>
+			<content>
+				<item>
+					<label>$LOCALIZE[24001]</label>
+					<onclick>ActivateWindow(addonbrowser)</onclick>
+					<icon>icons/settings/addons.png</icon>
+				</item>
+				<item>
+					<label>$LOCALIZE[10003]</label>
+					<onclick>ActivateWindow(filemanager)</onclick>
+					<icon>icons/settings/filemanager.png</icon>
+				</item>
+				<item>
+					<label>$LOCALIZE[138]</label>
+					<onclick>ActivateWindow(systeminfo)</onclick>
+					<icon>icons/settings/sysinfo.png</icon>
+				</item>
+				<item>
+					<label>$LOCALIZE[31067]</label>
+					<onclick>ActivateWindow(eventlog)</onclick>
+					<icon>icons/settings/eventlog.png</icon>
+				</item>
+			</content>
+		</control>
+	</controls>
+</window>

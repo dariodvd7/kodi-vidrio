@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Vidrio: inicio al estilo de la app TV del Apple TV.
+	Arriba: héroe con el fanart (o el tráiler, que arranca el servicio de plugin.video.vidrio) y el borde de abajo
+	difuminado hacia el fondo. Abajo: filas horizontales de tarjetas. Arriba al centro: barra de pestañas de vidrio.
+	Filas 5101-5110: el servicio lee de ahí el tráiler del elemento con foco.
+-->
+<window>
+	<defaultcontrol always="true">9100</defaultcontrol>
+	<backgroundcolor>FF0A0A0E</backgroundcolor>
+	<onload>ClearProperty(Vidrio.Preview,home)</onload>
+	<controls>
+		<!-- Fondo base -->
+		<control type="image">
+			<left>0</left><top>0</top><width>1920</width><height>1080</height>
+			<texture colordiffuse="FF0A0A0E">vidrio/white.png</texture>
+		</control>
+
+		<!-- Héroe: fanart del elemento con foco -->
+		<control type="image" id="10">
+			<left>0</left><top>0</top><width>1920</width><height>1080</height>
+			<aspectratio aligny="top">scale</aspectratio>
+			<fadetime>500</fadetime>
+			<texture background="true">$VAR[VidrioFanart]</texture>
+			<animation effect="fade" time="400">VisibleChange</animation>
+			<visible>String.IsEmpty(Window(home).Property(Vidrio.Preview)) | !Player.HasVideo</visible>
+		</control>
+
+		<!-- Héroe: tráiler de fondo (modo ventana) -->
+		<control type="videowindow">
+			<left>0</left><top>0</top><width>1920</width><height>1080</height>
+			<animation effect="fade" start="0" end="100" time="800">Visible</animation>
+			<visible>!String.IsEmpty(Window(home).Property(Vidrio.Preview)) + Player.HasVideo</visible>
+		</control>
+
+		<!-- Difuminados: el borde inferior del héroe se funde con el fondo; a la izquierda para leer el texto -->
+		<control type="image">
+			<left>0</left><top>0</top><width>1300</width><height>1080</height>
+			<texture>vidrio/fade_left.png</texture>
+		</control>
+		<control type="image">
+			<left>0</left><top>0</top><width>1920</width><height>220</height>
+			<texture>vidrio/fade_top.png</texture>
+		</control>
+		<control type="image">
+			<left>0</left><top>260</top><width>1920</width><height>420</height>
+			<texture>vidrio/fade_bottom.png</texture>
+		</control>
+		<control type="image">
+			<left>0</left><top>678</top><width>1920</width><height>402</height>
+			<texture colordiffuse="FF0A0A0E">vidrio/white.png</texture>
+		</control>
+
+		<!-- Texto del héroe -->
+		<control type="group">
+			<left>110</left><top>196</top>
+			<control type="label">
+				<top>0</top><width>1100</width><height>36</height>
+				<font>vidrio_kicker</font>
+				<textcolor>B3FFFFFF</textcolor>
+				<label>$VAR[VidrioKicker]</label>
+			</control>
+			<control type="label">
+				<top>38</top><width>1250</width><height>100</height>
+				<font>vidrio_hero</font>
+				<textcolor>FFFFFFFF</textcolor>
+				<shadowcolor>66000000</shadowcolor>
+				<label>$VAR[VidrioTitulo]</label>
+			</control>
+			<control type="label">
+				<top>142</top><width>1250</width><height>40</height>
+				<font>vidrio_meta</font>
+				<textcolor>D9FFFFFF</textcolor>
+				<label>$VAR[VidrioMeta]</label>
+			</control>
+			<control type="textbox">
+				<top>190</top><width>980</width><height>120</height>
+				<font>vidrio_plot</font>
+				<textcolor>CCFFFFFF</textcolor>
+				<label>$VAR[VidrioSinopsis]</label>
+			</control>
+			<control type="group">
+				<top>330</top>
+				<visible>Integer.IsGreater(Container(5101).NumItems,0) | Integer.IsGreater(Container(5102).NumItems,0)</visible>
+				<control type="image">
+					<width>250</width><height>64</height>
+					<texture border="32">vidrio/glass_pill.png</texture>
+				</control>
+				<control type="image">
+					<left>54</left><top>20</top><width>24</width><height>24</height>
+					<texture>vidrio/play.png</texture>
+				</control>
+				<control type="label">
+					<left>90</left><width>150</width><height>64</height>
+					<aligny>center</aligny>
+					<font>vidrio_tab</font>
+					<textcolor>FFFFFFFF</textcolor>
+					<label>$VAR[VidrioAccion]</label>
+				</control>
+				<control type="label">
+					<left>276</left><width>700</width><height>64</height>
+					<aligny>center</aligny>
+					<font>vidrio_small</font>
+					<textcolor>99FFFFFF</textcolor>
+					<label>$VAR[VidrioTrailerHint]</label>
+				</control>
+			</control>
+		</control>
+
+		<!-- Barra de pestañas de vidrio -->
+		<control type="image">
+			<left>300</left><top>36</top><width>1320</width><height>76</height>
+			<texture border="38">vidrio/glass_pill.png</texture>
+		</control>
+		<control type="grouplist" id="9000">
+			<left>306</left><top>42</top><width>1308</width><height>64</height>
+			<orientation>horizontal</orientation>
+			<align>center</align>
+			<itemgap>2</itemgap>
+			<ondown condition="Integer.IsGreater(Container(5100).NumItems,0)">5100</ondown>
+			<ondown condition="!Integer.IsGreater(Container(5100).NumItems,0)">5101</ondown>
+			<include content="VidrioTab"><param name="id" value="9001"/><param name="label" value="Inicio"/><param name="action" value="SetFocus(9100)"/></include>
+			<include content="VidrioTab"><param name="id" value="9002"/><param name="label" value="Películas"/><param name="previo" value="SetProperty(Vidrio.GrillaQ,lista=peliculas,home)"/><param name="previo2" value="SetProperty(Vidrio.GrillaTitulo,Películas,home)"/><param name="action" value="ActivateWindow(1151)"/></include>
+			<include content="VidrioTab"><param name="id" value="9003"/><param name="label" value="Series"/><param name="previo" value="SetProperty(Vidrio.GrillaQ,lista=series,home)"/><param name="previo2" value="SetProperty(Vidrio.GrillaTitulo,Series,home)"/><param name="action" value="ActivateWindow(1151)"/></include>
+			<include content="VidrioTab"><param name="id" value="9004"/><param name="label" value="Géneros"/><param name="action" value="ActivateWindow(1153)"/></include>
+			<include content="VidrioTab"><param name="id" value="9005"/><param name="label" value="Buscar"/><param name="action" value="ActivateWindow(1152)"/></include>
+			<include content="VidrioTab"><param name="id" value="9009"/><param name="label" value="Trakt"/><param name="previo" value="SetProperty(Vidrio.GrillaQ,lista=trakt,home)"/><param name="previo2" value="SetProperty(Vidrio.GrillaTitulo,Trakt,home)"/><param name="action" value="ActivateWindow(1151)"/></include>
+			<include content="VidrioTab"><param name="id" value="9006"/><param name="label" value="Archivos"/><param name="action" value="ActivateWindow(Videos,sources://video/,return)"/></include>
+			<include content="VidrioTab"><param name="id" value="9007"/><param name="label" value="Ajustes"/><param name="action" value="ActivateWindow(Settings)"/></include>
+			<include content="VidrioTab"><param name="id" value="9008"/><param name="label" value="Salir"/><param name="action" value="Quit"/></include>
+		</control>
+		<control type="label">
+			<right>80</right><top>48</top><width>300</width><height>52</height>
+			<align>right</align><aligny>center</aligny>
+			<font>vidrio_tab</font>
+			<textcolor>E6FFFFFF</textcolor>
+			<label>$INFO[System.Time]</label>
+		</control>
+
+		<!-- Filas -->
+		<control type="grouplist" id="9100">
+			<left>0</left><top>650</top><width>1920</width><height>430</height>
+			<orientation>vertical</orientation>
+			<itemgap>0</itemgap>
+			<scrolltime tween="cubic" easing="out">350</scrolltime>
+			<onup>9000</onup>
+			<include content="VidrioFila"><param name="id" value="5100"/><param name="titulo" value="Continuar viendo"/><param name="ruta" value="plugin://plugin.video.vidrio/?lista=continuar&amp;t=$INFO[Window(home).Property(Vidrio.Trakt)]"/><param name="arriba" value="9000"/><param name="abajo" value="5101"/></include>
+			<include content="VidrioFila"><param name="id" value="5101"/><param name="titulo" value="Agregadas recientemente"/><param name="ruta" value="plugin://plugin.video.vidrio/?lista=recientes&amp;limite=30"/><param name="arriba" value="5100"/><param name="arriba_si" value="Integer.IsGreater(Container(5100).NumItems,0)"/><param name="arriba_no" value="9000"/><param name="abajo" value="5102"/></include>
+			<include content="VidrioFila"><param name="id" value="5102"/><param name="titulo" value="Películas"/><param name="ruta" value="plugin://plugin.video.vidrio/?lista=peliculas"/><param name="arriba" value="5101"/><param name="abajo" value="5103"/></include>
+			<include content="VidrioFila"><param name="id" value="5103"/><param name="titulo" value="Series"/><param name="ruta" value="plugin://plugin.video.vidrio/?lista=series"/><param name="arriba" value="5102"/><param name="abajo" value="5104"/></include>
+			<include content="VidrioFila"><param name="id" value="5104"/><param name="titulo" value="Acción"/><param name="ruta" value="plugin://plugin.video.vidrio/?genero=Acción"/><param name="arriba" value="5103"/><param name="abajo" value="5105"/></include>
+			<include content="VidrioFila"><param name="id" value="5105"/><param name="titulo" value="Comedia"/><param name="ruta" value="plugin://plugin.video.vidrio/?genero=Comedia"/><param name="arriba" value="5104"/><param name="abajo" value="5106"/></include>
+			<include content="VidrioFila"><param name="id" value="5106"/><param name="titulo" value="Drama"/><param name="ruta" value="plugin://plugin.video.vidrio/?genero=Drama"/><param name="arriba" value="5105"/><param name="abajo" value="5107"/></include>
+			<include content="VidrioFila"><param name="id" value="5107"/><param name="titulo" value="Suspenso"/><param name="ruta" value="plugin://plugin.video.vidrio/?genero=Suspenso"/><param name="arriba" value="5106"/><param name="abajo" value="5108"/></include>
+			<include content="VidrioFila"><param name="id" value="5108"/><param name="titulo" value="Ciencia ficción"/><param name="ruta" value="plugin://plugin.video.vidrio/?genero=Ciencia ficción"/><param name="arriba" value="5107"/><param name="abajo" value="5108"/></include>
+		</control>
+	</controls>
+</window>

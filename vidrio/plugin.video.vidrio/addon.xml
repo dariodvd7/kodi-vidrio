@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="plugin.video.vidrio" name="Vidrio" version="1.2.2" provider-name="Dario">
+	<requires>
+		<import addon="xbmc.python" version="3.0.1"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.service" library="service.py"/>
+	<extension point="xbmc.addon.metadata">
+		<summary lang="es_ES">Tus películas y series del homelab, con datos en español, sin biblioteca de Kodi</summary>
+		<description lang="es_ES">Lee el catálogo que genera el homelab (Jellyfin, Radarr y Sonarr) y lo muestra con sinopsis, géneros, duración, carátulas y tráiler. Pensado para la skin Vidrio y para Kodi 22 sin biblioteca. El servicio reproduce el tráiler de fondo en el inicio y deja configurada la búsqueda automática de subtítulos en español.</description>
+		<summary lang="en_GB">Your homelab movies and shows with Spanish metadata, without a Kodi library</summary>
+		<platform>all</platform>
+		<license>GPL-2.0-or-later</license>
+		<assets>
+			<icon>icon.png</icon>
+		</assets>
+	</extension>
+</addon>
