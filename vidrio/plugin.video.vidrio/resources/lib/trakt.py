@@ -16,7 +16,7 @@ import xbmcvfs
 
 PERFIL = xbmcvfs.translatePath(xbmcaddon.Addon('plugin.video.vidrio').getAddonInfo('profile'))
 API = 'https://api.trakt.tv'
-VIGENCIA = {'playback': 60, 'watchlist': 600, 'historial': 60}
+VIGENCIA = {'playback': 60, 'watchlist': 600, 'historial': 60, 'historial_peliculas': 60}
 
 
 def log(msg, nivel=xbmc.LOGINFO):
@@ -89,6 +89,11 @@ def historial():
     """Últimos episodios vistos (el más reciente primero), para armar "siguiente episodio"."""
     datos = _pedir('historial', '/sync/history/episodes?limit=60')
     return sorted(datos, key=lambda x: x.get('watched_at', ''), reverse=True)
+
+
+def historial_peliculas():
+    """Últimas películas vistas (para no rescatar en "Continuar viendo" una que se terminó en otro equipo)."""
+    return _pedir('historial_peliculas', '/sync/history/movies?limit=40')
 
 
 def lista():

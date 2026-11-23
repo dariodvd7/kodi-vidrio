@@ -137,8 +137,10 @@ def continuar(pelis, series):
     """Lo que hay para seguir viendo según Trakt, lo más reciente primero: películas y episodios a medias (se retoman
     desde donde quedaron) y, de las series que venís viendo, el episodio que sigue al último que terminaste."""
     from resources.lib import trakt
+    import json
     items = []  # (fecha, item)
     en_curso = set()
+    archivos = set()  # ya en la lista
     for r in trakt.reproducciones():
         progreso = float(r.get('progress') or 0)
         if r.get('type') == 'movie':
@@ -173,6 +175,53 @@ def continuar(pelis, series):
         if r.get('type') == 'episode':
             en_curso.add(s['carpeta'])
         items.append((r.get('paused_at', ''), (url(reproducir=archivo, desde=f'{progreso:.2f}'), li, carpeta)))
+        archivos.add(archivo)
+
+    # Lo que Trakt dio por visto al cortarlo pasado el 80 % pero no se terminó: lo anota el servicio en este equipo
+    # (resources/lib/posiciones.py). No vuelve si después se vio entero (historial de Trakt, de cualquier equipo).
+    from datetime import datetime, timezone
+    from resources.lib import posiciones
+    anotadas = posiciones.cargar()
+    if anotadas:
+        vistas_despues = {}
+        for h in trakt.historial_peliculas():
+            vistas_despues.setdefault(json.dumps(h.get('movie', {}).get('ids', {}), sort_keys=True), h.get('watched_at', ''))
+        for h in trakt.historial():
+            ep = h.get('episode', {})
+            clave = (json.dumps(h.get('show', {}).get('ids', {}), sort_keys=True), ep.get('season'), ep.get('number'))
+            vistas_despues.setdefault(clave, h.get('watched_at', ''))
+    for archivo, d in anotadas.items():
+        if archivo in archivos:
+            continue
+        cuando = datetime.fromtimestamp(d.get('cuando', 0), timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        p = next((p for p in pelis if p['archivo'] == archivo), None)
+        if p:
+            visto = next((w for ids, w in vistas_despues.items() if isinstance(ids, str) and mismo(json.loads(ids), p.get('ids'))), '')
+            if visto > cuando:
+                continue
+            u, li, carpeta = item_pelicula(p)
+        else:
+            s, e = next(((s, e) for s in series for t in s['temporadas'] for e in t['episodios'] if e['archivo'] == archivo),
+                        (None, None))
+            if not e:
+                continue
+            visto = next((w for k, w in vistas_despues.items() if isinstance(k, tuple) and mismo(json.loads(k[0]), s.get('ids'))
+                          and str(k[1]) == str(e.get('temporada')) and str(k[2]) == str(e.get('episodio'))), '')
+            if visto > cuando:
+                continue
+            u, li, carpeta = item_episodio(s, e)
+            li.setLabel(f"{s['titulo']} · T{e.get('temporada')} E{e.get('episodio')}")
+            li.setArt(arte(s, s['dir']))
+            en_curso.add(s['carpeta'])
+        total = float(d.get('total') or 0)
+        progreso = 100 * float(d.get('posicion') or 0) / total if total else 0
+        li.getVideoInfoTag().setResumePoint(float(d.get('posicion') or 0), total)
+        li.setProperty('vidrio.meta', f"Te quedan {duracion(round((total - float(d.get('posicion') or 0)) / 60)) or '1 min'}  ·  {li.getProperty('vidrio.meta')}")
+        li.setProperty('vidrio.etiqueta', 'CONTINUAR VIENDO')
+        li.setProperty('vidrio.continuar', '1')
+        li.setProperty('vidrio.progreso', str(int(progreso)))
+        archivos.add(archivo)
+        items.append((cuando, (url(reproducir=archivo, desde=f'{progreso:.2f}'), li, carpeta)))
 
     # Siguiente episodio: por cada serie del historial (la más reciente primero), el que sigue al último que viste
     vistas = set()

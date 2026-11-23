@@ -354,6 +354,28 @@ RECARGA_PERIODICA = 5 * 60  # con el inicio en pantalla y nada sonando
 ARRANQUE_SEGURO = 4  # segundos: no cortar un tráiler antes (ver Trailers.paso)
 
 
+def seguir_posicion(trailers, seguido):
+    """Va tomando por dónde va lo que se mira del homelab y, al cortarlo, lo anota (resources/lib/posiciones.py):
+    "Continuar viendo" no pierde lo que Trakt da por visto pasado el 80 %. Los tráileres no cuentan."""
+    jugador = trailers.player
+    try:
+        actual = None
+        if jugador.isPlayingVideo() and not trailers.archivo and not trailers.pedido:
+            archivo = jugador.getPlayingFile()
+            if archivo.startswith(('smb://', 'nfs://', '/')):
+                actual = (archivo, jugador.getTime(), jugador.getTotalTime())
+    except RuntimeError:  # justo terminó entre una pregunta y otra
+        actual = None
+    if seguido and (actual is None or actual[0] != seguido[0]):
+        try:
+            from resources.lib import posiciones
+            porcentaje = posiciones.anotar(*seguido)
+            log(f'posición anotada: {porcentaje:.0%}' if porcentaje is not None else 'posición: terminado o recién empezado')
+        except Exception as e:
+            log(f'no pude anotar la posición: {e}')
+    return actual
+
+
 def buscar_actualizaciones(motivo):
     """Pide a Kodi que revise los repositorios ya, para que una versión nueva de Vidrio (repository.vidrio, en el
     homelab) llegue al abrir Kodi y no recién en la revisión diaria. Como mucho cada 30 minutos: al actualizarse, el
@@ -382,6 +404,7 @@ def main():
     # Revisar actualizaciones con el inicio ya cargado: si Kodi reemplaza el plugin mientras la skin arma sus filas,
     # muestra un error ("Unknown addon id") durante el segundo en que el plugin no está instalado.
     revisar_en, motivo_revision = time.time() + 90, 'Kodi arrancó'
+    seguido = None  # (archivo, posición, total) de lo que el usuario mira del homelab
     vueltas = 0
     ultima_vuelta = time.time()
     ultima_recarga = ultima_vuelta - RECARGA_PERIODICA  # la primera vez que esté el inicio en pantalla (al arrancar o al actualizar el add-on)
@@ -420,6 +443,7 @@ def main():
             monitor.waitForAbort(2)
             rpc('Addons.SetAddonEnabled', addonid='plugin.video.youtube', enabled=True)
             trailers.fallos = 0
+        seguido = seguir_posicion(trailers, seguido)
         vueltas += 1
         try:
             trailers.paso()
@@ -427,6 +451,12 @@ def main():
             log(f'error: {e}')
         if monitor.waitForAbort(0.3):
             break
+    if seguido:  # Kodi se cerró con algo sonando
+        try:
+            from resources.lib import posiciones
+            posiciones.anotar(*seguido)
+        except Exception:
+            pass
     HOME.clearProperty('Vidrio.Preview')
 
 

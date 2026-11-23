@@ -276,3 +276,8 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 - Trakt da por vista una película que se corta pasado el 80 % y la saca de "Continuar viendo" (pasó con Men in Black:
   retomada en 79 %, cortada en 85 %). Para devolverla: quitar esa vista (`/sync/history/remove` con su id) y guardar
   el progreso con `/scrobble/pause`; Trakt rechaza (422) un progreso de pausa mayor al 80 %, así que va 79,9 %.
+- Plugin 1.7.0: el servicio anota en cada equipo dónde se cortó lo que se mira del homelab
+  (`resources/lib/posiciones.py`, `posiciones.json` en el perfil; no cuenta tráileres, menos de 2 minutos ni más del
+  95 %). "Continuar viendo" suma lo anotado que Trakt ya no muestra y lo retoma desde ese punto, salvo que el
+  historial de Trakt diga que se vio después (por ejemplo, terminado en el otro equipo). Kodi guarda su propio punto,
+  pero bajo la dirección con la que arrancó, que incluye el porcentaje de Trakt, y desde la lista no se encuentra.
