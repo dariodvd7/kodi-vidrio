@@ -28,6 +28,12 @@ def log(msg):
     xbmc.log(f'[vidrio.servicio] {msg}', xbmc.LOGINFO)
 
 
+def instalado(addon_id):
+    # xbmcaddon.Addon() con un add-on que no está deja un "EXCEPTION: Unknown addon id" en el log de Kodi aunque
+    # se atrape el error: preguntar antes.
+    return xbmc.getCondVisibility(f'System.HasAddon({addon_id})')
+
+
 def rpc(metodo, **params):
     r = json.loads(xbmc.executeJSONRPC(json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': metodo, 'params': params})))
     return r.get('result', r.get('error'))
@@ -59,6 +65,8 @@ def parchear_youtube():
     """Deja el add-on de YouTube usable para tráileres en macOS/tvOS (ver PARCHE_YOUTUBE). Se reaplica solo si
     YouTube se actualiza y pisa el archivo. Devuelve True si cambió algo (hace falta reiniciar Kodi)."""
     import xbmcvfs
+    if not instalado('plugin.video.youtube'):
+        return False
     try:
         yt = xbmcaddon.Addon('plugin.video.youtube')
     except RuntimeError:
@@ -107,7 +115,8 @@ def configurar_subtitulos():
         'subtitles.languages': ['Spanish', 'English'],  # idiomas a buscar, en orden
     }
     try:
-        xbmcaddon.Addon(A4K)
+        if not instalado(A4K):
+            raise RuntimeError(A4K)
         ajustes['subtitles.movie'] = A4K
         ajustes['subtitles.tv'] = A4K
         a4k = xbmcaddon.Addon(A4K)
@@ -115,7 +124,9 @@ def configurar_subtitulos():
             if a4k.getSetting(clave) != 'true':
                 a4k.setSetting(clave, 'true')
     except RuntimeError:
-        log('a4kSubtitles no está instalado: no hay búsqueda automática de subtítulos')
+        if not getattr(configurar_subtitulos, 'avisado', False):
+            log('a4kSubtitles no está instalado: no hay búsqueda automática de subtítulos')
+            configurar_subtitulos.avisado = True
     for clave, valor in ajustes.items():
         actual = rpc('Settings.GetSettingValue', setting=clave)
         if isinstance(actual, dict) and actual.get('value') != valor:
@@ -124,6 +135,8 @@ def configurar_subtitulos():
 
 def configurar_trakt():
     """Si está Trakt: que no cuente los tráileres de fondo (llegan por http) y sí lo que reproduce Vidrio."""
+    if not instalado('script.trakt'):
+        return
     try:
         trakt = xbmcaddon.Addon('script.trakt')
     except RuntimeError:
@@ -321,8 +334,10 @@ def main():
     trailers = Trailers()
     vueltas = 0
     while not monitor.abortRequested():
-        if vueltas % 1000 == 0:
+        if vueltas % 1000 == 0:  # al arrancar y cada ~5 minutos: también toma add-ons instalados después
             configurar_trakt()
+            if vueltas:
+                configurar_subtitulos()
         if vueltas % 1000 == 0 and parchear_youtube():  # al arrancar y cada ~5 minutos (YouTube se actualiza solo)
             # reiniciar el add-on de YouTube para que su servicio levante el servidor con el parche
             rpc('Addons.SetAddonEnabled', addonid='plugin.video.youtube', enabled=False)

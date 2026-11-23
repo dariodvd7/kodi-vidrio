@@ -63,8 +63,8 @@ empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la to
 (sin ella usa la de ejemplo): en el cron, `VIDRIO_HOMELAB=<ip> /opt/kodi-artwork/catalogo.py`.
 
 ## Instalar
-1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.2.4.zip`,
-   después `skin.vidrio-1.2.0.zip` (versiones actuales: add-on 1.2.4, skin 1.2.0). La skin pide el add-on, por eso va
+1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.2.5.zip`,
+   después `skin.vidrio-1.2.0.zip` (versiones actuales: add-on 1.2.5, skin 1.2.0). La skin pide el add-on, por eso va
    primero.
 2. Para tráileres: instalar YouTube (`plugin.video.youtube`) del repositorio oficial. Funciona sin clave propia de la API.
 3. Interfaz → Skin → Vidrio.
@@ -143,6 +143,13 @@ Reinstalar encima conserva los ajustes de Kodi (están en NSUserDefaults) pero b
 (`Library/Caches`): hay que volver a vincular Trakt. El servicio recarga "Continuar viendo" solo al vincularlo (y
 otra vez a los 70 s: recién vinculada, Trakt puede responder la lista vacía). Para actualizar solo Vidrio sin perder
 Trakt: agregar `smb://<homelab>/KodiAddons/` como fuente e instalar `plugin.video.vidrio-<versión>.zip` encima.
+
+## Android TV (TCL)
+Kodi 21.2 en un TCL Smart TV Pro (Android TV 11): solo la skin y el plugin, sin IPA. Pasos: activar el control remoto
+(`services.esallinterfaces`) y los orígenes desconocidos, agregar `smb://<homelab>/KodiAddons/` como fuente, instalar
+`plugin.video.vidrio` y `skin.vidrio` desde zip, el español (Argentina), YouTube y Trakt del repositorio oficial y
+a4kSubtitles (repositorio y add-on) desde zip; país Argentina, subtítulos en español, sin cambio de frecuencia; skin
+Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de tvOS; el parche de YouTube no molesta.
 
 ## Probado
 - Mac, Kodi 21.3: inicio, filas, datos en español, navegación con flechas, tráiler de YouTube de fondo con el

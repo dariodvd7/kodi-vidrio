@@ -25,6 +25,8 @@ def log(msg, nivel=xbmc.LOGINFO):
 
 def credenciales():
     """(client_id, access_token) de script.trakt, o None si no está instalado o vinculado."""
+    if not xbmc.getCondVisibility('System.HasAddon(script.trakt)'):  # sin error "Unknown addon id" en el log
+        return None
     try:
         addon = xbmcaddon.Addon('script.trakt')
     except RuntimeError:
