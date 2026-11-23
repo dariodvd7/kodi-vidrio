@@ -248,3 +248,14 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 - Es un botón y no el menú contextual porque en una ventana propia de la skin (1154) Kodi no abre el menú
   contextual de los elementos de una lista.
 - Probado en el TCL; llegó por el repositorio sin tocar nada.
+
+## Solo los canales de DGO (plugin 1.6.0)
+
+- `homelab/canales_dgo.json`: los canales del plan de DGO, sacados de la grilla de TV en vivo de directvgo.com con
+  la sesión de la casa (119; HBO no está: en su página figura con "Quiero verlo", la oferta para contratarlo).
+  Si cambia el plan, se vuelve a sacar y se copia a `/opt/kodi-artwork/` en el homelab.
+- `homelab/guia.py` marca cada canal con `"dgo": true/false` (`clave_dgo` quita país o región del nombre;
+  `EQUIVALENTES_DGO` para los que se llaman distinto: TN = "Todo Noticias.", C5N, Nat Geo...). 88 de 163.
+- El plugin oculta los `"dgo": false` en todas las filas menos "Mis canales" (ajuste "Mostrar en la guía solo los
+  canales de DGO", activado por defecto). Sin el archivo, la guía muestra todo.
+- Al copiar `guia.py` al homelab hay que dejarlo ejecutable (`chmod 755`): el cron lo corre directo.
