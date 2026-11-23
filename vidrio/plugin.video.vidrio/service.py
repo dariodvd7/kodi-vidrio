@@ -378,8 +378,10 @@ def main():
     if monitor.waitForAbort(5):
         return
     configurar_subtitulos()
-    buscar_actualizaciones('Kodi arrancó')
     trailers = Trailers()
+    # Revisar actualizaciones con el inicio ya cargado: si Kodi reemplaza el plugin mientras la skin arma sus filas,
+    # muestra un error ("Unknown addon id") durante el segundo en que el plugin no está instalado.
+    revisar_en, motivo_revision = time.time() + 90, 'Kodi arrancó'
     vueltas = 0
     ultima_vuelta = time.time()
     ultima_recarga = ultima_vuelta - RECARGA_PERIODICA  # la primera vez que esté el inicio en pantalla (al arrancar o al actualizar el add-on)
@@ -389,13 +391,16 @@ def main():
         ahora = time.time()
         if ahora - ultima_vuelta > 60:  # el servicio estuvo pausado: Kodi estaba en segundo plano o dormido
             recargar_trakt(trailers, 'Kodi volvió de segundo plano'); ultima_recarga = ahora
-            buscar_actualizaciones('Kodi volvió de segundo plano')
+            revisar_en, motivo_revision = time.time() + 30, 'Kodi volvió de segundo plano'
         elif monitor.despierto:
             recargar_trakt(trailers, 'Kodi se despertó'); ultima_recarga = ahora
         elif (ahora - ultima_recarga > RECARGA_PERIODICA and xbmcgui.getCurrentWindowId() == 10000
               and not xbmc.Player().isPlaying()):
             recargar_trakt(trailers, 'cada 5 minutos en el inicio'); ultima_recarga = ahora
         monitor.despierto = False
+        if revisar_en and ahora >= revisar_en and not xbmc.Player().isPlaying():
+            buscar_actualizaciones(motivo_revision)
+            revisar_en = 0
         pedido = HOME.getProperty('Vidrio.Abrir')
         if pedido:  # abrir otra app (tvOS): desde acá, porque el servicio sigue vivo cuando tvOS responde
             HOME.clearProperty('Vidrio.Abrir')
