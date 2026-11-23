@@ -284,10 +284,11 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 	<include name="VidrioFila">
 		<param name="id"/><param name="titulo"/><param name="ruta"/><param name="arriba"/><param name="abajo"/>
 		<param name="arriba_si" default="true"/><param name="arriba_no" default="noop"/>
+		<param name="tambien" default="false"/>
 		<definition>
 			<control type="group">
 				<height>350</height>
-				<visible>Integer.IsGreater(Container($PARAM[id]).NumItems,0) | Container($PARAM[id]).IsUpdating</visible>
+				<visible>Integer.IsGreater(Container($PARAM[id]).NumItems,0) | Container($PARAM[id]).IsUpdating | $PARAM[tambien]</visible>
 				<control type="label">
 					<left>110</left><top>0</top><width>1200</width><height>44</height>
 					<font>vidrio_row</font>

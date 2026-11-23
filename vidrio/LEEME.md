@@ -57,6 +57,10 @@ Kodi 21 de la Mac).
 | `dist/` | Zips e IPA armados (fuera de git; `herramientas/zips.py`, `fork/armar_ipa.py`; publicados en Releases). |
 
 ## Red de casa (`local.json`)
+Si Kodi usa la skin y el plugin directo desde esta carpeta (enlaces simbólicos, como en el Mac), el catálogo por
+defecto es el de ejemplo: poner la ruta real en los ajustes del plugin (`addon_data/plugin.video.vidrio/settings.xml`,
+ajuste `catalogo`).
+
 En el repositorio la IP del homelab es la de ejemplo, `192.168.1.50`. La real va en `vidrio/local.json` (fuera de git;
 copiar `local.ejemplo.json`): `herramientas/zips.py` y `fork/armar_ipa.py` la ponen en el catálogo del plugin al
 empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la toma de la variable `VIDRIO_HOMELAB`
@@ -64,7 +68,7 @@ empaquetar (con `--generico`, la de ejemplo). En el homelab, `catalogo.py` la to
 
 ## Instalar
 1. En Kodi: Add-ons → Instalar desde un archivo zip → `smb://192.168.1.50/KodiAddons/` → `plugin.video.vidrio-1.2.5.zip`,
-   después `skin.vidrio-1.2.0.zip` (versiones actuales: add-on 1.2.5, skin 1.2.0). La skin pide el add-on, por eso va
+   después `skin.vidrio-1.2.1.zip` (versiones actuales: add-on 1.2.5, skin 1.2.1). La skin pide el add-on, por eso va
    primero.
 2. Para tráileres: instalar YouTube (`plugin.video.youtube`) del repositorio oficial. Funciona sin clave propia de la API.
 3. Interfaz → Skin → Vidrio.
@@ -97,7 +101,8 @@ su código para obtener el video es de 2021 y YouTube ya no le responde (`Conten
   (propiedad `StartPercent`): retoma donde quedó. La tarjeta muestra la barra de progreso y "Te quedan …". Las
   respuestas se guardan 1 min (lista: 10 min); al cortar algo que no sea un tráiler, el servicio borra esa caché a los
   8 s y cambia `Window(home).Property(Vidrio.Trakt)`, que va en la ruta de la fila: la skin la recarga. La fila se
-  oculta si no hay nada, y la navegación la saltea. `PlayMedia` desde el inicio deja el video detrás del inicio (se
+  oculta si no hay nada, y la navegación la saltea. Kodi no recarga una lista oculta: la lista 5099, fuera de la
+  pantalla y siempre activa, carga lo mismo, y la fila aparece (y se carga) cuando esa tiene algo. `PlayMedia` desde el inicio deja el video detrás del inicio (se
   oye pero no se ve): el servicio pasa a pantalla completa, una sola vez, cada video del usuario que arranca con el
   inicio en pantalla. El plugin trae su propio `_scproxy.py` para que `urllib` ande en
   el Apple TV.
