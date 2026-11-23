@@ -66,11 +66,18 @@ def ahora_y_despues(canal, ahora=None):
     return actual, siguiente
 
 
-# Clave de la página de cada canal en DGO (dtvmobile://dgo/home/lander/<clave>): las arma el CMS de DGO y solo las da
-# su API con sesión iniciada; una clave inexistente muestra "¡Ups! Algo pasó" (M2-1998). "espnpremium" y
-# "tntsportspremium" no existen (probado en el TCL). Solo van acá las confirmadas; sin clave, el canal abre TV en vivo.
-CLAVES_DGO = {}
+# Página de cada canal en DGO (dtvmobile://dgo/home/lander/<clave>). Las claves las arma el CMS de DGO; las de marca
+# están en la web (landerUris en su JS) y distinguen mayúsculas. Se probaron en directvgo.com con sesión iniciada:
+# HBO, Universal y DISCOVERY muestran sus canales en vivo (Lionsgate solo películas). Una clave inexistente muestra
+# "¡Ups! Algo pasó" (M2-1998; pasó con "espnpremium" y "tntsportspremium"). Sin clave, el canal abre TV en vivo.
+CLAVES_DGO = {
+    'Universal Channel': 'Universal',
+    'Discovery Channel': 'DISCOVERY', 'Discovery Turbo': 'DISCOVERY', 'Discovery World': 'DISCOVERY',
+    'Discovery Home And Health': 'DISCOVERY', 'Animal Planet': 'DISCOVERY', 'Discovery Kids': 'DISCOVERY',
+}
 
 
 def clave_dgo(nombre):
+    if nombre.startswith('HBO'):  # la página HBO trae HBO, HBO 2, HBO Family y HBO Signature en vivo
+        return 'HBO'
     return CLAVES_DGO.get(nombre, '')
