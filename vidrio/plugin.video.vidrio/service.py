@@ -460,6 +460,11 @@ def revisar_partidos(estado):
             nueva = envivo.actualizar()
             if nueva:
                 HOME.setProperty('Vidrio.EnVivo', nueva)
+            elif not HOME.getProperty('Vidrio.EnVivo'):
+                # primera vuelta: las filas pudieron cargarse vacías (mientras se instalaba una versión nueva o antes
+                # de tener partidos.json) y sin un cambio no se recargarían nunca
+                from resources.lib import copia
+                HOME.setProperty('Vidrio.EnVivo', envivo.huella(copia.leer(envivo.CACHE) or {}) or 'x')
         except Exception as e:
             log(f'partidos en vivo: error {e}')
     import threading
