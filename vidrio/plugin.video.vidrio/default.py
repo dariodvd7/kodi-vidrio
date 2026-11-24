@@ -26,7 +26,8 @@ def url(**q):
 
 
 def arte(item, dir_):
-    poster, fanart = dir_ + 'folder.jpg', dir_ + 'fanart.jpg'
+    # el catálogo de carpetas (carpetas.py) trae poster y fanart: los de la carpeta o los de TMDb
+    poster, fanart = item.get('poster') or dir_ + 'folder.jpg', item.get('fanart') or dir_ + 'fanart.jpg'
     return {'poster': poster, 'fanart': fanart, 'thumb': fanart, 'landscape': fanart, 'icon': poster}
 
 
@@ -114,7 +115,7 @@ def item_episodio(s, e):
     tag.setEpisode(int(e.get('episodio') or 0))
     if e.get('estreno'):
         tag.setFirstAired(e['estreno'])
-    li.setArt({**arte(s, s['dir']), 'thumb': e.get('imagen') or s['dir'] + 'fanart.jpg'})
+    li.setArt({**arte(s, s['dir']), 'thumb': e.get('imagen') or arte(s, s['dir'])['fanart']})
     li.setProperty('vidrio.tipo', 'episodio')
     li.setProperty('vidrio.numero', f"EPISODIO {e['episodio']}" if e.get('episodio') else 'ESPECIAL')
     # Título para la tarjeta: vacío si solo repite el número ("Episodio 3"), que ya está arriba
@@ -381,6 +382,20 @@ def main():
         from resources.lib import envivo
         n = envivo.prueba(P['probar_envivo'] != '0')
         return terminar([(f'{BASE}?nada=1', xbmcgui.ListItem(f'partidos de prueba: {n}'), False)], 'files', orden=False)
+    if P.get('escanear'):  # botón "Actualizar el catálogo ahora" (catálogo de carpetas, sin homelab)
+        from resources.lib import carpetas
+        barra = xbmcgui.DialogProgressBG()
+        barra.create('Vidrio', 'Leyendo las carpetas…')
+        try:
+            pelis, series = carpetas.escanear(lambda pct, nombre: barra.update(pct, 'Vidrio', nombre))
+        finally:
+            barra.close()
+        import json  # por JSON-RPC: Dialog().notification no se ve cuando el plugin corre desde los ajustes
+        xbmc.executeJSONRPC(json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': 'GUI.ShowNotification', 'params': {
+            'title': 'Vidrio', 'message': f'Catálogo: {pelis} películas y {series} series', 'displaytime': 8000}}))
+        # el inicio vuelve a cargar sus filas un momento después (no mientras este plugin sigue corriendo)
+        xbmc.executebuiltin('AlarmClock(vidriorecarga,ReloadSkin(),00:02,silent)')
+        return
     if P.get('restaurar'):  # botón "Restaurar un backup" de los ajustes; con archivo=... y prueba=1, solo cuenta
         import json
         from resources.lib import restaurar
@@ -511,7 +526,7 @@ def main():
             destacado = destacados[g]
             li = xbmcgui.ListItem(g, offscreen=True)
             li.setLabel2(f"{len(del_genero)} títulos")
-            fanart = destacado['dir'] + 'fanart.jpg'
+            fanart = arte(destacado, destacado['dir'])['fanart']
             li.setArt({'icon': 'DefaultGenre.png', 'thumb': fanart, 'fanart': fanart})
             li.setProperty('vidrio.genero_q', quote_plus(g))
             li.setProperty('vidrio.cantidad', str(len(del_genero)))

@@ -7,20 +7,53 @@ partidos en vivo y próximos (Primera División, Copa Argentina, Libertadores, S
 Anda en **Apple TV** (Kodi 22, con el IPA de este repositorio), **Android TV / Google TV** (Kodi 21 o 22) y **Mac,
 Windows o Linux** (Kodi 21 o 22).
 
-> **Antes de empezar:** Vidrio no usa la biblioteca de Kodi. Las películas y series salen de un catálogo
-> (`catalogo.json`) que arma un servidor de tu casa (homelab) a partir de **Jellyfin, Radarr y Sonarr**. Sin ese
-> catálogo, la skin se instala y se ve, pero las filas de películas y series quedan vacías. La parte 1 explica cómo
-> armarlo.
+> **Antes de empezar:** Vidrio no usa la biblioteca de Kodi. Las películas y series salen de un catálogo, y hay dos
+> formas de armarlo:
+>
+> - **Carpetas (lo más fácil, desde el plugin 1.14.0):** Vidrio lee tus carpetas de películas y series (en el mismo
+>   equipo, un disco o una carpeta compartida) y, con una clave gratis de TMDb, completa títulos, sinopsis, géneros e
+>   imágenes en español. No hace falta servidor. Está en la [parte 0](#parte-0-sin-servidor-carpetas).
+> - **Homelab:** un servidor de tu casa con Jellyfin, Radarr y Sonarr arma `catalogo.json`. Además suma la guía de TV
+>   y los partidos. Está en la [parte 1](#parte-1-el-servidor-homelab).
 
 ## Qué hace falta
 
 | Para | Hace falta |
 |---|---|
-| Películas y series | Un servidor Linux con Jellyfin, Radarr y Sonarr (en Docker), las películas y series compartidas por Samba, y Python 3. Seerr es opcional: aporta sinopsis en español que Jellyfin no tiene. |
+| Películas y series, con homelab | Un servidor Linux con Jellyfin, Radarr y Sonarr (en Docker), las películas y series compartidas por Samba, y Python 3. Seerr es opcional: aporta sinopsis en español que Jellyfin no tiene. |
+| Películas y series, sin servidor | Las carpetas con los videos y, opcional, una clave gratis de [TMDb](https://www.themoviedb.org/settings/api). |
 | Tráileres | El add-on YouTube del repositorio oficial de Kodi (viene adentro del IPA). |
 | "Continuar viendo" y la lista de Trakt | Una cuenta de [Trakt](https://trakt.tv) (gratis) y el add-on Trakt (viene adentro del IPA). |
 | Guía de TV y partidos | Nada más que el servidor: la guía usa XMLTV públicos de Argentina y los partidos, el marcador público de ESPN. Abrir los canales en DGO funciona solo en Android TV, con la app de DGO instalada. |
 | Apple TV | Una Mac o un servidor con [atvloadly](https://github.com/bitxeno/atvloadly) (u otra forma de instalar IPA) y una cuenta de Apple. |
+
+## Parte 0: sin servidor (carpetas)
+
+1. Instalá Vidrio en tu equipo, como dicen la [parte 2](#parte-2-apple-tv) (Apple TV) o la
+   [parte 3](#parte-3-android-tv-mac-windows-o-linux) (Android TV y compu).
+2. Ordená las carpetas con los nombres de siempre (los que usan Kodi, Plex o Jellyfin):
+   ```
+   Películas/Nueve reinas (2000)/Nueve reinas (2000).mkv
+   Series/Okupas (2000)/Season 1/Okupas S01E01.mkv
+   ```
+   También sirven `Temporada 1`, los episodios sin subcarpeta (`S01E01`, `1x01` o `E01`) y las películas sueltas
+   (`Películas/Nueve reinas (2000).mkv`). Si en la carpeta hay `folder.jpg` y `fanart.jpg`, o un `.nfo` de Kodi, se
+   usan.
+3. **Clave de TMDb** (opcional pero recomendada): creá una cuenta gratis en [themoviedb.org](https://www.themoviedb.org),
+   andá a Configuración → API, pedí una clave para uso personal y copiá la **"Clave de la API"** (o el "Token de
+   acceso de lectura de la API"). Sin clave, Vidrio muestra el nombre de la carpeta y las imágenes que encuentre,
+   pero sin sinopsis ni géneros, así que las filas por género quedan vacías.
+4. En Kodi: Ajustes → Vidrio → **Tráileres y subtítulos** →
+   - **Origen del catálogo**: Carpetas.
+   - **Carpeta de películas** y **Carpeta de series**: elegilas con el navegador de Kodi (sirven carpetas locales,
+     `smb://` y `nfs://`).
+   - **Clave de TMDb**: pegala.
+5. Cerrá los ajustes. Vidrio lee las carpetas en segundo plano (la primera vez tarda unos minutos, según cuántos
+   títulos tengas) y el inicio se recarga solo al terminar. Después se actualiza cada 12 horas, o al momento con
+   **Actualizar el catálogo ahora**, en los mismos ajustes.
+
+La guía de TV, "Deportes en vivo" y "Próximos partidos" necesitan el servidor de la parte 1; sin él, esas filas no
+aparecen.
 
 ## Parte 1: el servidor (homelab)
 
@@ -122,7 +155,8 @@ En Android TV, la pestaña **DGO** muestra la guía y abre los canales en la app
 
 | Pasa esto | Probá esto |
 |---|---|
-| Las filas de películas y series están vacías | Revisá el archivo de catálogo en los ajustes de Vidrio y abrí esa ruta desde Kodi (Archivos), para ver que llegue a la carpeta compartida. |
+| Las filas de películas y series están vacías | Con Carpetas: revisá las carpetas en los ajustes de Vidrio y tocá "Actualizar el catálogo ahora". Con homelab: revisá el archivo de catálogo y abrí esa ruta desde Kodi (Archivos), para ver que llegue a la carpeta compartida. |
+| Con Carpetas, faltan sinopsis, géneros o imágenes | Falta la clave de TMDb, o TMDb no encontró el título: revisá que la carpeta tenga el nombre y el año (`Nueve reinas (2000)`). |
 | No hay tráileres | Instalá YouTube del repositorio oficial. Si fallan seguido, apagalos en los ajustes de Vidrio. |
 | La guía o los partidos no aparecen | Fijate que `guia.json` y `partidos.json` estén al lado de `catalogo.py`. "Deportes en vivo" solo se ve mientras se juega un partido. |
 | Kodi pide desinstalar Vidrio para actualizarlo | Ajustes → Sistema → Add-ons → Actualizaciones → "Cualquier repositorio". |

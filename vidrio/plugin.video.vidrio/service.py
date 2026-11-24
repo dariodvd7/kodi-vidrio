@@ -344,6 +344,10 @@ class Monitor(xbmc.Monitor):
     def __init__(self):
         super().__init__()
         self.despierto = False
+        self.ajustes = False
+
+    def onSettingsChanged(self):  # Kodi guarda los ajustes de Vidrio al cerrar la ventana
+        self.ajustes = True
 
     def onNotification(self, sender, method, data):
         if method in ('System.OnWake', 'GUI.OnScreensaverDeactivated'):
@@ -463,6 +467,29 @@ def revisar_partidos(estado):
     estado['hilo'].start()
 
 
+def revisar_carpetas(estado):
+    """Catálogo sin homelab (origen Carpetas): lo rearma en un hilo cada 12 horas, sin nada reproduciéndose. La
+    primera vez (sin catálogo) recarga el inicio al terminar, para que aparezcan las filas."""
+    from resources.lib import carpetas
+    carpetas.releer()
+    if not carpetas.activo() or not carpetas.hace_falta() or xbmc.Player().isPlaying():
+        return
+    if estado.get('hilo') and estado['hilo'].is_alive():
+        return
+    primera = carpetas.leer() is None
+
+    def correr():
+        try:
+            pelis, series = carpetas.escanear()
+            if primera and (pelis or series) and xbmcgui.getCurrentWindowId() == 10000:
+                xbmc.executebuiltin('ReloadSkin()')
+        except Exception as e:
+            log(f'catálogo de carpetas: error {e}')
+    import threading
+    estado['hilo'] = threading.Thread(target=correr, daemon=True)
+    estado['hilo'].start()
+
+
 def recargar_trakt(trailers, motivo):
     log(f'recargo Continuar viendo ({motivo})')
     trailers.trakt_en = time.time()
@@ -482,6 +509,7 @@ def main():
     arranque = time.time()
     vueltas = 0
     partidos_estado = {}
+    carpetas_estado = {}
     ultima_vuelta = time.time()
     ultima_recarga = ultima_vuelta - RECARGA_PERIODICA  # la primera vez que esté el inicio en pantalla (al arrancar o al actualizar el add-on)
     while not monitor.abortRequested():
@@ -512,6 +540,9 @@ def main():
         ultima_vuelta = time.time()
         if vueltas % 1000 == 500:
             tal_vez_respaldar(arranque)
+        if vueltas % 1000 == 300 or monitor.ajustes:  # ~90 s después de arrancar, cada ~5 minutos y al cambiar
+            monitor.ajustes = False                    # los ajustes (otra carpeta, la clave de TMDb)
+            revisar_carpetas(carpetas_estado)
         # cada ~minuto con el inicio en pantalla (y al volver a él), sin nada reproduciéndose
         if (vueltas % 200 == 20 and xbmcgui.getCurrentWindowId() == 10000
                 and not xbmc.Player().isPlaying()):

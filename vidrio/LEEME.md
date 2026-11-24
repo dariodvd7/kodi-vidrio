@@ -370,3 +370,23 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 - "Deportes en vivo" no cambia: arriba de todo, solo con partidos en juego. Las dos filas usan la misma tarjeta
   (`VidrioTarjetaPartido`) y el mismo include (`VidrioFilaPartidos`), en `herramientas/includes.py`; 5121 y su
   cargador 5097 en `Home.xml`.
+
+## Catálogo sin homelab (plugin 1.14.0)
+
+- Ajuste **Origen del catálogo**: Homelab (`catalogo.json`, como siempre) o **Carpetas**. Con Carpetas,
+  `resources/lib/carpetas.py` arma el catálogo leyendo la carpeta de películas y la de series (locales, `smb://`,
+  `nfs://`) y lo guarda en el perfil (`catalogo_carpetas.json`), con el mismo formato que el del homelab.
+- Nombres: `Título (Año)/` por película (o el video suelto), y por serie `Season N`, `Temporada N`, `S0N` o los
+  episodios sueltos (`S01E02`, `1x02`, `E02`). El título del episodio sale de TMDb o, si no, del nombre del archivo
+  (lo de después del número, hasta la calidad).
+- Datos: TMDb si hay clave (ajuste "Clave de TMDb": la API Key de v3 va en la dirección, el token de lectura de v4
+  en la cabecera), en es-MX con es-ES de respaldo; si no, el `.nfo` de Kodi; si no, el nombre de la carpeta. Lo de
+  TMDb se guarda en el perfil (`tmdb.json`) y no se vuelve a pedir. Con 5 fallas seguidas (clave mala, sin internet)
+  deja de preguntar en esa vuelta.
+- Imágenes: `folder.jpg`/`poster.jpg` y `fanart.jpg` de la carpeta; si faltan, las de TMDb. `arte()` en `default.py`
+  usa `poster` y `fanart` del catálogo si están.
+- El servicio lo rearma cada 12 horas, ~90 s después de arrancar si no hay, y al cerrar los ajustes si cambió una
+  carpeta o la clave. La primera vez recarga el inicio al terminar. El botón "Actualizar el catálogo ahora" lo hace
+  al momento (`?escanear=1`), con barra de progreso.
+- Probado en la Mac con las carpetas del homelab por `smb://`, sin TMDb: 253 películas y 91 series en unos 3
+  minutos. Con TMDb solo se probó el armado de los datos con respuestas de ejemplo.

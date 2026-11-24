@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Lee el catálogo del homelab y lo guarda en caché local."""
+"""Lee el catálogo del homelab y lo guarda en caché local (o el de carpetas.py, si el origen es Carpetas)."""
 import json
 import os
 import time
@@ -29,7 +29,9 @@ def _leer_remoto():
 
 def cargar(forzar=False):
     """Devuelve el catálogo: caché si está fresca, si no el del homelab; si el homelab falla, la caché vieja."""
-    from resources.lib import copia
+    from resources.lib import copia, carpetas
+    if carpetas.activo():  # sin homelab: el catálogo que arman carpetas.escanear() (el servicio, cada 12 horas)
+        return carpetas.leer() or {'peliculas': [], 'series': []}
     fresco = os.path.isfile(CACHE) and time.time() - os.path.getmtime(CACHE) < VIGENCIA
     if fresco and not forzar:
         cat = copia.leer(CACHE)

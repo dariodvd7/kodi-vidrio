@@ -40,3 +40,31 @@ msgstr ""
 msgctxt "#30008"
 msgid "Restore a backup"
 msgstr ""
+
+msgctxt "#30009"
+msgid "Catalogue source"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Home server (catalogo.json)"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Folders"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Movies folder"
+msgstr ""
+
+msgctxt "#30013"
+msgid "TV shows folder"
+msgstr ""
+
+msgctxt "#30014"
+msgid "TMDb key (optional: Spanish titles, plots and pictures)"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Update the catalogue now"
+msgstr ""

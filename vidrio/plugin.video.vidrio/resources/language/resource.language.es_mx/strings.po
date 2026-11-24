@@ -40,3 +40,31 @@ msgstr "Carpeta del backup (vacío: KodiBackups del homelab)"
 msgctxt "#30008"
 msgid "Restore a backup"
 msgstr "Restaurar un backup"
+
+msgctxt "#30009"
+msgid "Catalogue source"
+msgstr "Origen del catálogo"
+
+msgctxt "#30010"
+msgid "Home server (catalogo.json)"
+msgstr "Servidor de casa (catalogo.json)"
+
+msgctxt "#30011"
+msgid "Folders"
+msgstr "Carpetas"
+
+msgctxt "#30012"
+msgid "Movies folder"
+msgstr "Carpeta de películas"
+
+msgctxt "#30013"
+msgid "TV shows folder"
+msgstr "Carpeta de series"
+
+msgctxt "#30014"
+msgid "TMDb key (optional: Spanish titles, plots and pictures)"
+msgstr "Clave de TMDb (opcional: títulos, sinopsis e imágenes en español)"
+
+msgctxt "#30015"
+msgid "Update the catalogue now"
+msgstr "Actualizar el catálogo ahora"
