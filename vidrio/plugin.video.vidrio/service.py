@@ -490,6 +490,44 @@ def revisar_carpetas(estado):
     estado['hilo'].start()
 
 
+DGO_ANDROID = ('StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/{}?reopened=true,'
+               '268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)')
+DGO_TVOS = 'itms-apps://apps.apple.com/ar/app/id1349939060'
+
+
+def avisar_partidos(estado):
+    """Recordatorios de partidos (5 minutos antes). Con algo reproduciéndose, solo un cartel; si no, un diálogo con
+    "Abrir DGO" que se cierra solo al minuto. En un hilo: el diálogo no frena el servicio."""
+    from resources.lib import envivo
+    if estado.get('hilo') and estado['hilo'].is_alive():
+        return
+    avisos = envivo.para_avisar()
+    if not avisos:
+        return
+
+    def correr():
+        for a in avisos:
+            cuando = f"empieza en {a['minutos']} minutos" if a['minutos'] else 'ya empezó'
+            donde = f" por {a['canal']}" if a['canal'] else ''
+            log(f"aviso de partido: {a['titulo']} {cuando}{donde}")
+            if xbmc.Player().isPlayingVideo() or not (xbmc.getCondVisibility('System.Platform.Android')
+                                                      or xbmc.getCondVisibility('System.Platform.TVOS')):
+                rpc('GUI.ShowNotification', title=a['titulo'], message=f"{a['competencia']}: {cuando}{donde}",
+                    displaytime=15000)
+                continue
+            abrir = xbmcgui.Dialog().yesno(f"{a['titulo']} {cuando}", f"{a['competencia']}{donde}.",
+                                           nolabel='Cerrar', yeslabel='Abrir DGO', autoclose=60000)
+            if not abrir:
+                continue
+            if xbmc.getCondVisibility('System.Platform.Android'):
+                xbmc.executebuiltin(DGO_ANDROID.format(a['dgo'] or 'home/live'))
+            else:  # tvOS: la página de DGO en la App Store (Kodi no puede abrir la app directo)
+                HOME.setProperty('Vidrio.Abrir', DGO_TVOS)
+    import threading
+    estado['hilo'] = threading.Thread(target=correr, daemon=True)
+    estado['hilo'].start()
+
+
 def recargar_trakt(trailers, motivo):
     log(f'recargo Continuar viendo ({motivo})')
     trailers.trakt_en = time.time()
@@ -510,6 +548,7 @@ def main():
     vueltas = 0
     partidos_estado = {}
     carpetas_estado = {}
+    avisos_estado = {}
     ultima_vuelta = time.time()
     ultima_recarga = ultima_vuelta - RECARGA_PERIODICA  # la primera vez que esté el inicio en pantalla (al arrancar o al actualizar el add-on)
     while not monitor.abortRequested():
@@ -547,6 +586,11 @@ def main():
         if (vueltas % 200 == 20 and xbmcgui.getCurrentWindowId() == 10000
                 and not xbmc.Player().isPlaying()):
             revisar_partidos(partidos_estado)
+        if vueltas % 50 == 25:  # cada ~15 segundos: recordatorios de partidos
+            try:
+                avisar_partidos(avisos_estado)
+            except Exception as e:
+                log(f'avisos de partidos: error {e}')
         if vueltas % 100 == 50:  # cada ~30 segundos
             try:
                 revisar_version(version_estado, xbmcgui.getCurrentWindowId() == 10000)

@@ -390,3 +390,16 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   al momento (`?escanear=1`), con barra de progreso.
 - Probado en la Mac con las carpetas del homelab por `smb://`, sin TMDb: 253 películas y 91 series en unos 3
   minutos. Con TMDb solo se probó el armado de los datos con respuestas de ejemplo.
+
+## Recordatorio de partidos (plugin 1.15.0, skin 1.7.0)
+
+- Elegir una tarjeta de "Próximos partidos" pone un aviso para 5 minutos antes (`?recordar=<id>`); elegirla de nuevo
+  lo saca. La tarjeta muestra la pastilla celeste "AVISO" y "Te aviso · …" abajo; el botón del encabezado dice
+  "Avisarme" o "No avisar". Cada equipo guarda los suyos en el perfil (`recordatorios.json`); se borran 3 horas
+  después del comienzo.
+- El servicio revisa cada ~15 segundos (`avisar_partidos`). En Android TV y Apple TV, sin nada reproduciéndose, un
+  diálogo "<partido> empieza en N minutos" con **Abrir DGO** (Android: el canal directo; tvOS: la página de DGO en
+  la App Store) que se cierra solo al minuto. Con un video en pantalla, o en la compu, solo un cartel. El canal se
+  toma de `partidos.json` en ese momento (la guía puede haberlo sumado después de poner el aviso).
+- Si Kodi estaba cerrado a la hora del aviso, sale al abrirlo si todavía no pasaron 15 minutos del comienzo.
+- Probado en la Mac: poner y sacar el aviso, la tarjeta y el cartel. El diálogo con "Abrir DGO" falta probarlo en el TCL.

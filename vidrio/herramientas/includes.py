@@ -35,7 +35,8 @@ def cond_var(nombre, casos, defecto=''):
     if nombre == 'VidrioAccion':
         out.append('\t\t<value condition="Control.HasFocus(5120) + System.Platform.Android">Ver en DGO</value>')
         out.append('\t\t<value condition="Control.HasFocus(5120)">Abrir DGO</value>')
-        out.append('\t\t<value condition="Control.HasFocus(5121)">Horario</value>')
+        out.append('\t\t<value condition="Control.HasFocus(5121) + String.IsEqual(Container(5121).ListItem.Property(vidrio.recordado),1)">No avisar</value>')
+        out.append('\t\t<value condition="Control.HasFocus(5121)">Avisarme</value>')
     for cond, valor in casos:
         for i in FILAS:
             c = f'Container({i}).'
@@ -297,7 +298,8 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 
 	<!-- Partidos (plugin ?lista=envivo y ?lista=proximos). "Deportes en vivo" (5120) va arriba de todo y solo se ve con
 	     algún partido en juego; elegir uno abre su canal en DGO (Android) o la página de DGO en la App Store (tvOS),
-	     como la guía. "Próximos partidos" (5121) va debajo de "Continuar viendo"; elegir uno avisa cuándo empieza.
+	     como la guía. "Próximos partidos" (5121) va debajo de "Continuar viendo"; elegir uno pone (o saca) un aviso
+	     5 minutos antes (plugin ?recordar=), y la pastilla pasa a celeste.
 	     Las listas 5098 y 5097 de Home.xml, fuera de pantalla, las cargan aunque estén ocultas. -->
 	<include name="VidrioTarjetaPartido">
 		<control type="image">
@@ -312,13 +314,26 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 		<control type="image">
 			<left>36</left><top>36</top><width>150</width><height>32</height>
 			<texture border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texture>
-			<visible>!String.IsEqual(ListItem.Property(vidrio.vivo),1)</visible>
+			<visible>!String.IsEqual(ListItem.Property(vidrio.vivo),1) + !String.IsEqual(ListItem.Property(vidrio.recordado),1)</visible>
+		</control>
+		<control type="image">
+			<left>36</left><top>36</top><width>150</width><height>32</height>
+			<texture border="4" colordiffuse="FF2E86DE">vidrio/pill_focus.png</texture>
+			<visible>String.IsEqual(ListItem.Property(vidrio.recordado),1)</visible>
 		</control>
 		<control type="label">
 			<left>36</left><top>36</top><width>150</width><height>32</height>
 			<align>center</align><aligny>center</aligny>
 			<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
 			<label>$INFO[ListItem.Property(vidrio.pastilla)]</label>
+			<visible>!String.IsEqual(ListItem.Property(vidrio.recordado),1)</visible>
+		</control>
+		<control type="label">
+			<left>36</left><top>36</top><width>150</width><height>32</height>
+			<align>center</align><aligny>center</aligny>
+			<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+			<label>$INFO[ListItem.Property(vidrio.pastilla)]</label>
+			<visible>String.IsEqual(ListItem.Property(vidrio.recordado),1)</visible>
 		</control>
 		<control type="image">
 			<left>264</left><top>30</top><width>110</width><height>44</height>
@@ -375,7 +390,7 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 					<onup>$PARAM[arriba]</onup>
 					<ondown>$PARAM[abajo]</ondown>
 					<onback>SetFocus(9001)</onback>
-					<onclick condition="!String.IsEqual(ListItem.Property(vidrio.vivo),1)">Notification($ESCINFO[ListItem.Label],$INFO[ListItem.Property(vidrio.aviso)],6000)</onclick>
+					<onclick condition="!String.IsEqual(ListItem.Property(vidrio.vivo),1)">RunPlugin(plugin://plugin.video.vidrio/?recordar=$INFO[ListItem.Property(vidrio.partido_id)])</onclick>
 					<onclick condition="String.IsEqual(ListItem.Property(vidrio.vivo),1) + System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="String.IsEqual(ListItem.Property(vidrio.vivo),1) + System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
 					<onclick condition="String.IsEqual(ListItem.Property(vidrio.vivo),1) + !System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>

@@ -378,6 +378,15 @@ def main():
         if atrasados or P.get('probar_aviso') == 'forzar':
             version.avisar(atrasados or [(a, version.instalada(a), v) for a, v in publicado.items()])
         return terminar([(f'{BASE}?nada={i}', xbmcgui.ListItem(f), False) for i, f in enumerate(filas)], 'files', orden=False)
+    if P.get('recordar'):  # elegir un próximo partido: pone o saca el aviso de 5 minutos antes
+        import json
+        import time as _t
+        from resources.lib import envivo
+        _, texto = envivo.alternar(P['recordar'])
+        xbmc.executeJSONRPC(json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': 'GUI.ShowNotification', 'params': {
+            'title': 'Vidrio', 'message': texto, 'displaytime': 5000}}))
+        xbmcgui.Window(10000).setProperty('Vidrio.EnVivo', f'r{int(_t.time())}')  # la fila muestra el cambio
+        return
     if 'probar_envivo' in P:  # diagnóstico: un partido de muestra en "Deportes en vivo" (0: lo saca)
         from resources.lib import envivo
         n = envivo.prueba(P['probar_envivo'] != '0')

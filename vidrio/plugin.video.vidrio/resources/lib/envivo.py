@@ -19,7 +19,9 @@ import xbmcvfs
 ADDON = xbmcaddon.Addon('plugin.video.vidrio')
 PERFIL = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
 CACHE = os.path.join(PERFIL, 'partidos.json')
-VENCE = 10 * 60  # si el homelab dejó de actualizarlo, la fila no muestra partidos viejos
+VENCE = 10 * 60
+RECORDATORIOS = os.path.join(PERFIL, 'recordatorios.json')
+ANTES = 5 * 60  # el aviso sale 5 minutos antes del comienzo  # si el homelab dejó de actualizarlo, la fila no muestra partidos viejos
 
 
 def log(msg, nivel=xbmc.LOGINFO):
@@ -142,6 +144,7 @@ def proximos():
     if time.time() - datos.get('generado', 0) > VENCE:
         return []
     ahora, salida = time.time(), []
+    avisos = recordatorios()
     for p in datos.get('proximos', []):
         if p.get('inicio', 0) < ahora - 600 or len(p.get('equipos', [])) != 2:
             continue
@@ -171,6 +174,12 @@ def proximos():
         li.setProperty('vidrio.meta', f'{dia} {hora}  ·  {donde}')
         li.setProperty('vidrio.competencia', p['competencia'])
         li.setProperty('vidrio.aviso', f'{dia} {hora} · {donde}')
+        li.setProperty('vidrio.partido_id', str(p['id']))
+        if str(p['id']) in avisos:
+            li.setProperty('vidrio.recordado', '1')
+            li.setProperty('vidrio.pastilla', 'AVISO')
+            li.setLabel2(f'Te aviso · {dia} {hora} · {donde}')
+            li.setProperty('vidrio.meta', f'{dia} {hora}  ·  {donde}  ·  Te aviso 5 minutos antes')
         li.setProperty('vidrio.dgo', guia.destino_dgo(canal['nombre']) if canal else '')
         salida.append((p['id'], li))
     return salida
@@ -198,3 +207,64 @@ def prueba(activar=True):
     copia.escribir(CACHE, datos)
     xbmcgui.Window(10000).setProperty('Vidrio.EnVivo', huella(datos) + str(int(time.time())))
     return len(datos['partidos'])
+
+
+# --- recordatorios --------------------------------------------------------------------------------------------------
+
+def recordatorios():
+    """{id del partido: {inicio, titulo, competencia, avisado}} de este equipo; los de hace más de 3 horas se borran."""
+    from resources.lib import copia
+    todos = copia.leer(RECORDATORIOS) or {}
+    vigentes = {k: v for k, v in todos.items() if v.get('inicio', 0) > time.time() - 3 * 3600}
+    if len(vigentes) != len(todos):
+        copia.escribir(RECORDATORIOS, vigentes)
+    return vigentes
+
+
+def buscar(pid):
+    """El partido con ese id en partidos.json (próximo o ya en juego), o None."""
+    from resources.lib import copia
+    datos = copia.leer(CACHE) or {}
+    return next((p for p in datos.get('partidos', []) + datos.get('proximos', []) if str(p.get('id')) == str(pid)), None)
+
+
+def alternar(pid):
+    """Pone o saca el recordatorio de un próximo partido. Devuelve (puesto, texto para avisar)."""
+    from resources.lib import copia
+    todos = recordatorios()
+    pid = str(pid)
+    if pid in todos:
+        titulo = todos.pop(pid)['titulo']
+        copia.escribir(RECORDATORIOS, todos)
+        return False, f'Sin aviso para {titulo}'
+    p = buscar(pid)
+    if not p or len(p.get('equipos', [])) != 2:
+        return False, 'No encontré ese partido'
+    local, visita = p['equipos']
+    titulo = f"{local['nombre']} vs. {visita['nombre']}"
+    todos[pid] = {'inicio': p['inicio'], 'titulo': titulo, 'competencia': p.get('competencia', ''), 'avisado': False}
+    copia.escribir(RECORDATORIOS, todos)
+    dia, hora = cuando(p['inicio'])
+    return True, f'Te aviso 5 minutos antes: {dia} {hora}'
+
+
+def para_avisar(ahora=None):
+    """Recordatorios que tocan ahora (de 5 minutos antes hasta 15 después del comienzo), marcados como avisados.
+    Cada uno con el canal que tenga partidos.json en este momento (la guía puede haberlo sumado después)."""
+    from resources.lib import copia, guia
+    ahora = ahora or time.time()
+    todos = recordatorios()
+    salida = []
+    for pid, r in todos.items():
+        if r.get('avisado') or not (r['inicio'] - ANTES <= ahora < r['inicio'] + 15 * 60):
+            continue
+        r['avisado'] = True
+        p = buscar(pid) or {}
+        canales = p.get('canales') or []
+        canal = next((c for c in canales if guia.destino_dgo(c['nombre'])), canales[0] if canales else None)
+        minutos = max(0, round((r['inicio'] - ahora) / 60))
+        salida.append({**r, 'id': pid, 'minutos': minutos, 'canal': canal['nombre'] if canal else '',
+                       'dgo': guia.destino_dgo(canal['nombre']) if canal else ''})
+    if salida:
+        copia.escribir(RECORDATORIOS, todos)
+    return salida
