@@ -334,4 +334,5 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   `repository.vidrio` instalado) al arrancar, al volver de segundo plano y cada 6 horas. Si hay una más nueva, pide
   `UpdateAddonRepos`; si a los 20 minutos sigue atrasado, muestra un aviso ("Cerrá Kodi desde Apagar > Salir y volvé
   a abrirlo"), con el inicio en pantalla, nada sonando y como mucho cada 2 horas.
+- El aviso va por JSON-RPC (`GUI.ShowNotification`): `Dialog().notification` no se ve cuando el plugin corre sin ventana propia (1.11.1, probado en el TCL).
 - `?probar_aviso=1` muestra instalada y publicada (y avisa si está atrasado); `?probar_aviso=forzar` muestra el aviso.

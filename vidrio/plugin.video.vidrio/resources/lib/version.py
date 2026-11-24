@@ -5,11 +5,12 @@ Kodi se actualiza desde repository.vidrio, pero en el Apple TV, después de hora
 quedarse con un índice viejo del repositorio y no volver a pedirlo hasta que se cierra. El servicio pregunta acá qué
 versión publica el homelab y, si Kodi no se pone al día en un rato, avisa que hay que cerrarlo y volver a abrirlo.
 """
+import json
 import re
 import urllib.request
 
+import xbmc
 import xbmcaddon
-import xbmcgui
 import xbmcvfs
 
 ADDONS = {'plugin.video.vidrio': 'plugin', 'skin.vidrio': 'skin'}
@@ -64,8 +65,11 @@ def pendientes(publicado):
 
 
 def avisar(atrasados):
+    """Por JSON-RPC (GUI.ShowNotification): Dialog().notification no muestra nada cuando el plugin corre sin ventana
+    propia (probado en el TCL); el pedido de Kodi aparece siempre."""
     pub = max((p for _, _, p in atrasados), key=numero)
-    xbmcgui.Dialog().notification(
-        f'Hay una versión nueva de Vidrio ({pub})',
-        'Cerrá Kodi desde Apagar > Salir y volvé a abrirlo para actualizar.',
-        'special://home/addons/plugin.video.vidrio/icon.png', 12000)
+    xbmc.executeJSONRPC(json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': 'GUI.ShowNotification', 'params': {
+        'title': f'Hay una versión nueva de Vidrio ({pub})',
+        'message': 'Cerrá Kodi desde Apagar > Salir y volvé a abrirlo para actualizar.',
+        'image': xbmcvfs.translatePath('special://home/addons/plugin.video.vidrio/icon.png'),
+        'displaytime': 12000}}))
