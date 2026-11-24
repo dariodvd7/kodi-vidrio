@@ -369,6 +369,16 @@ def raiz():
 
 
 def main():
+    if P.get('restaurar'):  # botón "Restaurar un backup" de los ajustes; con archivo=... y prueba=1, solo cuenta
+        import json
+        from resources.lib import restaurar
+        if P.get('archivo'):
+            r = restaurar.restaurar(P['archivo'], prueba=P.get('prueba') == '1')
+            return terminar([(f'{BASE}?nada=1', xbmcgui.ListItem(json.dumps(r)), False)], 'files', orden=False)
+        restaurar.dialogo()
+        if HANDLE >= 0:
+            xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
+        return
     if P.get('respaldar'):  # backup ahora (diagnóstico o a pedido)
         from resources.lib import respaldo
         hecho = respaldo.respaldar(P.get('destino'))

@@ -36,3 +36,7 @@ msgstr ""
 msgctxt "#30007"
 msgid "Backup folder (empty: KodiBackups on the home server)"
 msgstr ""
+
+msgctxt "#30008"
+msgid "Restore a backup"
+msgstr ""

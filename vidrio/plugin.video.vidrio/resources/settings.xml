@@ -40,6 +40,12 @@
 					<constraints><allowempty>true</allowempty></constraints>
 					<control type="edit" format="string"/>
 				</setting>
+				<setting id="restaurar" type="action" label="30008">
+					<level>0</level>
+					<data>RunPlugin(plugin://plugin.video.vidrio/?restaurar=1)</data>
+					<constraints><allowempty>true</allowempty></constraints>
+					<control type="button" format="action"/>
+				</setting>
 			</group>
 		</category>
 	</section>

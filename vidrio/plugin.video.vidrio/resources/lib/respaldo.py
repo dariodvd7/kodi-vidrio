@@ -92,10 +92,12 @@ CLAVE = re.compile(r'(^|[._-])(token|access_?token|refresh_?token|pass|password|
 
 def sin_claves(xml):
     """Vacía los ajustes de un add-on que parecen claves o cuentas (por su id), en los dos formatos de Kodi."""
-    xml = re.sub(r'(<setting\s+id="([^"]*)"[^>]*?)(?:\s+value="[^"]*")', lambda m: m.group(1) + ' value=""'
-                 if CLAVE.search(m.group(2)) else m.group(0), xml)
+    def es_clave(ident, valor):  # un verdadero/falso nunca es una clave ("...switch.user.show", "..._login")
+        return CLAVE.search(ident) and valor.strip().lower() not in ('true', 'false', '')
+    xml = re.sub(r'(<setting\s+id="([^"]*)"[^>]*?)\s+value="([^"]*)"', lambda m: m.group(1) + ' value=""'
+                 if es_clave(m.group(2), m.group(3)) else m.group(0), xml)
     return re.sub(r'(<setting\s+id="([^"]*)"[^>/]*>)([^<]*)(</setting>)', lambda m: m.group(1) + m.group(4)
-                  if CLAVE.search(m.group(2)) else m.group(0), xml)
+                  if es_clave(m.group(2), m.group(3)) else m.group(0), xml)
 
 
 def copiar(origen, destino_zip):

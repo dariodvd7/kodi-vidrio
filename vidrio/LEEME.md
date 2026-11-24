@@ -306,9 +306,14 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 - En el homelab: `/srv/kodi-backups` (dueño `apple`), compartida como `[KodiBackups]` sin contraseña pero con
   escritura solo para la red de casa (por ejemplo `192.168.1.0/24`) (`hosts allow`). Copia de la configuración anterior de Samba en
   `/etc/samba/smb.conf.bak-*`.
-- Restaurar (TCL o Mac): con Kodi cerrado, copiar el contenido del zip a la carpeta `userdata` de Kodi y abrirlo;
-  después volver a vincular Trakt. En el Apple TV no hay acceso a los archivos: haría falta una opción de restaurar
-  dentro de Vidrio (pendiente).
+- Restaurar (plugin 1.10.0, en cualquier equipo): ajustes de Vidrio > "Restaurar un backup" > equipo > fecha.
+  `resources/lib/restaurar.py` aplica `guisettings.xml` con JSON-RPC (Kodi lo tiene en memoria y pisaría el archivo
+  al salir; las listas van separadas por coma) y los ajustes de la skin con `Skin.SetBool/SetString`; copia orígenes,
+  favoritos, atajos, listas, ajustes de add-ons y datos de Vidrio. No toca los ajustes de hardware (pantalla,
+  frecuencia, salida de audio, red). Los ajustes con nombre de clave que el backup trae vacíos se quedan con el valor
+  que tenga el equipo. Al final pide cerrar Kodi para que guarde todo; después, volver a vincular Trakt.
+  `?restaurar=1&archivo=<zip>&prueba=1` cuenta lo que cambiaría sin tocar nada.
+- La limpieza de claves no vacía valores verdadero/falso (hay interruptores con "user" o "login" en el nombre).
 
 ## Más canales directos a DGO (plugin 1.9.0)
 
