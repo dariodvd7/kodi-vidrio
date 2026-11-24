@@ -444,6 +444,25 @@ def revisar_version(estado, en_inicio):
     version.avisar(atrasados)
 
 
+def revisar_partidos(estado):
+    """Partidos en vivo, en un hilo aparte (si el homelab no contesta, el servicio no se traba): si cambió algo,
+    Window(home).Property(Vidrio.EnVivo) cambia y la skin recarga la fila "Deportes en vivo"."""
+    if estado.get('hilo') and estado['hilo'].is_alive():
+        return
+
+    def correr():
+        try:
+            from resources.lib import envivo
+            nueva = envivo.actualizar()
+            if nueva:
+                HOME.setProperty('Vidrio.EnVivo', nueva)
+        except Exception as e:
+            log(f'partidos en vivo: error {e}')
+    import threading
+    estado['hilo'] = threading.Thread(target=correr, daemon=True)
+    estado['hilo'].start()
+
+
 def recargar_trakt(trailers, motivo):
     log(f'recargo Continuar viendo ({motivo})')
     trailers.trakt_en = time.time()
@@ -462,6 +481,7 @@ def main():
     seguido = None  # (archivo, posición, total) de lo que el usuario mira del homelab
     arranque = time.time()
     vueltas = 0
+    partidos_estado = {}
     ultima_vuelta = time.time()
     ultima_recarga = ultima_vuelta - RECARGA_PERIODICA  # la primera vez que esté el inicio en pantalla (al arrancar o al actualizar el add-on)
     while not monitor.abortRequested():
@@ -492,6 +512,10 @@ def main():
         ultima_vuelta = time.time()
         if vueltas % 1000 == 500:
             tal_vez_respaldar(arranque)
+        # cada ~minuto con el inicio en pantalla (y al volver a él), sin nada reproduciéndose
+        if (vueltas % 200 == 20 and xbmcgui.getCurrentWindowId() == 10000
+                and not xbmc.Player().isPlaying()):
+            revisar_partidos(partidos_estado)
         if vueltas % 100 == 50:  # cada ~30 segundos
             try:
                 revisar_version(version_estado, xbmcgui.getCurrentWindowId() == 10000)

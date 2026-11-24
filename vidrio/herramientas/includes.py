@@ -1,9 +1,16 @@
 """Genera xml/Includes_Vidrio.xml (variables repetidas por fila)."""
 import sys
 FILAS = range(5100, 5109)  # 5100 = Continuar viendo (Trakt)
+EN_VIVO = {'VidrioFanart': '$INFO[Container(5120).ListItem.Art(fanart)]',
+           'VidrioTitulo': '$INFO[Container(5120).ListItem.Label]',
+           'VidrioMeta': '$INFO[Container(5120).ListItem.Property(vidrio.meta)]',
+           'VidrioSinopsis': '$INFO[Container(5120).ListItem.Plot]',
+           'VidrioKicker': '$INFO[Container(5120).ListItem.Property(vidrio.etiqueta)]'}
 
 def var(nombre, plantilla, defecto=None):
     out = [f'\t<variable name="{nombre}">']
+    if nombre in EN_VIVO:  # "Deportes en vivo" (5120): arriba de todo, sin las variables de tráiler
+        out.append(f'\t\t<value condition="Control.HasFocus(5120)">{EN_VIVO[nombre]}</value>')
     for i in FILAS:
         out.append(f'\t\t<value condition="Control.HasFocus({i})">{plantilla.format(c=f"Container({i}).")}</value>')
     for i in FILAS:  # sin foco en filas (barra de arriba): el último elemento visto de la primera fila con contenido
@@ -24,6 +31,9 @@ partes = [
 ]
 def cond_var(nombre, casos, defecto=''):
     out = [f'\t<variable name="{nombre}">']
+    if nombre == 'VidrioAccion':
+        out.append('\t\t<value condition="Control.HasFocus(5120) + System.Platform.Android">Ver en DGO</value>')
+        out.append('\t\t<value condition="Control.HasFocus(5120)">Abrir DGO</value>')
     for cond, valor in casos:
         for i in FILAS:
             c = f'Container({i}).'
@@ -279,6 +289,111 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 				<onclick>$PARAM[previo2]</onclick>
 				<onclick>$PARAM[action]</onclick>
 				<onback>Quit</onback>
+			</control>
+		</definition>
+	</include>
+
+	<!-- "Deportes en vivo": partidos al aire (plugin ?lista=envivo). Elegir uno abre su canal en DGO (Android) o la
+	     página de DGO en la App Store (tvOS), como la guía. Solo se ve cuando hay alguno (ver la lista 5098 en Home.xml). -->
+	<include name="VidrioTarjetaPartido">
+		<control type="image">
+			<left>20</left><top>22</top><width>370</width><height>208</height>
+			<texture diffuse="vidrio/mask_card.png" colordiffuse="FF1C2230">vidrio/white.png</texture>
+		</control>
+		<control type="image">
+			<left>36</left><top>36</top><width>124</width><height>32</height>
+			<texture border="4" colordiffuse="FFE53935">vidrio/pill_focus.png</texture>
+		</control>
+		<control type="label">
+			<left>36</left><top>36</top><width>124</width><height>32</height>
+			<align>center</align><aligny>center</aligny>
+			<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+			<label>EN VIVO</label>
+		</control>
+		<control type="image">
+			<left>264</left><top>30</top><width>110</width><height>44</height>
+			<aspectratio align="right">keep</aspectratio>
+			<texture background="true">$INFO[ListItem.Art(logo)]</texture>
+		</control>
+		<control type="image">
+			<left>40</left><top>84</top><width>96</width><height>96</height>
+			<aspectratio>keep</aspectratio>
+			<texture background="true">$INFO[ListItem.Art(local)]</texture>
+		</control>
+		<control type="image">
+			<left>274</left><top>84</top><width>96</width><height>96</height>
+			<aspectratio>keep</aspectratio>
+			<texture background="true">$INFO[ListItem.Art(visitante)]</texture>
+		</control>
+		<control type="label">
+			<left>130</left><top>92</top><width>150</width><height>64</height>
+			<align>center</align><aligny>center</aligny>
+			<font>vidrio_marcador</font><textcolor>FFFFFFFF</textcolor>
+			<label>$INFO[ListItem.Property(vidrio.goles_local)] - $INFO[ListItem.Property(vidrio.goles_visita)]</label>
+		</control>
+		<control type="label">
+			<left>130</left><top>156</top><width>150</width><height>30</height>
+			<align>center</align><aligny>center</aligny>
+			<font>vidrio_small</font><textcolor>CCFFFFFF</textcolor>
+			<label>$INFO[ListItem.Property(vidrio.estado)]</label>
+		</control>
+		<control type="label">
+			<left>36</left><top>190</top><width>338</width><height>32</height>
+			<align>center</align><aligny>center</aligny>
+			<font>vidrio_small</font><textcolor>B3FFFFFF</textcolor>
+			<label>$INFO[ListItem.Property(vidrio.competencia)]</label>
+		</control>
+	</include>
+
+	<include name="VidrioFilaEnVivo">
+		<definition>
+			<control type="group">
+				<height>350</height>
+				<visible>Integer.IsGreater(Container(5098).NumItems,0)</visible>
+				<control type="label">
+					<left>110</left><top>0</top><width>1200</width><height>44</height>
+					<font>vidrio_row</font>
+					<textcolor>F2FFFFFF</textcolor>
+					<label>Deportes en vivo</label>
+				</control>
+				<control type="list" id="5120">
+					<left>90</left><top>40</top><width>1830</width><height>310</height>
+					<orientation>horizontal</orientation>
+					<scrolltime tween="cubic" easing="out">300</scrolltime>
+					<onup>9000</onup>
+					<ondown condition="Integer.IsGreater(Container(5099).NumItems,0)">5100</ondown>
+					<ondown condition="!Integer.IsGreater(Container(5099).NumItems,0)">5101</ondown>
+					<onback>SetFocus(9001)</onback>
+					<onclick condition="System.Platform.Android + !String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/$INFO[ListItem.Property(vidrio.dgo)]?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="System.Platform.Android + String.IsEmpty(ListItem.Property(vidrio.dgo))">StartAndroidActivity(com.directv.dtvlatam,android.intent.action.VIEW,,dtvmobile://dgo/home/live?reopened=true,268468224,,,,com.directvgo.presentation.tv.splash.router.SplashRouterActivity)</onclick>
+					<onclick condition="!System.Platform.Android">RunPlugin(plugin://plugin.video.vidrio/?abrir=itms-apps%3A%2F%2Fapps.apple.com%2Far%2Fapp%2Fid1349939060)</onclick>
+					<itemlayout width="410" height="300">
+						<include>VidrioTarjetaPartido</include>
+						<control type="label">
+							<left>20</left><top>246</top><width>370</width><height>40</height>
+							<font>vidrio_small</font><textcolor>B3FFFFFF</textcolor>
+							<label>$INFO[ListItem.Label2]</label>
+						</control>
+					</itemlayout>
+					<focusedlayout width="410" height="300">
+						<control type="group">
+							<animation effect="zoom" start="100" end="110" center="205,126" time="220" tween="cubic" easing="out" reversible="false" condition="Control.HasFocus(5120)">Conditional</animation>
+							<include>VidrioTarjetaPartido</include>
+							<control type="image">
+								<left>20</left><top>22</top><width>370</width><height>208</height>
+								<texture>vidrio/card_focus.png</texture>
+								<visible>Control.HasFocus(5120)</visible>
+							</control>
+						</control>
+						<control type="label">
+							<left>20</left><top>246</top><width>370</width><height>40</height>
+							<font>vidrio_small</font><textcolor>FFFFFFFF</textcolor>
+							<scroll>true</scroll>
+							<label>$INFO[ListItem.Label2]</label>
+						</control>
+					</focusedlayout>
+					<content target="videos">plugin://plugin.video.vidrio/?lista=envivo&amp;v=$INFO[Window(home).Property(Vidrio.EnVivo)]</content>
+				</control>
 			</control>
 		</definition>
 	</include>

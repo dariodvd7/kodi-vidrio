@@ -2,6 +2,12 @@
 <fonts>
 	<fontset id="Default" idloc="15109">
 		<font>
+			<name>vidrio_marcador</name>
+			<filename>NotoSans-Regular.ttf</filename>
+			<size>48</size>
+			<style>bold</style>
+		</font>
+		<font>
 			<name>vidrio_hero</name>
 			<filename>NotoSans-Regular.ttf</filename>
 			<size>72</size>
@@ -195,6 +201,12 @@
 		</font>
 	</fontset>
 	<fontset id="Arial" idloc="31053">
+		<font>
+			<name>vidrio_marcador</name>
+			<filename>NotoSans-Regular.ttf</filename>
+			<size>48</size>
+			<style>bold</style>
+		</font>
 		<font>
 			<name>vidrio_hero</name>
 			<filename>NotoSans-Regular.ttf</filename>

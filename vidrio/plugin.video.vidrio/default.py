@@ -377,6 +377,10 @@ def main():
         if atrasados or P.get('probar_aviso') == 'forzar':
             version.avisar(atrasados or [(a, version.instalada(a), v) for a, v in publicado.items()])
         return terminar([(f'{BASE}?nada={i}', xbmcgui.ListItem(f), False) for i, f in enumerate(filas)], 'files', orden=False)
+    if 'probar_envivo' in P:  # diagnóstico: un partido de muestra en "Deportes en vivo" (0: lo saca)
+        from resources.lib import envivo
+        n = envivo.prueba(P['probar_envivo'] != '0')
+        return terminar([(f'{BASE}?nada=1', xbmcgui.ListItem(f'partidos de prueba: {n}'), False)], 'files', orden=False)
     if P.get('restaurar'):  # botón "Restaurar un backup" de los ajustes; con archivo=... y prueba=1, solo cuenta
         import json
         from resources.lib import restaurar
@@ -474,6 +478,9 @@ def main():
     if lista == 'recientes':
         todo = [(p['agregada'], item_pelicula(p)) for p in pelis] + [(s['agregada'], item_serie(s)) for s in series]
         return terminar([i for _, i in sorted(todo, key=lambda x: -x[0])], 'movies', orden=False)
+    if lista == 'envivo':  # fila "Deportes en vivo" del inicio
+        from resources.lib import envivo
+        return terminar([(url(canal=cid), li, False) for cid, li in envivo.items()], 'videos', orden=False)
     if lista == 'guia':  # ventana Guía de la skin: una fila por grupo
         return terminar(canales_guia(P.get('grupo', '')), 'videos', orden=False)
     if 'canal' in P:  # elegir un canal desde una lista común: la skin lo maneja; acá no hay nada que reproducir

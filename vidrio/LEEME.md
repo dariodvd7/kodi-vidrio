@@ -336,3 +336,24 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   a abrirlo"), con el inicio en pantalla, nada sonando y como mucho cada 2 horas.
 - El aviso va por JSON-RPC (`GUI.ShowNotification`): `Dialog().notification` no se ve cuando el plugin corre sin ventana propia (1.11.1, probado en el TCL).
 - `?probar_aviso=1` muestra instalada y publicada (y avisa si está atrasado); `?probar_aviso=forzar` muestra el aviso.
+
+## Deportes en vivo (plugin 1.12.0, skin 1.5.0)
+
+- Fila "Deportes en vivo" arriba de todo en el inicio, **solo mientras hay un partido al aire** y solo de estas
+  competencias: Primera División (LPF), Copa Argentina, Copa Libertadores, Copa Sudamericana y NFL. Cada tarjeta
+  muestra los escudos, el resultado, el minuto, la competencia y el logo del canal; elegirla abre ese canal en DGO
+  (Android) o la página de DGO en la App Store (tvOS), como la guía.
+- `homelab/partidos.py` (en `/opt/kodi-artwork/`, cron `/etc/cron.d/vidrio-partidos` cada 2 minutos) pregunta al
+  marcador público de ESPN (`site.api.espn.com`, sin cuenta) qué partidos están en juego y busca en `guia.json` el
+  canal: el programa al aire que nombra a los dos equipos o, si la guía solo dice "Liga Profesional 2026", el que
+  nombra la competencia y empezó cerca del partido. Escribe `/srv/kodi-addons/vidrio/partidos.json`.
+  `partidos.py --mostrar` imprime lo que encontró sin escribir.
+- La guía repite los partidos muchas veces (repeticiones): por eso qué está en vivo sale de ESPN y no de la guía.
+- El servicio de Vidrio baja `partidos.json` cada minuto con el inicio en pantalla (en un hilo, nada reproduciéndose)
+  y, si cambió algo, cambia `Window(home).Property(Vidrio.EnVivo)`: la skin recarga la fila. Un archivo de más de
+  10 minutos (el cron dejó de andar) no muestra nada. Los partidos sin canal en la guía no se muestran.
+- Prueba: `plugin://plugin.video.vidrio/?probar_envivo=1` pone un partido de muestra (Boca 1 - 0 Ind. Rivadavia,
+  ESPN Premium) por 10 minutos; `?probar_envivo=0` lo saca.
+- La fila es la lista 5120 (fuera de 5101-5110, que el servicio usa para los tráileres); la 5098, fuera de pantalla,
+  la carga aunque esté oculta (como 5099 con "Continuar viendo"). Las variables del encabezado salen de
+  `herramientas/includes.py`.
