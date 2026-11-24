@@ -87,12 +87,18 @@ CANALES_DGO = {
     'TNT': '046', 'TNT Series': '044', 'Warner Channel': '026', 'Star Channel': '249', 'AXN': '080', 'Sony': '247',
     'FX': '186',  # en DGO, "FX Colombia"
     'Cinecanal': '104',  # en DGO, "Cinecanal Colombia"
+    # plugin 1.9.0 (tocando cada canal en la grilla de la web; muestras confirmadas en su ficha)
+    'A&E': '064', 'Adult Swim': '039', 'AMC': '068', 'Animal Planet': '074', 'Antena3': '075', 'Atres Series': '076',
+    'Baby TV': '085', 'Canal A': '094', 'Cartoon Network': '098', 'Cartoonito': '087', 'Cinemax': '107',
+    'CNN Español': '111', 'CNN Internacional': '112', 'Comedy Central': '114', 'Daystar': '410', 'Deportv': '010',
+    'Discovery Channel': '020', 'Discovery Home & Health': '015', 'Discovery ID': '117', 'Discovery Kids': '142',
+    'Discovery Theater': '118', 'Discovery World': '119', 'Disney Channel': '141', 'Disney Junior': '146',
+    'E! Entertainment': '149', 'El Gourmet': '151', 'Encuentro': '155', 'F24': '420', 'Food Network': '171',
+    'Hgtv': '203', 'History 2': '019', 'History Channel': '202', 'Lifetime': '215', 'Magazine': '211', 'MTV': '222',
+    'Nat Geo': '223', 'Nick Jr': '226', 'Nickelodeon': '229', 'Plim Plim': '421', 'Space': '246', 'TLC': '050',
+    'TNT Novelas': '053', 'Universal Channel': '031',
 }
-PAGINAS_DGO = {
-    'Universal Channel': 'Universal',
-    'Discovery Channel': 'DISCOVERY', 'Discovery World': 'DISCOVERY', 'Discovery Home And Health': 'DISCOVERY',
-    'Animal Planet': 'DISCOVERY', 'Discovery Kids': 'DISCOVERY',
-}
+PAGINAS_DGO = {}  # Universal y Discovery ya abren directo; HBO no está en el plan (su página dice "Quiero verlo")
 
 
 def destino_dgo(nombre):

@@ -309,3 +309,14 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 - Restaurar (TCL o Mac): con Kodi cerrado, copiar el contenido del zip a la carpeta `userdata` de Kodi y abrirlo;
   después volver a vincular Trakt. En el Apple TV no hay acceso a los archivos: haría falta una opción de restaurar
   dentro de Vidrio (pendiente).
+
+## Más canales directos a DGO (plugin 1.9.0)
+
+- 76 nombres de la guía con su id de DGO (`guia.CANALES_DGO`): casi todo el plan. Sin enlace (abren TV en vivo):
+  Volver, Net TV, Sony Movies, Studio Universal, Quiero, Hola TV, Rai y Telemundo, que solo están en la lista completa
+  de la grilla web y esa lista cuelga la página antes de llegar.
+- Cómo se sacaron: en la grilla de directvgo.com, con `history.pushState` interceptado para anotar el
+  `/player/live/<id>` en lugar de ir; el toque se calcula desde el logo del canal (alt) y se usan los filtros
+  (Infantil, Series & Shows, Películas, Locales & Noticias) para que la lista sea corta. Muestras confirmadas en
+  `/home/pdp/live/<id>`.
+- Discovery, Animal Planet y Universal dejaron de abrir su página de marca: abren el canal.
