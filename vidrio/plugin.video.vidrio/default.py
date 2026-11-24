@@ -369,6 +369,14 @@ def raiz():
 
 
 def main():
+    if P.get('probar_aviso'):  # diagnóstico: versión instalada y publicada, y el aviso en pantalla
+        from resources.lib import version
+        publicado = version.publicadas()
+        atrasados = version.pendientes(publicado)
+        filas = [f'{a}: instalada {version.instalada(a)}, publicada {v}' for a, v in publicado.items()]
+        if atrasados or P.get('probar_aviso') == 'forzar':
+            version.avisar(atrasados or [(a, version.instalada(a), v) for a, v in publicado.items()])
+        return terminar([(f'{BASE}?nada={i}', xbmcgui.ListItem(f), False) for i, f in enumerate(filas)], 'files', orden=False)
     if P.get('restaurar'):  # botón "Restaurar un backup" de los ajustes; con archivo=... y prueba=1, solo cuenta
         import json
         from resources.lib import restaurar

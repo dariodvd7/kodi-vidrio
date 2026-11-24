@@ -325,3 +325,13 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   (Infantil, Series & Shows, Películas, Locales & Noticias) para que la lista sea corta. Muestras confirmadas en
   `/home/pdp/live/<id>`.
 - Discovery, Animal Planet y Universal dejaron de abrir su página de marca: abren el canal.
+
+## Aviso de versión nueva (plugin 1.11.0)
+
+- En el Apple TV, después de horas dormido en segundo plano, Kodi puede quedarse con un índice viejo de
+  repository.vidrio (pide versiones que ya no están, 404) y no volver a pedirlo hasta cerrarse. Pasó el 23/11.
+- El servicio pregunta al homelab qué versión publica (`resources/lib/version.py`, el `addons.xml` del
+  `repository.vidrio` instalado) al arrancar, al volver de segundo plano y cada 6 horas. Si hay una más nueva, pide
+  `UpdateAddonRepos`; si a los 20 minutos sigue atrasado, muestra un aviso ("Cerrá Kodi desde Apagar > Salir y volvé
+  a abrirlo"), con el inicio en pantalla, nada sonando y como mucho cada 2 horas.
+- `?probar_aviso=1` muestra instalada y publicada (y avisa si está atrasado); `?probar_aviso=forzar` muestra el aviso.

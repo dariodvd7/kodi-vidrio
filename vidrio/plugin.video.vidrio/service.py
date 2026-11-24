@@ -410,6 +410,40 @@ def buscar_actualizaciones(motivo):
     xbmc.executebuiltin('UpdateAddonRepos')
 
 
+def revisar_version(estado, en_inicio):
+    """Si el homelab publica una versión de Vidrio más nueva y Kodi no se actualiza en 20 minutos (en el Apple TV
+    puede quedar con el índice viejo del repositorio después de dormir horas), avisa que hay que cerrarlo y abrirlo.
+    Pregunta al homelab al arrancar, al volver de segundo plano y cada 6 horas; avisa como mucho cada 2 horas, con
+    el inicio en pantalla y nada sonando."""
+    from resources.lib import version
+    ahora = time.time()
+    if ahora >= estado['proxima']:
+        estado['proxima'] = ahora + 6 * 3600
+        try:
+            estado['publicado'] = version.publicadas()
+        except Exception as e:
+            log(f'no pude preguntar la versión publicada: {e}')
+            return
+        atrasados = version.pendientes(estado['publicado'])
+        if atrasados and not estado['desde']:
+            estado['desde'] = ahora
+            log('versión nueva publicada: ' + ', '.join(f'{a} {i} -> {p}' for a, i, p in atrasados))
+            buscar_actualizaciones('hay una versión nueva')
+        elif not atrasados:
+            estado['desde'] = 0
+    if not estado['desde'] or ahora - estado['desde'] < 20 * 60 or ahora - estado['avisado'] < 2 * 3600:
+        return
+    if not en_inicio or xbmc.Player().isPlaying():
+        return
+    atrasados = version.pendientes(estado['publicado'])  # puede haberse actualizado mientras tanto
+    if not atrasados:
+        estado['desde'] = 0
+        return
+    estado['avisado'] = ahora
+    log('aviso: Kodi no se actualizó solo, hay que cerrarlo y abrirlo')
+    version.avisar(atrasados)
+
+
 def recargar_trakt(trailers, motivo):
     log(f'recargo Continuar viendo ({motivo})')
     trailers.trakt_en = time.time()
@@ -424,6 +458,7 @@ def main():
     # Revisar actualizaciones con el inicio ya cargado: si Kodi reemplaza el plugin mientras la skin arma sus filas,
     # muestra un error ("Unknown addon id") durante el segundo en que el plugin no está instalado.
     revisar_en, motivo_revision = time.time() + 90, 'Kodi arrancó'
+    version_estado = {'proxima': time.time() + 150, 'desde': 0, 'avisado': 0, 'publicado': {}}
     seguido = None  # (archivo, posición, total) de lo que el usuario mira del homelab
     arranque = time.time()
     vueltas = 0
@@ -436,6 +471,7 @@ def main():
         if ahora - ultima_vuelta > 60:  # el servicio estuvo pausado: Kodi estaba en segundo plano o dormido
             recargar_trakt(trailers, 'Kodi volvió de segundo plano'); ultima_recarga = ahora
             revisar_en, motivo_revision = time.time() + 30, 'Kodi volvió de segundo plano'
+            version_estado['proxima'] = min(version_estado['proxima'], time.time() + 60)
         elif monitor.despierto:
             recargar_trakt(trailers, 'Kodi se despertó'); ultima_recarga = ahora
         elif (ahora - ultima_recarga > RECARGA_PERIODICA and xbmcgui.getCurrentWindowId() == 10000
@@ -456,6 +492,11 @@ def main():
         ultima_vuelta = time.time()
         if vueltas % 1000 == 500:
             tal_vez_respaldar(arranque)
+        if vueltas % 100 == 50:  # cada ~30 segundos
+            try:
+                revisar_version(version_estado, xbmcgui.getCurrentWindowId() == 10000)
+            except Exception as e:
+                log(f'revisar versión: error {e}')
         if vueltas % 1000 == 0:  # al arrancar y cada ~5 minutos: también toma add-ons instalados después
             configurar_trakt()
             if vueltas:
