@@ -29,21 +29,16 @@ def _leer_remoto():
 
 def cargar(forzar=False):
     """Devuelve el catálogo: caché si está fresca, si no el del homelab; si el homelab falla, la caché vieja."""
+    from resources.lib import copia
     fresco = os.path.isfile(CACHE) and time.time() - os.path.getmtime(CACHE) < VIGENCIA
     if fresco and not forzar:
-        with open(CACHE, encoding='utf-8') as fh:
-            return json.load(fh)
+        cat = copia.leer(CACHE)
+        if cat is not None:
+            return cat
     try:
         cat = _leer_remoto()
-        os.makedirs(PERFIL, exist_ok=True)
-        tmp = CACHE + '.tmp'
-        with open(tmp, 'w', encoding='utf-8') as fh:
-            json.dump(cat, fh, ensure_ascii=False)
-        os.replace(tmp, CACHE)
+        copia.escribir(CACHE, cat)
         return cat
     except Exception as e:  # sin red: seguir con lo último que haya
         log(f'no pude leer el catálogo del homelab: {e}', xbmc.LOGWARNING)
-        if os.path.isfile(CACHE):
-            with open(CACHE, encoding='utf-8') as fh:
-                return json.load(fh)
-        return {'peliculas': [], 'series': []}
+        return copia.leer(CACHE) or {'peliculas': [], 'series': []}

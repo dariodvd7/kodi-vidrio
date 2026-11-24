@@ -55,9 +55,11 @@ def _cache(nombre):
 
 def _pedir(nombre, ruta):
     archivo = _cache(nombre)
+    from resources.lib import copia
     if os.path.isfile(archivo) and time.time() - os.path.getmtime(archivo) < VIGENCIA[nombre]:
-        with open(archivo, encoding='utf-8') as fh:
-            return json.load(fh)
+        guardado = copia.leer(archivo)
+        if guardado is not None:
+            return guardado
     cred = credenciales()
     if not cred:
         return []
@@ -69,13 +71,8 @@ def _pedir(nombre, ruta):
             datos = json.loads(r.read().decode('utf-8'))
     except Exception as e:  # sin red o token vencido (script.trakt lo renueva en su próxima llamada)
         log(f'no pude leer {ruta}: {e}', xbmc.LOGWARNING)
-        if os.path.isfile(archivo):
-            with open(archivo, encoding='utf-8') as fh:
-                return json.load(fh)
-        return []
-    os.makedirs(PERFIL, exist_ok=True)
-    with open(archivo, 'w', encoding='utf-8') as fh:
-        json.dump(datos, fh)
+        return copia.leer(archivo) or []
+    copia.escribir(archivo, datos)
     return datos
 
 

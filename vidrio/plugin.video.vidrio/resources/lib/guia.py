@@ -31,26 +31,22 @@ def ruta_remota():
 
 
 def cargar():
+    from resources.lib import copia
     if os.path.isfile(CACHE) and time.time() - os.path.getmtime(CACHE) < VIGENCIA:
-        with open(CACHE, encoding='utf-8') as fh:
-            return json.load(fh)
+        guia = copia.leer(CACHE)
+        if guia is not None:
+            return guia
     try:
         with xbmcvfs.File(ruta_remota()) as fh:
             datos = fh.readBytes()
         if not datos:
             raise IOError('vacía o inaccesible')
         guia = json.loads(bytes(datos).decode('utf-8'))
-        os.makedirs(PERFIL, exist_ok=True)
-        with open(CACHE + '.tmp', 'w', encoding='utf-8') as fh:
-            json.dump(guia, fh, ensure_ascii=False)
-        os.replace(CACHE + '.tmp', CACHE)
+        copia.escribir(CACHE, guia)
         return guia
     except Exception as e:
         log(f'no pude leer la guía del homelab: {e}', xbmc.LOGWARNING)
-        if os.path.isfile(CACHE):
-            with open(CACHE, encoding='utf-8') as fh:
-                return json.load(fh)
-        return {'grupos': [], 'canales': []}
+        return copia.leer(CACHE) or {'grupos': [], 'canales': []}
 
 
 def hora(t):
@@ -120,7 +116,5 @@ def mis_canales(guia=None):
 
 
 def guardar_mis_canales(ids):
-    os.makedirs(PERFIL, exist_ok=True)
-    with open(MIS_CANALES + '.tmp', 'w', encoding='utf-8') as fh:
-        json.dump(list(ids), fh, ensure_ascii=False)
-    os.replace(MIS_CANALES + '.tmp', MIS_CANALES)
+    from resources.lib import copia
+    copia.escribir(MIS_CANALES, list(ids))
