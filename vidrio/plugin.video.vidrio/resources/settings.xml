@@ -64,6 +64,17 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="equipos_favoritos" type="string" label="30016">
+					<level>0</level>
+					<default></default>
+					<constraints><allowempty>true</allowempty></constraints>
+					<control type="edit" format="string"/>
+				</setting>
+				<setting id="avisar_favoritos" type="boolean" label="30017">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="solo_dgo" type="boolean" label="30005">
 					<level>0</level>
 					<default>true</default>

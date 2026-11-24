@@ -84,7 +84,8 @@ def items():
     if time.time() - datos.get('generado', 0) > VENCE:
         return []
     salida = []
-    for p in datos.get('partidos', []):
+    favs = favoritos()
+    for p in sorted(datos.get('partidos', []), key=lambda p: not es_favorito(p, favs)):
         canales = p.get('canales') or []
         if not canales or len(p.get('equipos', [])) != 2:
             continue
@@ -115,8 +116,57 @@ def items():
         li.setProperty('vidrio.goles_local', str(local['goles']))
         li.setProperty('vidrio.goles_visita', str(visita['goles']))
         li.setProperty('vidrio.dgo', guia.destino_dgo(canal['nombre']))
+        if es_favorito(p, favs):
+            li.setProperty('vidrio.favorito', '1')
+            li.setProperty('vidrio.pastilla', '★ EN VIVO')
+            li.setProperty('vidrio.etiqueta', f"★ EN VIVO  ·  {p['competencia']}")
         salida.append((canal['id'], li))
     return salida
+
+
+MAX_PROXIMOS = 20
+NFL_POR_DIA = 3
+
+
+def _norma(texto):
+    import unicodedata
+    texto = unicodedata.normalize('NFKD', texto or '').encode('ascii', 'ignore').decode().lower()
+    return ' '.join(re.sub(r'[^a-z0-9]+', ' ', texto).split())
+
+
+def favoritos():
+    """Ajuste "Equipos favoritos" (separados por coma), normalizados: ['river plate', 'chiefs']."""
+    ajustes = xbmcaddon.Addon('plugin.video.vidrio')  # nuevo cada vez: el servicio vive mucho y el ajuste cambia
+    return [f for f in (_norma(x) for x in ajustes.getSettingString('equipos_favoritos').split(',')) if f]
+
+
+def es_favorito(p, favs=None):
+    """Si juega un equipo favorito: el favorito tiene que estar entero, por palabras, en el nombre corto o completo
+    ("packers" en "Green Bay Packers", "racing club" en "Racing Club"; "river" no es "Riverside")."""
+    favs = favoritos() if favs is None else favs
+    for e in p.get('equipos', []):
+        for nombre in (e.get('nombre'), e.get('completo')):
+            texto = f' {_norma(nombre)} '
+            if any(f' {f} ' in texto for f in favs):
+                return True
+    return False
+
+
+def elegir(proximos, favs):
+    """Los de los favoritos siempre y primero; del resto, de la NFL como mucho NFL_POR_DIA por día; MAX_PROXIMOS en
+    total. El homelab manda todos."""
+    fav = [p for p in proximos if es_favorito(p, favs)]
+    resto, por_dia = [], {}
+    for p in proximos:
+        if p in fav:
+            continue
+        if p.get('competencia') == 'NFL':
+            dia = time.strftime('%Y%m%d', time.localtime(p['inicio']))
+            por_dia[dia] = por_dia.get(dia, 0) + 1
+            if por_dia[dia] > NFL_POR_DIA:
+                continue
+        resto.append(p)
+    return (fav + resto)[:max(MAX_PROXIMOS, len(fav))]
 
 
 DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
@@ -144,10 +194,11 @@ def proximos():
     if time.time() - datos.get('generado', 0) > VENCE:
         return []
     ahora, salida = time.time(), []
-    avisos = recordatorios()
-    for p in datos.get('proximos', []):
-        if p.get('inicio', 0) < ahora - 600 or len(p.get('equipos', [])) != 2:
-            continue
+    favs = favoritos()
+    vigentes = [p for p in datos.get('proximos', []) if p.get('inicio', 0) >= ahora - 600 and len(p.get('equipos', [])) == 2]
+    avisos = recordatorios(sumar=vigentes)
+    for p in elegir(vigentes, favs):
+        favorito = es_favorito(p, favs)
         canales = p.get('canales') or []
         canal = next((c for c in canales if guia.destino_dgo(c['nombre'])), canales[0] if canales else None)
         local, visita = p['equipos']
@@ -180,6 +231,10 @@ def proximos():
             li.setProperty('vidrio.pastilla', 'AVISO')
             li.setLabel2(f'Te aviso · {dia} {hora} · {donde}')
             li.setProperty('vidrio.meta', f'{dia} {hora}  ·  {donde}  ·  Te aviso 5 minutos antes')
+        if favorito:
+            li.setProperty('vidrio.favorito', '1')
+            li.setProperty('vidrio.pastilla', '★ ' + li.getProperty('vidrio.pastilla'))
+            li.setProperty('vidrio.etiqueta', f"★ FAVORITO  ·  {p['competencia']}")
         li.setProperty('vidrio.dgo', guia.destino_dgo(canal['nombre']) if canal else '')
         salida.append((p['id'], li))
     return salida
@@ -211,13 +266,41 @@ def prueba(activar=True):
 
 # --- recordatorios --------------------------------------------------------------------------------------------------
 
-def recordatorios():
-    """{id del partido: {inicio, titulo, competencia, avisado}} de este equipo; los de hace más de 3 horas se borran."""
+def _leer_todo():
     from resources.lib import copia
     todos = copia.leer(RECORDATORIOS) or {}
+    return todos, set(todos.pop('_no', []))
+
+
+def _guardar(todos, no):
+    from resources.lib import copia
+    copia.escribir(RECORDATORIOS, {**todos, '_no': sorted(no)})
+
+
+def _nuevo(p):
+    local, visita = p['equipos']
+    return {'inicio': p['inicio'], 'titulo': f"{local['nombre']} vs. {visita['nombre']}",
+            'competencia': p.get('competencia', ''), 'avisado': False}
+
+
+def recordatorios(sumar=None):
+    """{id del partido: {inicio, titulo, competencia, avisado}} de este equipo; los de hace más de 3 horas se borran.
+    Con `sumar` (próximos partidos) y el ajuste "Avisarme los partidos de mis favoritos", agrega los de los equipos
+    favoritos, salvo los que se sacaron a mano (quedan en "_no")."""
+    todos, no = _leer_todo()
+    cambio = False
     vigentes = {k: v for k, v in todos.items() if v.get('inicio', 0) > time.time() - 3 * 3600}
-    if len(vigentes) != len(todos):
-        copia.escribir(RECORDATORIOS, vigentes)
+    cambio |= len(vigentes) != len(todos)
+    if sumar and xbmcaddon.Addon('plugin.video.vidrio').getSettingBool('avisar_favoritos'):
+        favs = favoritos()
+        for p in sumar:
+            pid = str(p.get('id'))
+            if favs and pid not in vigentes and pid not in no and len(p.get('equipos', [])) == 2 \
+                    and p.get('inicio', 0) > time.time() and es_favorito(p, favs):
+                vigentes[pid] = {**_nuevo(p), 'automatico': True}
+                cambio = True
+    if cambio:
+        _guardar(vigentes, {n for n in no if n in {str(p.get('id')) for p in (sumar or [])}} if sumar else no)
     return vigentes
 
 
@@ -230,20 +313,20 @@ def buscar(pid):
 
 def alternar(pid):
     """Pone o saca el recordatorio de un próximo partido. Devuelve (puesto, texto para avisar)."""
-    from resources.lib import copia
-    todos = recordatorios()
+    recordatorios()
+    todos, no = _leer_todo()
     pid = str(pid)
     if pid in todos:
         titulo = todos.pop(pid)['titulo']
-        copia.escribir(RECORDATORIOS, todos)
+        no.add(pid)  # si es de un favorito, que no vuelva a ponerse solo
+        _guardar(todos, no)
         return False, f'Sin aviso para {titulo}'
     p = buscar(pid)
     if not p or len(p.get('equipos', [])) != 2:
         return False, 'No encontré ese partido'
-    local, visita = p['equipos']
-    titulo = f"{local['nombre']} vs. {visita['nombre']}"
-    todos[pid] = {'inicio': p['inicio'], 'titulo': titulo, 'competencia': p.get('competencia', ''), 'avisado': False}
-    copia.escribir(RECORDATORIOS, todos)
+    todos[pid] = _nuevo(p)
+    no.discard(pid)
+    _guardar(todos, no)
     dia, hora = cuando(p['inicio'])
     return True, f'Te aviso 5 minutos antes: {dia} {hora}'
 
@@ -253,7 +336,9 @@ def para_avisar(ahora=None):
     Cada uno con el canal que tenga partidos.json en este momento (la guía puede haberlo sumado después)."""
     from resources.lib import copia, guia
     ahora = ahora or time.time()
-    todos = recordatorios()
+    datos = copia.leer(CACHE) or {}
+    todos = recordatorios(sumar=datos.get('proximos', []))
+    _, no = _leer_todo()
     salida = []
     for pid, r in todos.items():
         if r.get('avisado') or not (r['inicio'] - ANTES <= ahora < r['inicio'] + 15 * 60):
@@ -266,5 +351,5 @@ def para_avisar(ahora=None):
         salida.append({**r, 'id': pid, 'minutos': minutos, 'canal': canal['nombre'] if canal else '',
                        'dgo': guia.destino_dgo(canal['nombre']) if canal else ''})
     if salida:
-        copia.escribir(RECORDATORIOS, todos)
+        _guardar(todos, no)
     return salida

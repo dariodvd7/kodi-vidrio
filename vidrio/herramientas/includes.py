@@ -299,7 +299,8 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 	<!-- Partidos (plugin ?lista=envivo y ?lista=proximos). "Deportes en vivo" (5120) va arriba de todo y solo se ve con
 	     algún partido en juego; elegir uno abre su canal en DGO (Android) o la página de DGO en la App Store (tvOS),
 	     como la guía. "Próximos partidos" (5121) va debajo de "Continuar viendo"; elegir uno pone (o saca) un aviso
-	     5 minutos antes (plugin ?recordar=), y la pastilla pasa a celeste.
+	     5 minutos antes (plugin ?recordar=), y la pastilla pasa a celeste. Los de los equipos favoritos van primero,
+	     con "★" en la pastilla (dorada si no tienen aviso).
 	     Las listas 5098 y 5097 de Home.xml, fuera de pantalla, las cargan aunque estén ocultas. -->
 	<include name="VidrioTarjetaPartido">
 		<control type="image">
@@ -314,7 +315,12 @@ xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 		<control type="image">
 			<left>36</left><top>36</top><width>150</width><height>32</height>
 			<texture border="4" colordiffuse="40FFFFFF">vidrio/pill_focus.png</texture>
-			<visible>!String.IsEqual(ListItem.Property(vidrio.vivo),1) + !String.IsEqual(ListItem.Property(vidrio.recordado),1)</visible>
+			<visible>!String.IsEqual(ListItem.Property(vidrio.vivo),1) + !String.IsEqual(ListItem.Property(vidrio.recordado),1) + !String.IsEqual(ListItem.Property(vidrio.favorito),1)</visible>
+		</control>
+		<control type="image">
+			<left>36</left><top>36</top><width>150</width><height>32</height>
+			<texture border="4" colordiffuse="FFD4A017">vidrio/pill_focus.png</texture>
+			<visible>!String.IsEqual(ListItem.Property(vidrio.vivo),1) + !String.IsEqual(ListItem.Property(vidrio.recordado),1) + String.IsEqual(ListItem.Property(vidrio.favorito),1)</visible>
 		</control>
 		<control type="image">
 			<left>36</left><top>36</top><width>150</width><height>32</height>

@@ -68,3 +68,11 @@ msgstr ""
 msgctxt "#30015"
 msgid "Update the catalogue now"
 msgstr ""
+
+msgctxt "#30016"
+msgid "Favourite teams (comma separated, e.g. Racing Club, Packers)"
+msgstr ""
+
+msgctxt "#30017"
+msgid "Remind me of my favourite teams’ matches"
+msgstr ""

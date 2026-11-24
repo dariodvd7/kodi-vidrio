@@ -68,3 +68,11 @@ msgstr "Clave de TMDb (opcional: títulos, sinopsis e imágenes en español)"
 msgctxt "#30015"
 msgid "Update the catalogue now"
 msgstr "Actualizar el catálogo ahora"
+
+msgctxt "#30016"
+msgid "Favourite teams (comma separated, e.g. Racing Club, Packers)"
+msgstr "Equipos favoritos (separados por coma, por ejemplo Racing Club, Packers)"
+
+msgctxt "#30017"
+msgid "Remind me of my favourite teams’ matches"
+msgstr "Avisarme de los partidos de mis equipos favoritos"

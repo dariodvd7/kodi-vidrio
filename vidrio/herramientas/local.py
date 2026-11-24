@@ -19,14 +19,29 @@ def homelab():
         return EJEMPLO
 
 
+def favoritos():
+    """Equipos favoritos de la casa ("favoritos" en local.json, como en el ajuste: "Racing Club, Packers"), o ''."""
+    try:
+        with open(ARCHIVO, encoding='utf-8') as fh:
+            return json.load(fh).get('favoritos') or ''
+    except FileNotFoundError:
+        return ''
+
+
 def aplicar(carpeta_plugin, ip=None):
-    """Pone la IP del homelab en el valor por defecto del catálogo del plugin ya copiado."""
+    """Pone la IP del homelab en el valor por defecto del catálogo del plugin ya copiado y, salvo en el paquete
+    genérico (IP de ejemplo), los equipos favoritos de la casa en el valor por defecto de "Equipos favoritos"."""
+    import re
     ip = ip or homelab()
     ruta = os.path.join(carpeta_plugin, 'resources', 'settings.xml')
     with open(ruta, encoding='utf-8') as fh:
         xml = fh.read()
+    xml = xml.replace(f'smb://{EJEMPLO}/', f'smb://{ip}/')
+    if ip != EJEMPLO and favoritos():
+        xml = re.sub(r'(<setting id="equipos_favoritos"[^>]*>\s*<level>\d</level>\s*<default>)(</default>)',
+                     lambda m: m.group(1) + favoritos().replace('&', '&amp;') + m.group(2), xml, count=1)
     with open(ruta, 'w', encoding='utf-8') as fh:
-        fh.write(xml.replace(f'smb://{EJEMPLO}/', f'smb://{ip}/'))
+        fh.write(xml)
     return ip
 
 

@@ -403,3 +403,16 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
   toma de `partidos.json` en ese momento (la guía puede haberlo sumado después de poner el aviso).
 - Si Kodi estaba cerrado a la hora del aviso, sale al abrirlo si todavía no pasaron 15 minutos del comienzo.
 - Probado en la Mac: poner y sacar el aviso, la tarjeta y el cartel. El diálogo con "Abrir DGO" falta probarlo en el TCL.
+
+## Equipos favoritos (plugin 1.16.0, skin 1.8.0)
+
+- Ajuste **Equipos favoritos**, separados por coma ("Racing Club, Packers"). Se reconocen por palabras enteras en el
+  nombre corto o completo de ESPN ("Packers" en "Green Bay Packers"; "River" no toma "Riverside").
+- Sus partidos van primero en "Deportes en vivo" y en "Próximos partidos", con "★" en la pastilla ("★ EN VIVO",
+  "★ AVISO" o el día en dorado) y "★ FAVORITO" arriba. Siempre aparecen: el tope (20 próximos, 3 de la NFL por día)
+  ahora lo pone el plugin, y el homelab manda todos los próximos (hasta 80).
+- Ajuste **Avisarme los partidos de mis equipos favoritos** (prendido): les pone el aviso de 5 minutos antes solos.
+  Si se saca a mano, no vuelve a ponerse (queda en `_no` de `recordatorios.json`).
+- Los de casa van en `local.json` (`"favoritos": "Racing Club, Packers"`): `herramientas/local.py` los pone como valor
+  por defecto al armar los zips y el IPA de casa; el paquete genérico sale sin favoritos.
+  En la Mac (que usa la carpeta del proyecto) se cargan en sus ajustes de Vidrio.

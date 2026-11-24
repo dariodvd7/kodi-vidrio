@@ -30,8 +30,7 @@ ESPN = 'https://site.api.espn.com/apis/site/v2/sports/{}/scoreboard'
 CACHE_PROXIMOS = '/var/lib/vidrio-partidos/proximos.json'
 VIGENCIA_PROXIMOS = 30 * 60
 DIAS = 7
-MAX_PROXIMOS = 20
-NFL_POR_DIA = 3
+MAX_PROXIMOS = 80
 ARGENTINA = timezone(timedelta(hours=-3))
 
 # (ruta en ESPN, nombre en Vidrio, cómo la nombra la guía)
@@ -138,16 +137,9 @@ def proximos():
             p = partido(ev, nombre, patron)
             if ev.get('status', {}).get('type', {}).get('state') == 'pre' and p['inicio'] > ahora - 600:
                 salida.append(p)
-    # La NFL juega una docena de partidos el domingo: como mucho NFL_POR_DIA por día, para que no tape al fútbol
-    por_dia, elegidos = {}, []
-    for p in sorted(salida, key=lambda p: p['inicio']):
-        if p['competencia'] == 'NFL':
-            dia = datetime.fromtimestamp(p['inicio'], ARGENTINA).date()
-            por_dia[dia] = por_dia.get(dia, 0) + 1
-            if por_dia[dia] > NFL_POR_DIA:
-                continue
-        elegidos.append(p)
-    return elegidos[:MAX_PROXIMOS]
+    # Todos, sin tope por competencia: el plugin elige cuáles mostrar (los de los equipos favoritos de cada equipo
+    # siempre; de la NFL, 3 por día; 20 en total)
+    return sorted(salida, key=lambda p: p['inicio'])[:MAX_PROXIMOS]
 
 
 def canales_del_partido(partido, guia, ahora):
