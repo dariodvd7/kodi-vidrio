@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Partidos en vivo para la fila "Deportes en vivo" del inicio (partidos.json del homelab, armado por
+"""Partidos para las filas "Deportes en vivo" y "Próximos partidos" del inicio (partidos.json del homelab, armado por
 homelab/partidos.py cada 2 minutos: Primera División, Copa Argentina, Libertadores, Sudamericana y NFL).
 
 El servicio de Vidrio lo baja cada minuto mientras el inicio está en pantalla (actualizar) y, si cambió algo (un gol,
@@ -31,7 +31,8 @@ def ruta_remota():
 
 
 def huella(datos):
-    return hashlib.md5(json.dumps(datos.get('partidos', []), sort_keys=True).encode('utf-8')).hexdigest()[:12]
+    cambia = [datos.get('partidos', []), datos.get('proximos', [])]
+    return hashlib.md5(json.dumps(cambia, sort_keys=True).encode('utf-8')).hexdigest()[:12]
 
 
 def actualizar():
@@ -101,6 +102,9 @@ def items():
         tag.setPlot(f"{local['completo']} vs. {visita['completo']}."
                     + (f" También en {', '.join(otros)}." if otros else ''))
         li.setProperty('vidrio.tipo', 'partido')
+        li.setProperty('vidrio.vivo', '1')
+        li.setProperty('vidrio.pastilla', 'EN VIVO')
+        li.setProperty('vidrio.marcador', f"{local['goles']} - {visita['goles']}")
         li.setProperty('vidrio.etiqueta', f"EN VIVO  ·  {p['competencia']}")
         li.setProperty('vidrio.meta', f"{cuando}  ·  {canal['nombre']}")
         li.setProperty('vidrio.estado', cuando)
@@ -110,6 +114,65 @@ def items():
         li.setProperty('vidrio.goles_visita', str(visita['goles']))
         li.setProperty('vidrio.dgo', guia.destino_dgo(canal['nombre']))
         salida.append((canal['id'], li))
+    return salida
+
+
+DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+
+
+def cuando(inicio, ahora=None):
+    """"Hoy 21:00", "Mañana 15:00", "Domingo 29 17:00" (hora de este equipo)."""
+    ahora = ahora or time.time()
+    hoy, dia = time.localtime(ahora), time.localtime(inicio)
+    hora = time.strftime('%H:%M', dia)
+    dias = (time.mktime((dia.tm_year, dia.tm_mon, dia.tm_mday, 0, 0, 0, 0, 0, -1))
+            - time.mktime((hoy.tm_year, hoy.tm_mon, hoy.tm_mday, 0, 0, 0, 0, 0, -1))) / 86400
+    if round(dias) == 0:
+        return 'Hoy', hora
+    if round(dias) == 1:
+        return 'Mañana', hora
+    return f'{DIAS[dia.tm_wday]} {dia.tm_mday}', hora
+
+
+def proximos():
+    """ListItems de "Próximos partidos": los que empiezan en los próximos 7 días, con canal si la guía ya lo tiene."""
+    import xbmcgui
+    from resources.lib import copia, guia
+    datos = copia.leer(CACHE) or {}
+    if time.time() - datos.get('generado', 0) > VENCE:
+        return []
+    ahora, salida = time.time(), []
+    for p in datos.get('proximos', []):
+        if p.get('inicio', 0) < ahora - 600 or len(p.get('equipos', [])) != 2:
+            continue
+        canales = p.get('canales') or []
+        canal = next((c for c in canales if guia.destino_dgo(c['nombre'])), canales[0] if canales else None)
+        local, visita = p['equipos']
+        dia, hora = cuando(p['inicio'], ahora)
+        donde = canal['nombre'] if canal else 'Canal a confirmar'
+        titulo = f"{local['nombre']} vs. {visita['nombre']}"
+        li = xbmcgui.ListItem(titulo, offscreen=True)
+        li.setLabel2(f'{dia} {hora} · {donde}')
+        li.setArt({'local': local.get('logo', ''), 'visitante': visita.get('logo', ''),
+                   'logo': canal.get('logo', '') if canal else '', 'icon': 'DefaultVideo.png'})
+        tag = li.getVideoInfoTag()
+        tag.setMediaType('video')
+        tag.setTitle(titulo)
+        otros = [c['nombre'] for c in canales if c is not canal]
+        tag.setPlot(f"{local['completo']} vs. {visita['completo']}."
+                    + (f" También en {', '.join(otros)}." if otros else '')
+                    + ('' if canal else ' La guía todavía no llega a ese día: el canal aparece uno o dos días antes.'))
+        li.setProperty('vidrio.tipo', 'partido')
+        li.setProperty('vidrio.vivo', '0')
+        li.setProperty('vidrio.pastilla', dia.upper())
+        li.setProperty('vidrio.marcador', 'vs')
+        li.setProperty('vidrio.estado', hora)
+        li.setProperty('vidrio.etiqueta', f"PRÓXIMO  ·  {p['competencia']}")
+        li.setProperty('vidrio.meta', f'{dia} {hora}  ·  {donde}')
+        li.setProperty('vidrio.competencia', p['competencia'])
+        li.setProperty('vidrio.aviso', f'{dia} {hora} · {donde}')
+        li.setProperty('vidrio.dgo', guia.destino_dgo(canal['nombre']) if canal else '')
+        salida.append((p['id'], li))
     return salida
 
 
@@ -131,6 +194,7 @@ def prueba(activar=True):
                          'dgo': True}]}]}
     else:
         datos = {'generado': int(time.time()), 'partidos': []}
+    datos['proximos'] = (copia.leer(CACHE) or {}).get('proximos', [])
     copia.escribir(CACHE, datos)
     xbmcgui.Window(10000).setProperty('Vidrio.EnVivo', huella(datos) + str(int(time.time())))
     return len(datos['partidos'])

@@ -6,8 +6,10 @@ NFL. Qué se está jugando sale del marcador público de ESPN (site.api.espn.com
 ve, de la guía (guia.json, armada por guia.py): el canal cuyo programa al aire nombra a los dos equipos o, si la guía
 dice solo "Liga Profesional 2026", el que nombra la competencia y empezó cerca del partido.
 
-Escribe /srv/kodi-addons/vidrio/partidos.json (la carpeta compartida KodiAddons, al lado de guia.json). El plugin lo
-lee cada minuto y muestra los partidos que tienen canal; elegir uno abre ese canal en DGO.
+Escribe /srv/kodi-addons/vidrio/partidos.json (la carpeta compartida KodiAddons, al lado de guia.json): "partidos" (en
+juego) y "proximos" (los que empiezan en los próximos 7 días, con canal si la guía ya llega a ese día; el calendario
+de ESPN se baja cada 30 minutos). El plugin lo lee cada minuto: los en juego que tienen canal van a "Deportes en vivo"
+(elegir uno abre ese canal en DGO) y los próximos a "Próximos partidos".
 
 Uso (cron cada 2 minutos): partidos.py   |   partidos.py --mostrar (solo imprime, no escribe)
 """
@@ -19,12 +21,18 @@ import tempfile
 import time
 import unicodedata
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 CARPETA = '/srv/kodi-addons/vidrio'
 GUIA = os.path.join(CARPETA, 'guia.json')
 SALIDA = os.path.join(CARPETA, 'partidos.json')
 ESPN = 'https://site.api.espn.com/apis/site/v2/sports/{}/scoreboard'
+CACHE_PROXIMOS = '/var/lib/vidrio-partidos/proximos.json'
+VIGENCIA_PROXIMOS = 30 * 60
+DIAS = 7
+MAX_PROXIMOS = 20
+NFL_POR_DIA = 3
+ARGENTINA = timezone(timedelta(hours=-3))
 
 # (ruta en ESPN, nombre en Vidrio, cómo la nombra la guía)
 COMPETENCIAS = [
@@ -55,9 +63,25 @@ def nombra(texto_normalizado, palabras):
     return bool(palabras & set(texto_normalizado.split()))
 
 
-def bajar(ruta):
-    with urllib.request.urlopen(ESPN.format(ruta), timeout=20) as r:
+def bajar(ruta, extra=''):
+    with urllib.request.urlopen(ESPN.format(ruta) + extra, timeout=20) as r:
         return json.load(r)
+
+
+def partido(ev, nombre, patron):
+    estado = ev.get('status', {})
+    comp = ev['competitions'][0]
+    equipos = sorted(comp['competitors'], key=lambda c: c.get('homeAway') != 'home')  # local primero
+    return {
+        'id': ev['id'], 'competencia': nombre, 'patron': patron,
+        'inicio': int(datetime.fromisoformat(ev['date'].replace('Z', '+00:00')).timestamp()),
+        'estado': estado.get('type', {}).get('shortDetail', ''),
+        'reloj': estado.get('displayClock', ''),
+        'equipos': [{'nombre': (c['team'].get('shortDisplayName') or c['team'].get('displayName') or '').strip(),
+                     'completo': c['team'].get('displayName'), 'logo': c['team'].get('logo', ''),
+                     'goles': c.get('score', ''), 'palabras': palabras_equipo(c['team'])}
+                    for c in equipos],
+    }
 
 
 def en_vivo():
@@ -70,26 +94,65 @@ def en_vivo():
             print(f'{nombre}: no pude leer ESPN ({e})', file=sys.stderr)
             continue
         for ev in datos.get('events', []):
-            estado = ev.get('status', {})
-            if estado.get('type', {}).get('state') != 'in':
-                continue
-            comp = ev['competitions'][0]
-            equipos = sorted(comp['competitors'], key=lambda c: c.get('homeAway') != 'home')  # local primero
-            partidos.append({
-                'id': ev['id'], 'competencia': nombre, 'patron': patron,
-                'inicio': int(datetime.fromisoformat(ev['date'].replace('Z', '+00:00')).timestamp()),
-                'estado': estado.get('type', {}).get('shortDetail', ''),
-                'reloj': estado.get('displayClock', ''),
-                'equipos': [{'nombre': (c['team'].get('shortDisplayName') or c['team'].get('displayName') or '').strip(),
-                             'completo': c['team'].get('displayName'), 'logo': c['team'].get('logo', ''),
-                             'goles': c.get('score', ''), 'palabras': palabras_equipo(c['team'])}
-                            for c in equipos],
-            })
+            if ev.get('status', {}).get('type', {}).get('state') == 'in':
+                partidos.append(partido(ev, nombre, patron))
     return partidos
 
 
+def eventos_por_dia():
+    """Eventos de ESPN de hoy y los próximos DIAS días, por competencia (35 pedidos: se guardan VIGENCIA_PROXIMOS)."""
+    try:
+        with open(CACHE_PROXIMOS, encoding='utf-8') as fh:
+            cache = json.load(fh)
+        if time.time() - cache['bajado'] < VIGENCIA_PROXIMOS:
+            return cache['eventos']
+    except (OSError, ValueError, KeyError):
+        pass
+    hoy = datetime.now(ARGENTINA).date()
+    eventos, fallas = {}, 0
+    for ruta, nombre, _ in COMPETENCIAS:
+        for dia in range(DIAS + 1):
+            fecha = (hoy + timedelta(days=dia)).strftime('%Y%m%d')
+            try:
+                datos = bajar(ruta, f'?dates={fecha}')
+            except Exception as e:
+                fallas += 1
+                print(f'{nombre} {fecha}: no pude leer ESPN ({e})', file=sys.stderr)
+                continue
+            for ev in datos.get('events', []):
+                eventos.setdefault(nombre, {})[ev['id']] = ev
+    eventos = {k: list(v.values()) for k, v in eventos.items()}
+    if fallas < 5:  # si ESPN no contestó casi nada, se reintenta en la próxima vuelta
+        os.makedirs(os.path.dirname(CACHE_PROXIMOS), exist_ok=True)
+        with open(CACHE_PROXIMOS, 'w', encoding='utf-8') as fh:
+            json.dump({'bajado': time.time(), 'eventos': eventos}, fh)
+    return eventos
+
+
+def proximos():
+    """Partidos que todavía no empezaron, de los próximos DIAS días, por hora."""
+    ahora, salida = time.time(), []
+    eventos = eventos_por_dia()
+    for _, nombre, patron in COMPETENCIAS:
+        for ev in eventos.get(nombre, []):
+            p = partido(ev, nombre, patron)
+            if ev.get('status', {}).get('type', {}).get('state') == 'pre' and p['inicio'] > ahora - 600:
+                salida.append(p)
+    # La NFL juega una docena de partidos el domingo: como mucho NFL_POR_DIA por día, para que no tape al fútbol
+    por_dia, elegidos = {}, []
+    for p in sorted(salida, key=lambda p: p['inicio']):
+        if p['competencia'] == 'NFL':
+            dia = datetime.fromtimestamp(p['inicio'], ARGENTINA).date()
+            por_dia[dia] = por_dia.get(dia, 0) + 1
+            if por_dia[dia] > NFL_POR_DIA:
+                continue
+        elegidos.append(p)
+    return elegidos[:MAX_PROXIMOS]
+
+
 def canales_del_partido(partido, guia, ahora):
-    """Canales de la guía que lo están pasando, del más seguro al menos."""
+    """Canales de la guía que lo pasan a la hora `ahora` (en vivo: ya; próximo: al rato de empezar), del más seguro
+    al menos."""
     patron = re.compile(partido['patron'])
     candidatos = []
     for canal in guia.get('canales', []):
@@ -133,15 +196,21 @@ def armar():
     except (OSError, ValueError) as e:
         print(f'no pude leer la guía ({e})', file=sys.stderr)
         guia = {'canales': []}
-    salida = []
-    for partido in en_vivo():
-        canales = canales_del_partido(partido, guia, ahora)
-        for e in partido['equipos']:
+    def limpiar(p, canales):
+        for e in p['equipos']:
             del e['palabras']
-        del partido['patron']
-        partido['canales'] = canales
-        salida.append(partido)
-    return {'generado': int(ahora), 'partidos': salida}
+        del p['patron']
+        p['canales'] = canales
+        return p
+    salida = [limpiar(p, canales_del_partido(p, guia, ahora)) for p in en_vivo()]
+    try:
+        siguientes = proximos()
+    except Exception as e:  # los próximos no deben frenar los en vivo
+        print(f'próximos: {e}', file=sys.stderr)
+        siguientes = []
+    # el canal de un próximo: lo que la guía pasa 10 minutos después del comienzo (si la guía ya llega a ese día)
+    vienen = [limpiar(p, canales_del_partido(p, guia, p['inicio'] + 600)) for p in siguientes]
+    return {'generado': int(ahora), 'partidos': salida, 'proximos': vienen}
 
 
 def main():

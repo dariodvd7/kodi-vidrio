@@ -481,8 +481,13 @@ def main():
     if lista == 'envivo':  # fila "Deportes en vivo" del inicio
         from resources.lib import envivo
         return terminar([(url(canal=cid), li, False) for cid, li in envivo.items()], 'videos', orden=False)
+    if lista == 'proximos':  # fila "Próximos partidos" del inicio
+        from resources.lib import envivo
+        return terminar([(url(partido=pid), li, False) for pid, li in envivo.proximos()], 'videos', orden=False)
     if lista == 'guia':  # ventana Guía de la skin: una fila por grupo
         return terminar(canales_guia(P.get('grupo', '')), 'videos', orden=False)
+    if 'partido' in P:  # elegir un próximo partido: la skin muestra cuándo empieza
+        return xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
     if 'canal' in P:  # elegir un canal desde una lista común: la skin lo maneja; acá no hay nada que reproducir
         return xbmcplugin.endOfDirectory(HANDLE, succeeded=False, cacheToDisc=False)
     if lista in ('continuar', 'trakt'):

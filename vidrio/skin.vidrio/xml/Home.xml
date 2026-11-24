@@ -119,7 +119,7 @@
 			<itemgap>2</itemgap>
 			<ondown condition="Integer.IsGreater(Container(5098).NumItems,0)">5120</ondown>
 			<ondown condition="!Integer.IsGreater(Container(5098).NumItems,0) + Integer.IsGreater(Container(5099).NumItems,0)">5100</ondown>
-			<ondown condition="!Integer.IsGreater(Container(5098).NumItems,0) + !Integer.IsGreater(Container(5099).NumItems,0)">5101</ondown>
+			<ondown condition="!Integer.IsGreater(Container(5098).NumItems,0) + !Integer.IsGreater(Container(5099).NumItems,0)">5121</ondown>
 			<include content="VidrioTab"><param name="id" value="9001"/><param name="label" value="Inicio"/><param name="action" value="SetFocus(9100)"/></include>
 			<include content="VidrioTab"><param name="id" value="9002"/><param name="label" value="Películas"/><param name="previo" value="SetProperty(Vidrio.GrillaQ,lista=peliculas,home)"/><param name="previo2" value="SetProperty(Vidrio.GrillaTitulo,Películas,home)"/><param name="action" value="ActivateWindow(1151)"/></include>
 			<include content="VidrioTab"><param name="id" value="9003"/><param name="label" value="Series"/><param name="previo" value="SetProperty(Vidrio.GrillaQ,lista=series,home)"/><param name="previo2" value="SetProperty(Vidrio.GrillaTitulo,Series,home)"/><param name="action" value="ActivateWindow(1151)"/></include>
@@ -162,6 +162,14 @@
 			<content target="videos">plugin://plugin.video.vidrio/?lista=envivo&amp;v=$INFO[Window(home).Property(Vidrio.EnVivo)]</content>
 		</control>
 
+		<control type="list" id="5097">
+			<left>-4000</left><top>0</top><width>10</width><height>10</height>
+			<orientation>horizontal</orientation>
+			<itemlayout width="10" height="10"/>
+			<focusedlayout width="10" height="10"/>
+			<content target="videos">plugin://plugin.video.vidrio/?lista=proximos&amp;v=$INFO[Window(home).Property(Vidrio.EnVivo)]</content>
+		</control>
+
 		<!-- Filas -->
 		<control type="grouplist" id="9100">
 			<left>0</left><top>650</top><width>1920</width><height>430</height>
@@ -169,9 +177,10 @@
 			<itemgap>0</itemgap>
 			<scrolltime tween="cubic" easing="out">350</scrolltime>
 			<onup>9000</onup>
-			<include>VidrioFilaEnVivo</include>
-			<include content="VidrioFila"><param name="id" value="5100"/><param name="titulo" value="Continuar viendo"/><param name="tambien" value="Integer.IsGreater(Container(5099).NumItems,0)"/><param name="ruta" value="plugin://plugin.video.vidrio/?lista=continuar&amp;t=$INFO[Window(home).Property(Vidrio.Trakt)]"/><param name="arriba" value="5120"/><param name="arriba_si" value="Integer.IsGreater(Container(5098).NumItems,0)"/><param name="arriba_no" value="9000"/><param name="abajo" value="5101"/></include>
-			<include content="VidrioFila"><param name="id" value="5101"/><param name="titulo" value="Agregadas recientemente"/><param name="ruta" value="plugin://plugin.video.vidrio/?lista=recientes&amp;limite=30"/><param name="arriba" value="5100"/><param name="arriba_si" value="Integer.IsGreater(Container(5099).NumItems,0)"/><param name="arriba_no" value="5120"/><param name="abajo" value="5102"/></include>
+			<include content="VidrioFilaPartidos"><param name="id" value="5120"/><param name="titulo" value="Deportes en vivo"/><param name="cargador" value="5098"/><param name="lista" value="envivo"/><param name="arriba" value="9000"/><param name="abajo" value="5100"/></include>
+			<include content="VidrioFila"><param name="id" value="5100"/><param name="titulo" value="Continuar viendo"/><param name="tambien" value="Integer.IsGreater(Container(5099).NumItems,0)"/><param name="ruta" value="plugin://plugin.video.vidrio/?lista=continuar&amp;t=$INFO[Window(home).Property(Vidrio.Trakt)]"/><param name="arriba" value="5120"/><param name="arriba_si" value="Integer.IsGreater(Container(5098).NumItems,0)"/><param name="arriba_no" value="9000"/><param name="abajo" value="5121"/></include>
+			<include content="VidrioFilaPartidos"><param name="id" value="5121"/><param name="titulo" value="Próximos partidos"/><param name="cargador" value="5097"/><param name="lista" value="proximos"/><param name="arriba" value="5100"/><param name="abajo" value="5101"/></include>
+			<include content="VidrioFila"><param name="id" value="5101"/><param name="titulo" value="Agregadas recientemente"/><param name="ruta" value="plugin://plugin.video.vidrio/?lista=recientes&amp;limite=30"/><param name="arriba" value="5121"/><param name="abajo" value="5102"/></include>
 			<include content="VidrioFila"><param name="id" value="5102"/><param name="titulo" value="Películas"/><param name="ruta" value="plugin://plugin.video.vidrio/?lista=peliculas"/><param name="arriba" value="5101"/><param name="abajo" value="5103"/></include>
 			<include content="VidrioFila"><param name="id" value="5103"/><param name="titulo" value="Series"/><param name="ruta" value="plugin://plugin.video.vidrio/?lista=series"/><param name="arriba" value="5102"/><param name="abajo" value="5104"/></include>
 			<include content="VidrioFila"><param name="id" value="5104"/><param name="titulo" value="Acción"/><param name="ruta" value="plugin://plugin.video.vidrio/?genero=Acción"/><param name="arriba" value="5103"/><param name="abajo" value="5105"/></include>

@@ -357,3 +357,16 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 - La fila es la lista 5120 (fuera de 5101-5110, que el servicio usa para los tráileres); la 5098, fuera de pantalla,
   la carga aunque esté oculta (como 5099 con "Continuar viendo"). Las variables del encabezado salen de
   `herramientas/includes.py`.
+
+## Próximos partidos (plugin 1.13.0, skin 1.6.0)
+
+- Fila "Próximos partidos" debajo de "Continuar viendo": los partidos de las mismas cinco competencias que empiezan en
+  los próximos 7 días (como mucho 20; de la NFL, 3 por día, para que no tape al fútbol). Cada tarjeta muestra el día
+  ("MAÑANA", "JUEVES 26"), los escudos, la hora y el canal si la guía ya llega a ese día ("Canal a confirmar" si
+  no: la guía cubre uno o dos días). Elegir uno muestra un aviso con día, hora y canal.
+- `homelab/partidos.py` agrega `"proximos"` a `partidos.json`: el calendario de ESPN por día (`?dates=AAAAMMDD`, 35
+  pedidos) se baja cada 30 minutos a `/var/lib/vidrio-partidos/proximos.json`; el canal es lo que la guía pasa 10
+  minutos después del comienzo.
+- "Deportes en vivo" no cambia: arriba de todo, solo con partidos en juego. Las dos filas usan la misma tarjeta
+  (`VidrioTarjetaPartido`) y el mismo include (`VidrioFilaPartidos`), en `herramientas/includes.py`; 5121 y su
+  cargador 5097 en `Home.xml`.
