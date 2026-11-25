@@ -86,7 +86,7 @@ def contenido():
 
 # Una palabra entera del id (separada por . _ -), no un pedazo: "keyboardlayouts" o "avoidclipping" no son claves
 CLAVE = re.compile(r'(^|[._-])(token|access_?token|refresh_?token|pass|password|passwd|passphrase|secret|key|api_?key|'
-                   r'auth|authorization|login|user|username|cookie|session|credentials?|pin|pincode|lockcode)'
+                   r'auth|authorization|login|user|username|cookie|session|credentials?|pin|pincode|lockcode|clave|contrasena)'
                    r'([._-]|$)', re.I)
 
 

@@ -183,32 +183,50 @@ class Tmdb:
         else:
             q['api_key'] = self.clave
         url = TMDB + ruta + '?' + urllib.parse.urlencode(q)
-        try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=cabeceras), timeout=20) as r:
-                return json.load(r)
-        except Exception as e:
-            self.fallas += 1
-            log(f'TMDb {ruta}: {getattr(e, "code", "")} {e}', xbmc.LOGWARNING)
-            return None
+        for intento in range(3):  # un corte de conexión o un 429 (demasiados pedidos): esperar y reintentar
+            try:
+                with urllib.request.urlopen(urllib.request.Request(url, headers=cabeceras), timeout=20) as r:
+                    return json.load(r)
+            except Exception as e:
+                codigo = getattr(e, 'code', None)
+                if intento < 2 and (codigo in (429, 500, 502, 503, 504) or codigo is None):
+                    time.sleep(2 * (intento + 1))
+                    continue
+                self.fallas += 1
+                log(f'TMDb {ruta}: {codigo or ""} {e}', xbmc.LOGWARNING)
+                return None
 
     def guardar(self):
         from resources.lib import copia
         copia.escribir(TMDB_CACHE, self.cache)
 
     def buscar(self, tipo, nombre, anio):
-        """Número de TMDb del título ("movie" o "tv"), probando con el año y sin él."""
-        clave = f'{tipo}:{nombre.lower()}:{anio or ""}'
+        """Número de TMDb del título ("movie" o "tv"): el resultado más parecido en título y año. Primero con el año;
+        sin el año solo uno muy parecido (si no, "The Order" terminaba en "Harry Potter y la Orden del Fénix"). Si no
+        hay nada, de nuevo sin lo que esté entre paréntesis ("The Pitt (Latino)")."""
+        clave = f'v4:{tipo}:{nombre.lower()}:{anio or ""}'
         if clave in self.cache:
             return self.cache[clave]
-        campo = 'year' if tipo == 'movie' else 'first_air_date_year'
-        for extra in ([{campo: anio}] if anio else []) + [{}]:
-            r = self.pedir(f'search/{tipo}', query=nombre, language='es-MX', **extra)
-            if r and r.get('results'):
-                self.cache[clave] = r['results'][0]['id']
-                return self.cache[clave]
-        if self.fallas < 5:
-            self.cache[clave] = None  # no está en TMDb: no volver a buscarlo
-        return None
+        campo = 'primary_release_year' if tipo == 'movie' else 'first_air_date_year'
+        nombres = [nombre]
+        limpio = re.sub(r'\s*[(\[][^)\]]*[)\]]\s*', ' ', nombre).strip()
+        if limpio and limpio != nombre:
+            nombres.append(limpio)
+        elegido = None
+        for n in nombres:
+            for con_anio in ([True] if anio else []) + [False]:
+                # títulos en inglés para comparar: los nombres de carpeta suelen estar en inglés (Radarr, Sonarr) o
+                # en el idioma original ("Hope" coreana es "Hope: El primer impacto" en es-MX); los datos, en español
+                r = self.pedir(f'search/{tipo}', query=n, language='en-US', **({campo: anio} if con_anio else {}))
+                # sin año en la carpeta no hay con qué exigir: vale el más parecido
+                elegido = mejor(n, anio, (r or {}).get('results', []), exigente=bool(anio) and not con_anio)
+                if elegido:
+                    break
+            if elegido:
+                break
+        if elegido or self.fallas < 5:  # sin conexión no se anota "no está"
+            self.cache[clave] = elegido
+        return elegido
 
     def ficha(self, tipo, numero):
         clave = f'{tipo}/{numero}'
@@ -226,16 +244,56 @@ class Tmdb:
         return d
 
     def temporada(self, numero, temporada):
-        clave = f'tv/{numero}/season/{temporada}'
+        """Episodios de una temporada. TMDb pone "Episodio N" cuando no hay título en español: esos quedan vacíos
+        (el armado usa el del archivo) y se guarda aparte el título en inglés como último recurso."""
+        clave = f'v2:tv/{numero}/season/{temporada}'
         if clave not in self.cache:
             d = self.pedir(f'tv/{numero}/season/{temporada}', language='es-MX')
             if not d:
                 return {}
-            self.cache[clave] = {str(e['episode_number']): {
-                'titulo': e.get('name') or '', 'sinopsis': e.get('overview') or '', 'estreno': e.get('air_date') or '',
-                'minutos': e.get('runtime') or 0,
+            eps = {str(e['episode_number']): {
+                'titulo': '' if GENERICO.match(e.get('name') or '') else (e.get('name') or ''),
+                'sinopsis': e.get('overview') or '', 'estreno': e.get('air_date') or '', 'minutos': e.get('runtime') or 0,
                 'imagen': IMAGEN + 'w780' + e['still_path'] if e.get('still_path') else ''} for e in d.get('episodes', [])}
+            if any(not e['titulo'] for e in eps.values()):
+                en = self.pedir(f'tv/{numero}/season/{temporada}', language='en-US') or {}
+                for e in en.get('episodes', []):
+                    x = eps.get(str(e['episode_number']))
+                    if x is not None and not GENERICO.match(e.get('name') or ''):
+                        x['titulo_en'] = e.get('name') or ''
+            self.cache[clave] = eps
         return self.cache[clave]
+
+
+GENERICO = re.compile(r'^(episodio|episode|cap[ií]tulo)\s*\d+$', re.I)
+
+
+def _parecido(a, b):
+    from difflib import SequenceMatcher
+    a, b = (re.sub(r'[^a-z0-9 ]', '', (x or '').lower()) for x in (a, b))
+    return SequenceMatcher(None, a, b).ratio() if a and b else 0
+
+
+def mejor(nombre, anio, resultados, exigente=False):
+    """El resultado de TMDb más parecido. Suma: parecido del título (traducido u original), el año (si la carpeta lo
+    tiene), el orden de TMDb (que ya ordena por relevancia) y que el nombre de la carpeta esté entero en el título
+    ("The Hunt" en "The Hunt: Prey vs Predator"). Exigente (la búsqueda con año no dio nada y se probó sin año): solo
+    un título casi igual o de un año vecino."""
+    elegido, puntos_max = None, 0
+    buscado = f" {re.sub(r'[^a-z0-9]+', ' ', nombre.lower()).strip()} "
+    for orden, r in enumerate(resultados[:10]):
+        titulos = [r.get('title'), r.get('original_title'), r.get('name'), r.get('original_name')]
+        parecido = max(_parecido(nombre, t) for t in titulos)
+        entero = any(buscado in f" {re.sub(r'[^a-z0-9]+', ' ', (t or '').lower()).strip()} " for t in titulos)
+        fecha = (r.get('release_date') or r.get('first_air_date') or '')[:4]
+        dif = abs(int(fecha) - anio) if anio and fecha.isdigit() else None
+        if exigente and parecido < 0.85 and dif not in (0, 1):
+            continue
+        puntos = (parecido + (0.5 if dif == 0 else 0.25 if dif == 1 else 0) + max(0, 0.3 - 0.1 * orden)
+                  + (0.2 if entero else 0) + 0.3 * min(1, (r.get('vote_count') or 0) / 50))  # conocido > desconocido
+        if puntos > puntos_max:
+            elegido, puntos_max = r['id'], puntos
+    return elegido if puntos_max >= 0.5 else None
 
 
 def datos_tmdb(d, tipo):
@@ -382,7 +440,7 @@ def serie(base, nombre, tmdb):
     for t, e, ruta, de_archivo in eps:
         info = (tmdb.temporada(numero, t) if ficha else {}).get(str(e), {})
         agregada, _ = modificado(ruta)
-        ep = {'temporada': t, 'episodio': e, 'archivo': ruta, 'titulo': info.get('titulo') or de_archivo or f'Episodio {e}',
+        ep = {'temporada': t, 'episodio': e, 'archivo': ruta, 'titulo': info.get('titulo') or de_archivo or info.get('titulo_en') or f'Episodio {e}',
               'sinopsis': info.get('sinopsis', ''), 'estreno': info.get('estreno', ''),
               'minutos': info.get('minutos') or s.get('minutos') or 0, 'imagen': info.get('imagen', ''),
               'agregada': agregada or int(time.time())}

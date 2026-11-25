@@ -388,8 +388,16 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 - El servicio lo rearma cada 12 horas, ~90 s después de arrancar si no hay, y al cerrar los ajustes si cambió una
   carpeta o la clave. La primera vez recarga el inicio al terminar. El botón "Actualizar el catálogo ahora" lo hace
   al momento (`?escanear=1`), con barra de progreso.
-- Probado en la Mac con las carpetas del homelab por `smb://`, sin TMDb: 253 películas y 91 series en unos 3
-  minutos. Con TMDb solo se probó el armado de los datos con respuestas de ejemplo.
+- Probado en la Mac con las carpetas del homelab por `smb://`: sin TMDb, 253 películas y 91 series en unos 3
+  minutos; con TMDb (plugin 1.16.1), unos 14 minutos la primera vez y 4 después (lo de TMDb queda guardado). El
+  mismo título de TMDb que el catálogo del homelab en 250 de 253 películas y 89 de 91 series (el resto, con el
+  mismo título), sinopsis en español en 251 y 89, géneros en todas y título en 1717 de 1826 episodios.
+- Cómo elige en TMDb (`mejor()`): busca con títulos en inglés (los nombres de carpeta suelen estar en inglés o en
+  el idioma original) y suma parecido del título, año, orden de TMDb, que el nombre esté entero en el título y
+  popularidad. Con año en la carpeta, primero busca con ese año y, sin resultados, solo acepta uno casi igual. Si
+  no encuentra nada, prueba sin lo que esté entre paréntesis ("The Pitt (Latino)"). Reintenta los cortes de
+  conexión y los 429. Episodios: si TMDb no tiene el título en español ("Episodio 3"), el del archivo o el inglés.
+- El backup diario vacía también los ajustes que se llaman `clave` (la de TMDb no sale del equipo).
 
 ## Recordatorio de partidos (plugin 1.15.0, skin 1.7.0)
 
