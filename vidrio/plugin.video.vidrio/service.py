@@ -469,8 +469,9 @@ def avisar_actualizacion():
     nombres = {'plugin': 'Vidrio', 'skin': 'Skin'}
     texto = ' · '.join(f'{nombres[k]} {actuales[k]}' for k in cambios)
     log(f'actualizado: {texto} (antes {antes})')
-    xbmcgui.Dialog().notification(ADDON.getLocalizedString(30020), ADDON.getLocalizedString(30021) % texto,
-                                  ADDON.getAddonInfo('icon'), 8000)
+    # Dialog().notification no se ve desde el servicio: va por JSON-RPC (ver version.avisar)
+    from resources.lib import version
+    version.notificar(ADDON.getLocalizedString(30020), ADDON.getLocalizedString(30021) % texto)
 
 
 def actualizado_recien(addon_id, minutos=15):
@@ -541,6 +542,40 @@ def buscar_actualizaciones(motivo, forzar=False):
     xbmc.executebuiltin('UpdateAddonRepos')
 
 
+INSTALAR_SOLO = 4 * 60  # si Kodi no instaló la versión nueva en este tiempo, la instala Vidrio
+
+
+def instalar_atrasados(atrasados):
+    """Kodi tuvo su oportunidad y no la instaló (en el Apple TV, Kodi 22 revisa el repositorio y no instala nada):
+    Vidrio baja e instala su propia versión nueva desde el repositorio de casa."""
+    from resources.lib import version
+    hechos = []
+    for addon, instalada, publicada in atrasados:
+        try:
+            if version.instalar(addon, publicada):
+                hechos.append((addon, publicada))
+                log(f'instalé {addon} {instalada} -> {publicada} (Kodi no lo hizo)')
+        except Exception as e:
+            log(f'no pude instalar {addon} {publicada}: {e}')
+    HOME.setProperty('Vidrio.Actualizacion', f"{time.strftime('%H:%M:%S')} instalado por Vidrio: {hechos or 'nada'}")
+    if hechos:
+        try:  # para que avisar_actualizacion no lo vuelva a anunciar al próximo arranque
+            import os
+            import xbmcvfs
+            ruta = os.path.join(xbmcvfs.translatePath(ADDON.getAddonInfo('profile')), 'versiones.json')
+            with open(ruta, encoding='utf-8') as f:
+                guardadas = json.load(f)
+            claves = {'plugin.video.vidrio': 'plugin', 'skin.vidrio': 'skin'}
+            guardadas.update({claves[a]: v for a, v in hechos})
+            with open(ruta, 'w', encoding='utf-8') as f:
+                json.dump(guardadas, f)
+        except (OSError, ValueError):
+            pass
+        nombres = {'plugin.video.vidrio': 'Vidrio', 'skin.vidrio': 'Skin'}
+        version.notificar(ADDON.getLocalizedString(30020),
+                          ADDON.getLocalizedString(30021) % ' · '.join(f'{nombres[a]} {v}' for a, v in hechos))
+
+
 def revisar_version(estado, en_inicio):
     """Si el homelab publica una versión de Vidrio más nueva y Kodi no se actualiza en 20 minutos (en el Apple TV
     puede quedar con el índice viejo del repositorio después de dormir horas), avisa que hay que cerrarlo y abrirlo.
@@ -563,8 +598,11 @@ def revisar_version(estado, en_inicio):
             if not estado['desde']:
                 estado['desde'] = ahora
                 log('versión nueva publicada: ' + ', '.join(f'{a} {i} -> {p}' for a, i, p in atrasados))
-            buscar_actualizaciones('hay una versión nueva', forzar=True)
-            estado['proxima'] = ahora + 10 * 60  # volver a preguntar pronto hasta que Kodi la instale
+            if ahora - estado['desde'] >= INSTALAR_SOLO and not xbmc.Player().isPlaying():
+                instalar_atrasados(atrasados)
+            else:
+                buscar_actualizaciones('hay una versión nueva', forzar=True)
+            estado['proxima'] = ahora + INSTALAR_SOLO  # volver a preguntar pronto hasta que se instale
         else:
             estado['desde'] = 0
     if not estado['desde'] or ahora - estado['desde'] < 20 * 60 or ahora - estado['avisado'] < 2 * 3600:
