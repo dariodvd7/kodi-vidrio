@@ -266,25 +266,103 @@ def prueba(activar=True):
 
 # --- recordatorios --------------------------------------------------------------------------------------------------
 
+COMPARTIDO = 'vidrio-recordatorios.json'  # en la carpeta de backups del homelab: los avisos valen en todos los equipos
+_sin_compartido = [0.0]  # hasta cuándo no reintentar la copia compartida (falló la red o no hay homelab)
+_memoria = [0.0, None]  # (cuándo, datos): el servicio pregunta cada 15 segundos; leerla por la red cada 30 alcanza
+
+
+def _ruta_compartida():
+    """smb://<homelab>/KodiBackups/vidrio-recordatorios.json, o None sin homelab (catálogo de Carpetas sin destino de
+    backup propio): ahí la carpeta de ejemplo no existe y cada intento esperaría a que venza la conexión."""
+    from resources.lib import carpetas, respaldo
+    if time.time() < _sin_compartido[0]:
+        return None
+    if carpetas.activo() and not ADDON.getSettingString('respaldo_destino').strip():
+        return None
+    return respaldo.destino() + COMPARTIDO
+
+
+def _leer_compartido():
+    """Los avisos compartidos; {'_falta': True} si todavía no hay archivo, None si no se pudo leer."""
+    if _memoria[1] is not None and time.time() - _memoria[0] < 30:
+        return json.loads(json.dumps(_memoria[1]))  # copia: _leer_todo le agrega 'avisado'
+    ruta = _ruta_compartida()
+    if not ruta:
+        return None
+    try:
+        if not xbmcvfs.exists(ruta):
+            return {'_falta': True}
+        f = xbmcvfs.File(ruta)
+        try:
+            datos = json.loads(f.read() or '{}')
+        finally:
+            f.close()
+        datos = datos if isinstance(datos, dict) else {}
+        _memoria[:] = [time.time(), datos]
+        return json.loads(json.dumps(datos))
+    except Exception as e:
+        log(f'no pude leer los avisos compartidos: {e}', xbmc.LOGWARNING)
+        _sin_compartido[0] = time.time() + 10 * 60
+        return None
+
+
+def _escribir_compartido(datos):
+    ruta = _ruta_compartida()
+    if not ruta:
+        return
+    try:
+        f = xbmcvfs.File(ruta, 'w')
+        try:
+            ok = f.write(json.dumps(datos, ensure_ascii=False))
+        finally:
+            f.close()
+        if not ok:
+            raise OSError('no se pudo escribir')
+        _memoria[:] = [time.time(), json.loads(json.dumps(datos))]
+    except Exception as e:
+        log(f'no pude guardar los avisos compartidos: {e}', xbmc.LOGWARNING)
+        _sin_compartido[0] = time.time() + 10 * 60
+
+
 def _leer_todo():
+    """(recordatorios, sacados a mano). Los recordatorios se comparten entre equipos por el homelab; la copia local
+    sirve sin red. Qué ya se avisó es de cada equipo (_avisados, solo en la copia local)."""
     from resources.lib import copia
-    todos = copia.leer(RECORDATORIOS) or {}
-    return todos, set(todos.pop('_no', []))
+    local = copia.leer(RECORDATORIOS) or {}
+    avisados = set(local.pop('_avisados', []))
+    compartido = _leer_compartido()
+    if compartido is not None and compartido.pop('_falta', False):  # primera vez: los avisos de este equipo pasan a
+        compartido = dict(local)                                     # ser de todos
+        if compartido:
+            _escribir_compartido({k: ({c: x for c, x in v.items() if c != 'avisado'} if isinstance(v, dict) else v)
+                                  for k, v in compartido.items()})
+    todos = dict(compartido) if compartido is not None else local
+    if compartido is not None and compartido != local:
+        copia.escribir(RECORDATORIOS, {**compartido, '_avisados': sorted(avisados)})
+    no = set(todos.pop('_no', []))
+    for k, v in todos.items():
+        if isinstance(v, dict):
+            v['avisado'] = k in avisados
+    return todos, no
 
 
 def _guardar(todos, no):
     from resources.lib import copia
-    copia.escribir(RECORDATORIOS, {**todos, '_no': sorted(no)})
+    avisados = sorted(k for k, v in todos.items() if v.get('avisado'))
+    limpio = {k: {c: x for c, x in v.items() if c != 'avisado'} for k, v in todos.items() if isinstance(v, dict)}
+    compartido = {**limpio, '_no': sorted(no)}
+    copia.escribir(RECORDATORIOS, {**compartido, '_avisados': avisados})
+    _escribir_compartido(compartido)
 
 
 def _nuevo(p):
     local, visita = p['equipos']
     return {'inicio': p['inicio'], 'titulo': f"{local['nombre']} vs. {visita['nombre']}",
-            'competencia': p.get('competencia', ''), 'avisado': False}
+            'competencia': p.get('competencia', '')}
 
 
 def recordatorios(sumar=None):
-    """{id del partido: {inicio, titulo, competencia, avisado}} de este equipo; los de hace más de 3 horas se borran.
+    """{id del partido: {inicio, titulo, competencia, avisado}} (compartidos entre equipos); los de hace más de 3 horas se borran.
     Con `sumar` (próximos partidos) y el ajuste "Avisarme los partidos de mis favoritos", agrega los de los equipos
     favoritos, salvo los que se sacaron a mano (quedan en "_no")."""
     todos, no = _leer_todo()

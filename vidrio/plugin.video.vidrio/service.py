@@ -14,6 +14,8 @@
    que se vio en otro equipo.
 5. Mientras se reproduce algo del catálogo (resources/lib/siguiente.py): elige el audio en el idioma original y, al
    final de un episodio, ofrece el siguiente con una cuenta regresiva de 15 segundos.
+6. Actualizaciones: les pone repository.vidrio como origen a los add-ons de Vidrio instalados por zip (si no, Kodi
+   nunca los actualiza solo) y pide revisar los repositorios al arrancar.
 """
 import json
 import time
@@ -408,6 +410,35 @@ def tal_vez_respaldar(arranque):
         log(f'backup: error {e}')
 
 
+def fijar_origen():
+    """Kodi busca la versión nueva de un add-on solo en el repositorio del que lo instaló (su "origen"). Los de Vidrio
+    instalados desde un zip o que vienen dentro del IPA no tienen origen: Kodi los compara solo con el repositorio
+    oficial y nunca se actualizan solos. Se les pone repository.vidrio como origen en la base de add-ons y Kodi la
+    relee (UpdateLocalAddons). Una sola vez por equipo: después ya queda con origen."""
+    if not instalado('repository.vidrio'):
+        return
+    import glob
+    import os
+    import re
+    import sqlite3
+    import xbmcvfs
+    bases = glob.glob(os.path.join(xbmcvfs.translatePath('special://database/'), 'Addons*.db'))
+    if not bases:
+        return
+    base = max(bases, key=lambda b: int((re.findall(r'(\d+)\.db$', b) or ['0'])[0]))
+    con = sqlite3.connect(base, timeout=10)
+    try:
+        cur = con.execute("UPDATE installed SET origin = 'repository.vidrio' WHERE origin = '' AND addonID IN "
+                          "('plugin.video.vidrio', 'skin.vidrio')")
+        con.commit()
+        cambiados = cur.rowcount
+    finally:
+        con.close()
+    if cambiados:
+        log(f'{cambiados} add-on(s) de Vidrio sin origen: ahora se actualizan desde repository.vidrio')
+        xbmc.executebuiltin('UpdateLocalAddons')
+
+
 def buscar_actualizaciones(motivo):
     """Pide a Kodi que revise los repositorios ya, para que una versión nueva de Vidrio (repository.vidrio, en el
     homelab) llegue al abrir Kodi y no recién en la revisión diaria. Como mucho cada 30 minutos: al actualizarse, el
@@ -551,6 +582,10 @@ def main():
     if monitor.waitForAbort(5):
         return
     configurar_subtitulos()
+    try:
+        fijar_origen()
+    except Exception as e:
+        log(f'origen de los add-ons: error {e}')
     trailers = Trailers()
     from resources.lib.siguiente import Siguiente
     siguiente = Siguiente(trailers.player)
