@@ -84,3 +84,11 @@ msgstr ""
 msgctxt "#30019"
 msgid "Pick the audio in the original language"
 msgstr ""
+
+msgctxt "#30020"
+msgid "Vidrio was updated"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Now: %s"
+msgstr ""

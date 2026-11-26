@@ -439,6 +439,90 @@ def fijar_origen():
         xbmc.executebuiltin('UpdateLocalAddons')
 
 
+def avisar_actualizacion():
+    """Kodi actualiza Vidrio sin decir nada (sus avisos de add-ons vienen apagados). Al arrancar, el servicio compara
+    las versiones con las de la última vez (versiones.json en addon_data) y, si cambió alguna, lo avisa. La primera vez
+    que corre en un equipo no hay archivo: avisa solo si Kodi actualizó el plugin en los últimos 15 minutos."""
+    import os
+    import xbmcvfs
+    actuales = {'plugin': ADDON.getAddonInfo('version')}
+    if instalado('skin.vidrio'):
+        actuales['skin'] = xbmcaddon.Addon('skin.vidrio').getAddonInfo('version')
+    carpeta = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
+    ruta = os.path.join(carpeta, 'versiones.json')
+    try:
+        with open(ruta, encoding='utf-8') as f:
+            antes = json.load(f)
+    except (OSError, ValueError):
+        antes = None
+    if antes == actuales:
+        return
+    os.makedirs(carpeta, exist_ok=True)
+    with open(ruta, 'w', encoding='utf-8') as f:
+        json.dump(actuales, f)
+    if antes is None:
+        if not actualizado_recien('plugin.video.vidrio'):
+            return
+        cambios = ['plugin']
+    else:
+        cambios = [k for k in actuales if antes.get(k) != actuales[k]]
+    nombres = {'plugin': 'Vidrio', 'skin': 'Skin'}
+    texto = ' · '.join(f'{nombres[k]} {actuales[k]}' for k in cambios)
+    log(f'actualizado: {texto} (antes {antes})')
+    xbmcgui.Dialog().notification(ADDON.getLocalizedString(30020), ADDON.getLocalizedString(30021) % texto,
+                                  ADDON.getAddonInfo('icon'), 8000)
+
+
+def actualizado_recien(addon_id, minutos=15):
+    """True si Kodi instaló o actualizó el add-on hace menos de esos minutos (columna lastUpdated de Addons*.db)."""
+    import datetime
+    import glob
+    import os
+    import re
+    import sqlite3
+    import xbmcvfs
+    bases = glob.glob(os.path.join(xbmcvfs.translatePath('special://database/'), 'Addons*.db'))
+    if not bases:
+        return False
+    base = max(bases, key=lambda b: int((re.findall(r'(\d+)\.db$', b) or ['0'])[0]))
+    con = sqlite3.connect(base, timeout=10)
+    try:
+        fila = con.execute('SELECT lastUpdated FROM installed WHERE addonID = ?', (addon_id,)).fetchone()
+    finally:
+        con.close()
+    try:
+        cuando = datetime.datetime.strptime(fila[0][:19], '%Y-%m-%d %H:%M:%S')
+    except (TypeError, ValueError):
+        return False
+    return abs((datetime.datetime.now() - cuando).total_seconds()) < minutos * 60
+
+
+def copiar_log_actualizaciones():
+    """Copia al homelab (smb://<homelab>/KodiBackups/vidrio-diag-<equipo>.txt) las líneas del log de Kodi sobre
+    repositorios y actualizaciones de add-ons: en el Apple TV el log no se puede leer desde afuera, y sin esto no se
+    sabe por qué una versión nueva no se instaló sola. Solo líneas de add-ons: nada de rutas de medios ni cuentas."""
+    import re
+    import xbmcvfs
+    from resources.lib import carpetas, respaldo
+    if carpetas.activo() and not ADDON.getSettingString('respaldo_destino').strip():
+        return
+    ruta_log = xbmcvfs.translatePath('special://logpath/') + 'kodi.log'
+    patron = re.compile(r'Repositor|AddonInstaller|AddonUpdate|[Aa]ddon update|UpdateAddonRepos|UpdateLocalAddons|'
+                        r'vidrio\.servicio|plugin\.video\.vidrio.*(install|update|version)|repository\.vidrio')
+    with open(ruta_log, encoding='utf-8', errors='replace') as f:
+        lineas = [l.rstrip() for l in f if patron.search(l)]
+    datos = {k: xbmc.getInfoLabel(f'Window(home).Property({k})') for k in ('Vidrio.Actualizacion', 'Vidrio.Version')}
+    texto = '\n'.join([f'Vidrio {ADDON.getAddonInfo("version")} · {time.strftime("%Y-%m-%d %H:%M:%S")}',
+                        *(f'{k}: {v}' for k, v in datos.items()), ''] + lineas[-200:]) + '\n'
+    destino = respaldo.destino() + f'vidrio-diag-{respaldo.equipo()}.txt'
+    f = xbmcvfs.File(destino, 'w')
+    try:
+        f.write(texto)
+    finally:
+        f.close()
+    log(f'log de actualizaciones copiado a {destino}')
+
+
 def buscar_actualizaciones(motivo, forzar=False):
     """Pide a Kodi que revise los repositorios ya, para que una versión nueva de Vidrio (repository.vidrio, en el
     homelab) llegue al abrir Kodi y no recién en la revisión diaria. Como mucho cada 30 minutos: al actualizarse, el
@@ -595,6 +679,10 @@ def main():
         fijar_origen()
     except Exception as e:
         log(f'origen de los add-ons: error {e}')
+    try:
+        avisar_actualizacion()
+    except Exception as e:
+        log(f'aviso de actualización: error {e}')
     trailers = Trailers()
     from resources.lib.siguiente import Siguiente
     siguiente = Siguiente(trailers.player)
@@ -605,6 +693,7 @@ def main():
     version_estado = {'proxima': time.time() + 150, 'desde': 0, 'avisado': 0, 'publicado': {}}
     seguido = None  # (archivo, posición, total) de lo que el usuario mira del homelab
     arranque = time.time()
+    diagnostico_en = arranque + 6 * 60  # con la revisión de repositorios ya hecha (empieza a los 90 s)
     vueltas = 0
     partidos_estado = {}
     carpetas_estado = {}
@@ -615,6 +704,12 @@ def main():
         # Lo visto en otro equipo (Apple TV, TCL...) aparece al volver a Kodi: Android deja Kodi en segundo plano y
         # al volver el inicio no se recarga solo.
         ahora = time.time()
+        if diagnostico_en and ahora >= diagnostico_en:
+            diagnostico_en = 0
+            try:
+                copiar_log_actualizaciones()
+            except Exception as e:
+                log(f'copia del log de actualizaciones: error {e}')
         if ahora - ultima_vuelta > 60:  # el servicio estuvo pausado: Kodi estaba en segundo plano o dormido
             recargar_trakt(trailers, 'Kodi volvió de segundo plano'); ultima_recarga = ahora
             revisar_en, motivo_revision = time.time() + 30, 'Kodi volvió de segundo plano'

@@ -84,3 +84,11 @@ msgstr "Ofrecer el siguiente episodio al terminar uno (cuenta de 15 segundos)"
 msgctxt "#30019"
 msgid "Pick the audio in the original language"
 msgstr "Elegir el audio en el idioma original"
+
+msgctxt "#30020"
+msgid "Vidrio was updated"
+msgstr "Vidrio se ha actualizado"
+
+msgctxt "#30021"
+msgid "Now: %s"
+msgstr "Ahora: %s"
