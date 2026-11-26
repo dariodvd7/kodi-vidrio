@@ -458,12 +458,12 @@ def buscar_actualizaciones(motivo, forzar=False):
 def revisar_version(estado, en_inicio):
     """Si el homelab publica una versión de Vidrio más nueva y Kodi no se actualiza en 20 minutos (en el Apple TV
     puede quedar con el índice viejo del repositorio después de dormir horas), avisa que hay que cerrarlo y abrirlo.
-    Pregunta al homelab al arrancar, al volver de segundo plano y cada 6 horas; avisa como mucho cada 2 horas, con
+    Pregunta al homelab al arrancar, al volver de segundo plano y cada hora; avisa como mucho cada 2 horas, con
     el inicio en pantalla y nada sonando."""
     from resources.lib import version
     ahora = time.time()
     if ahora >= estado['proxima']:
-        estado['proxima'] = ahora + 6 * 3600
+        estado['proxima'] = ahora + 3600
         try:
             estado['publicado'] = version.publicadas()
         except Exception as e:
