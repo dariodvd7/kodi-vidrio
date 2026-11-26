@@ -439,14 +439,16 @@ def fijar_origen():
         xbmc.executebuiltin('UpdateLocalAddons')
 
 
-def buscar_actualizaciones(motivo):
+def buscar_actualizaciones(motivo, forzar=False):
     """Pide a Kodi que revise los repositorios ya, para que una versión nueva de Vidrio (repository.vidrio, en el
     homelab) llegue al abrir Kodi y no recién en la revisión diaria. Como mucho cada 30 minutos: al actualizarse, el
     servicio arranca de nuevo y no tiene que volver a pedirlo."""
     if not instalado('repository.vidrio'):
         return
     ultima = HOME.getProperty('Vidrio.ReposRevisados')
-    if ultima and time.time() - float(ultima) < 30 * 60:
+    # La propiedad sobrevive a "cerrar" Kodi en Android (el proceso sigue vivo): con una versión nueva publicada se pide
+    # igual (forzar), si no la espera de 30 minutos la frenaba y Kodi seguía con el índice viejo del repositorio.
+    if ultima and time.time() - float(ultima) < (10 if forzar else 30) * 60:
         return
     HOME.setProperty('Vidrio.ReposRevisados', str(time.time()))
     log(f'reviso los repositorios de add-ons ({motivo})')
@@ -468,11 +470,13 @@ def revisar_version(estado, en_inicio):
             log(f'no pude preguntar la versión publicada: {e}')
             return
         atrasados = version.pendientes(estado['publicado'])
-        if atrasados and not estado['desde']:
-            estado['desde'] = ahora
-            log('versión nueva publicada: ' + ', '.join(f'{a} {i} -> {p}' for a, i, p in atrasados))
-            buscar_actualizaciones('hay una versión nueva')
-        elif not atrasados:
+        if atrasados:
+            if not estado['desde']:
+                estado['desde'] = ahora
+                log('versión nueva publicada: ' + ', '.join(f'{a} {i} -> {p}' for a, i, p in atrasados))
+            buscar_actualizaciones('hay una versión nueva', forzar=True)
+            estado['proxima'] = ahora + 10 * 60  # volver a preguntar pronto hasta que Kodi la instale
+        else:
             estado['desde'] = 0
     if not estado['desde'] or ahora - estado['desde'] < 20 * 60 or ahora - estado['avisado'] < 2 * 3600:
         return
