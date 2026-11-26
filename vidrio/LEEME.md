@@ -415,7 +415,7 @@ Vidrio y vincular Trakt. En Android no hacen falta `_scproxy` ni el teclado de t
 ## Equipos favoritos (plugin 1.16.0, skin 1.8.0)
 
 - Ajuste **Equipos favoritos**, separados por coma ("Racing Club, Packers"). Se reconocen por palabras enteras en el
-  nombre corto o completo de ESPN ("Packers" en "Green Bay Packers"; "River" no toma "Riverside").
+  nombre corto o completo de ESPN ("Packers" en "Green Bay Packers"; "Unión" no toma "Unionistas").
 - Sus partidos van primero en "Deportes en vivo" y en "Próximos partidos", con "★" en la pastilla ("★ EN VIVO",
   "★ AVISO" o el día en dorado) y "★ FAVORITO" arriba. Siempre aparecen: el tope (20 próximos, 3 de la NFL por día)
   ahora lo pone el plugin, y el homelab manda todos los próximos (hasta 80).

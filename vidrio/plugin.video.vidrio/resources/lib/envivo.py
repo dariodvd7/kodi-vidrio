@@ -142,7 +142,7 @@ def favoritos():
 
 def es_favorito(p, favs=None):
     """Si juega un equipo favorito: el favorito tiene que estar entero, por palabras, en el nombre corto o completo
-    ("packers" en "Green Bay Packers", "racing club" en "Racing Club"; "river" no es "Riverside")."""
+    ("packers" en "Green Bay Packers", "racing club" en "Racing Club"; "union" no es "Unionistas")."""
     favs = favoritos() if favs is None else favs
     for e in p.get('equipos', []):
         for nombre in (e.get('nombre'), e.get('completo')):
