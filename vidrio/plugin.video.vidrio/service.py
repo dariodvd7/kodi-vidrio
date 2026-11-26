@@ -451,6 +451,8 @@ def buscar_actualizaciones(motivo, forzar=False):
     if ultima and time.time() - float(ultima) < (10 if forzar else 30) * 60:
         return
     HOME.setProperty('Vidrio.ReposRevisados', str(time.time()))
+    # para revisar desde afuera (JSON-RPC, Window(home).Property(Vidrio.Actualizacion)) sin leer el log de Kodi
+    HOME.setProperty('Vidrio.Actualizacion', f"{time.strftime('%H:%M:%S')} revisión pedida: {motivo}")
     log(f'reviso los repositorios de add-ons ({motivo})')
     xbmc.executebuiltin('UpdateAddonRepos')
 
@@ -468,8 +470,11 @@ def revisar_version(estado, en_inicio):
             estado['publicado'] = version.publicadas()
         except Exception as e:
             log(f'no pude preguntar la versión publicada: {e}')
+            HOME.setProperty('Vidrio.Version', f"{time.strftime('%H:%M:%S')} error: {e}")
             return
         atrasados = version.pendientes(estado['publicado'])
+        HOME.setProperty('Vidrio.Version', f"{time.strftime('%H:%M:%S')} publicado {estado['publicado'] or 'nada'}; "
+                         f"atrasados {atrasados or 'ninguno'}")
         if atrasados:
             if not estado['desde']:
                 estado['desde'] = ahora
