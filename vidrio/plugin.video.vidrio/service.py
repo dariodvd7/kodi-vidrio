@@ -12,6 +12,8 @@
    borra la caché de Trakt de Vidrio y cambia Window(home).Property(Vidrio.Trakt): la skin recarga "Continuar viendo".
    También al volver Kodi de segundo plano o del reposo, y cada 5 minutos con el inicio en pantalla: así aparece lo
    que se vio en otro equipo.
+5. Mientras se reproduce algo del catálogo (resources/lib/siguiente.py): elige el audio en el idioma original y, al
+   final de un episodio, ofrece el siguiente con una cuenta regresiva de 15 segundos.
 """
 import json
 import time
@@ -160,11 +162,17 @@ class Reproductor(xbmc.Player):
     def onAVStarted(self):
         self.servicio.al_empezar()
 
+    siguiente = None  # resources.lib.siguiente.Siguiente: audio original y "siguiente episodio"
+
     def onPlayBackEnded(self):
         self.servicio.al_terminar(evento=True)
+        if self.siguiente:
+            self.siguiente.terminado(natural=True)
 
     def onPlayBackStopped(self):
         self.servicio.al_terminar(evento=True)
+        if self.siguiente:
+            self.siguiente.terminado(natural=False)
 
     def onPlayBackError(self):
         self.servicio.al_fallar()
@@ -544,6 +552,9 @@ def main():
         return
     configurar_subtitulos()
     trailers = Trailers()
+    from resources.lib.siguiente import Siguiente
+    siguiente = Siguiente(trailers.player)
+    trailers.player.siguiente = siguiente
     # Revisar actualizaciones con el inicio ya cargado: si Kodi reemplaza el plugin mientras la skin arma sus filas,
     # muestra un error ("Unknown addon id") durante el segundo en que el plugin no está instalado.
     revisar_en, motivo_revision = time.time() + 90, 'Kodi arrancó'
@@ -617,6 +628,10 @@ def main():
             trailers.paso()
         except Exception as e:  # el servicio no debe morir por un error puntual
             log(f'error: {e}')
+        try:
+            siguiente.paso()
+        except Exception as e:
+            log(f'siguiente episodio: error {e}')
         if monitor.waitForAbort(0.3):
             break
     if seguido:  # Kodi se cerró con algo sonando

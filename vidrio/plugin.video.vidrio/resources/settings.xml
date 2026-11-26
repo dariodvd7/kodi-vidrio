@@ -64,6 +64,16 @@
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="siguiente" type="boolean" label="30018">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="audio_original" type="boolean" label="30019">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="equipos_favoritos" type="string" label="30016">
 					<level>0</level>
 					<default></default>

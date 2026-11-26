@@ -76,3 +76,11 @@ msgstr ""
 msgctxt "#30017"
 msgid "Remind me of my favourite teams’ matches"
 msgstr ""
+
+msgctxt "#30018"
+msgid "Offer the next episode when one ends (15-second countdown)"
+msgstr ""
+
+msgctxt "#30019"
+msgid "Pick the audio in the original language"
+msgstr ""

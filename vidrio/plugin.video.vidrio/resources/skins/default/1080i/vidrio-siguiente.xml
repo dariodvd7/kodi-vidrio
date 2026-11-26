@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Cartel "Siguiente episodio" sobre el video (resources/lib/siguiente.py). Texturas y fuentes de skin.vidrio;
+     con otra skin se ve sin el vidrio de fondo. -->
+<window>
+	<defaultcontrol always="true">10</defaultcontrol>
+	<animation effect="fade" time="250">WindowOpen</animation>
+	<animation effect="fade" time="200">WindowClose</animation>
+	<controls>
+		<control type="group">
+			<left>1150</left>
+			<top>770</top>
+			<width>710</width>
+			<height>250</height>
+			<control type="image">
+				<width>710</width>
+				<height>250</height>
+				<texture border="30" colordiffuse="F2101420">vidrio/glass_dialog.png</texture>
+			</control>
+			<control type="image">
+				<left>22</left>
+				<top>22</top>
+				<width>320</width>
+				<height>180</height>
+				<aspectratio>scale</aspectratio>
+				<texture background="true" diffuse="vidrio/mask_card.png">$INFO[Window.Property(imagen)]</texture>
+			</control>
+			<control type="label">
+				<left>364</left>
+				<top>20</top>
+				<width>320</width>
+				<height>30</height>
+				<font>font12</font>
+				<textcolor>B3FFFFFF</textcolor>
+				<label>SIGUIENTE EPISODIO · $INFO[Window.Property(numero)]</label>
+			</control>
+			<control type="label">
+				<left>364</left>
+				<top>52</top>
+				<width>320</width>
+				<height>40</height>
+				<font>font27</font>
+				<textcolor>FFFFFFFF</textcolor>
+				<scroll>true</scroll>
+				<label>$INFO[Window.Property(serie)]</label>
+			</control>
+			<control type="label">
+				<left>364</left>
+				<top>94</top>
+				<width>320</width>
+				<height>34</height>
+				<font>font13</font>
+				<textcolor>D9FFFFFF</textcolor>
+				<scroll>true</scroll>
+				<label>$INFO[Window.Property(titulo)]</label>
+			</control>
+			<control type="grouplist">
+				<left>364</left>
+				<top>150</top>
+				<width>330</width>
+				<height>56</height>
+				<orientation>horizontal</orientation>
+				<itemgap>12</itemgap>
+				<onup>noop</onup>
+				<ondown>noop</ondown>
+				<control type="button" id="10">
+					<width>186</width>
+					<height>56</height>
+					<font>font13</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>FFFFFFFF</textcolor>
+					<focusedcolor>FF101420</focusedcolor>
+					<texturefocus border="28">vidrio/pill_focus.png</texturefocus>
+					<texturenofocus border="28">vidrio/glass_pill.png</texturenofocus>
+					<label>Ver ahora ($INFO[Window.Property(cuenta)])</label>
+				</control>
+				<control type="button" id="11">
+					<width>130</width>
+					<height>56</height>
+					<font>font13</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>FFFFFFFF</textcolor>
+					<focusedcolor>FF101420</focusedcolor>
+					<texturefocus border="28">vidrio/pill_focus.png</texturefocus>
+					<texturenofocus border="28">vidrio/glass_pill.png</texturenofocus>
+					<label>Cancelar</label>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

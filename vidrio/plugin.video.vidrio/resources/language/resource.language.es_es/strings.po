@@ -76,3 +76,11 @@ msgstr "Equipos favoritos (separados por coma, por ejemplo Racing Club, Packers)
 msgctxt "#30017"
 msgid "Remind me of my favourite teams’ matches"
 msgstr "Avisarme de los partidos de mis equipos favoritos"
+
+msgctxt "#30018"
+msgid "Offer the next episode when one ends (15-second countdown)"
+msgstr "Ofrecer el siguiente episodio al terminar uno (cuenta de 15 segundos)"
+
+msgctxt "#30019"
+msgid "Pick the audio in the original language"
+msgstr "Elegir el audio en el idioma original"
