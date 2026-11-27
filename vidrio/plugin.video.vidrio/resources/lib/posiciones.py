@@ -2,9 +2,9 @@
 """Dónde quedó cada película o episodio del homelab en este equipo (lo anota el servicio al cortar).
 
 Trakt da por vista una película o un episodio que se corta pasado el 80 % y lo saca de "Continuar viendo" aunque
-falten minutos. Con lo que anota este equipo, "Continuar viendo" lo sigue mostrando hasta terminarlo (95 %). Kodi
-guarda su propio punto, pero bajo la dirección exacta con la que arrancó (que incluye el porcentaje de Trakt) y desde
-la lista no se puede encontrar.
+falten minutos, y Kodi no guarda su punto pasado el 92 % (en un episodio de media hora, los créditos). Con lo que anota
+este equipo, volver a abrirlo lo retoma donde se cortó, desde "Continuar viendo" o desde la lista de la serie, salvo
+que haya terminado: los últimos FINAL segundos (lo que dura el cartel del siguiente episodio) o el final del video.
 """
 import json
 import os
@@ -16,7 +16,8 @@ import xbmcvfs
 PERFIL = xbmcvfs.translatePath(xbmcaddon.Addon('plugin.video.vidrio').getAddonInfo('profile'))
 ARCHIVO = os.path.join(PERFIL, 'posiciones.json')
 MINIMO = 120          # segundos: menos que esto no es "empezado"
-TERMINADO = 0.95      # desde acá cuenta como visto
+FINAL = 20            # segundos: si quedan menos, lo terminó (el cartel del siguiente episodio sale a los 15)
+CASI = 0.95           # pasado esto (los créditos), "Continuar viendo" ofrece el siguiente episodio en vez de este
 VIGENCIA = 60 * 86400  # se olvidan a los 60 días
 MAXIMO = 50
 
@@ -31,12 +32,15 @@ def cargar():
 
 
 def anotar(archivo, posicion, total):
-    """Anota dónde quedó (o lo borra si lo terminó o apenas lo empezó). Devuelve el porcentaje o None."""
+    """Anota dónde quedó, lo borra si lo terminó y no toca nada si apenas lo empezó (abrirlo desde el principio y
+    cortarlo enseguida no borra el punto que ya tenía). Devuelve el porcentaje anotado o None."""
     if not archivo or not total or total <= 0:
+        return None
+    if posicion < MINIMO:
         return None
     datos = cargar()
     porcentaje = posicion / total
-    if posicion < MINIMO or porcentaje >= TERMINADO:
+    if total - posicion <= FINAL:
         datos.pop(archivo, None)
         porcentaje = None
     else:
@@ -49,3 +53,11 @@ def anotar(archivo, posicion, total):
         json.dump(dict(vigentes), fh)
     os.replace(ARCHIVO + '.tmp', ARCHIVO)
     return porcentaje
+
+
+def punto(archivo, datos=None):
+    """(posición, total) anotados para el archivo, o None."""
+    d = (cargar() if datos is None else datos).get(archivo)
+    if not d or not d.get('total'):
+        return None
+    return float(d.get('posicion') or 0), float(d['total'])

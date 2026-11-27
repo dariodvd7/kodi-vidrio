@@ -136,11 +136,13 @@ class Siguiente:
         self.cartel = None
         self.cancelado = False
         self.lanzado = False   # ya pedimos el siguiente: el "terminó" que viene es nuestro
+        self.resta = None      # segundos que faltaban en la última vuelta
 
     def reiniciar(self, archivo=None):
         self.cerrar()
         self.archivo, self.info, self.cancelado, self.lanzado = archivo, None, False, False
         self.audio_en = 0.0
+        self.resta = None
 
     def cerrar(self):
         if self.cartel:
@@ -162,7 +164,12 @@ class Siguiente:
         self.cerrar()
         self.lanzado = True
         log(f'siguiente episodio: {sig["serie"]} {sig["numero"]}')
-        xbmc.executebuiltin(f'PlayMedia(plugin://plugin.video.vidrio/?reproducir={quote_plus(sig["archivo"])})')
+        # Sin preguntar "Reanudar": si quedó a medias, sigue desde ahí; si se había cortado en los créditos, de cero
+        from resources.lib import posiciones
+        pt = posiciones.punto(sig['archivo'])
+        desde = 100 * pt[0] / pt[1] if pt and pt[0] < posiciones.CASI * pt[1] else 0
+        xbmc.executebuiltin(f'PlayMedia(plugin://plugin.video.vidrio/?reproducir={quote_plus(sig["archivo"])}'
+                            f'&desde={desde:.2f})')
 
     def elegir_audio(self):
         r = rpc('Player.GetProperties', playerid=1, properties=['audiostreams', 'currentaudiostream']) or {}
@@ -182,6 +189,11 @@ class Siguiente:
 
     def paso(self):
         if not self.player.isPlayingVideo():
+            # Terminó con el cartel en pantalla: el aviso de Kodi (terminado) puede llegar después de esta vuelta,
+            # cuando el cartel ya se cerró, y el siguiente no arrancaba.
+            if (self.cartel and not self.cancelado and not self.lanzado and self.resta is not None
+                    and self.resta <= 3):
+                return self.lanzar()
             if self.archivo and not self.lanzado:
                 self.reiniciar()
             return
@@ -216,6 +228,7 @@ class Siguiente:
         except RuntimeError:
             return
         resta = total - pos
+        self.resta = resta
         if self.cartel:
             if self.cartel.eleccion == 'ahora':
                 return self.lanzar()

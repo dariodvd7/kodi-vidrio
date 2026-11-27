@@ -76,6 +76,26 @@ def duracion(m):
     return f'{h} h {m} min' if h and m else (f'{h} h' if h else f'{m} min')
 
 
+def preguntar_desde(archivo):
+    """Al abrir algo que se cortó a medias desde una lista (no desde "Continuar viendo", que ya trae dónde seguir):
+    pregunta "Reanudar desde..." o "Reproducir desde el principio" con el menú de Kodi. Devuelve (posición, total)
+    para retomar, (0, 0) para empezar de cero, None si se canceló o False si Vidrio no tiene punto (entonces, si Kodi
+    tiene el suyo, ya preguntó Kodi y no hay que tocar nada). Lo pregunta Vidrio y no Kodi: con el punto en el
+    ítem de la lista Kodi pregunta, pero no le pasa la respuesta al plugin; y Kodi no guarda su propio punto pasado el
+    92 % (los créditos de un episodio), así que esos se perdían."""
+    from resources.lib import posiciones
+    pt = posiciones.punto(archivo)
+    if not pt:
+        return False
+    s = int(pt[0])
+    hora = f'{s // 3600:02d}:{s % 3600 // 60:02d}:{s % 60:02d}'
+    eleccion = xbmcgui.Dialog().contextmenu([xbmc.getLocalizedString(12022).replace('{0:s}', hora).replace('%s', hora),
+                                            xbmc.getLocalizedString(12021)])
+    if eleccion < 0:
+        return None
+    return pt if eleccion == 0 else (0, 0)
+
+
 def item_pelicula(p):
     li = xbmcgui.ListItem(p['titulo'], offscreen=True)
     comun(li, p, 'movie')
@@ -194,11 +214,15 @@ def continuar(pelis, series):
     for archivo, d in anotadas.items():
         if archivo in archivos:
             continue
+        if float(d.get('posicion') or 0) >= posiciones.CASI * float(d.get('total') or 1):
+            continue  # cortado en los créditos: la fila ofrece el siguiente episodio; abrirlo de la lista lo retoma
+        # Trakt lo da por visto en el mismo momento en que se cortó (pasado el 80 %): solo cuenta si se vio después
         cuando = datetime.fromtimestamp(d.get('cuando', 0), timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        limite = datetime.fromtimestamp(d.get('cuando', 0) + 600, timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.000Z')
         p = next((p for p in pelis if p['archivo'] == archivo), None)
         if p:
             visto = next((w for ids, w in vistas_despues.items() if isinstance(ids, str) and mismo(json.loads(ids), p.get('ids'))), '')
-            if visto > cuando:
+            if visto > limite:
                 continue
             u, li, carpeta = item_pelicula(p)
         else:
@@ -208,7 +232,7 @@ def continuar(pelis, series):
                 continue
             visto = next((w for k, w in vistas_despues.items() if isinstance(k, tuple) and mismo(json.loads(k[0]), s.get('ids'))
                           and str(k[1]) == str(e.get('temporada')) and str(k[2]) == str(e.get('episodio'))), '')
-            if visto > cuando:
+            if visto > limite:
                 continue
             u, li, carpeta = item_episodio(s, e)
             li.setLabel(f"{s['titulo']} · T{e.get('temporada')} E{e.get('episodio')}")
@@ -446,6 +470,13 @@ def main():
         li.setPath(archivo)
         if P.get('desde'):  # desde "Continuar viendo": retomar donde quedó según Trakt
             li.setProperty('StartPercent', P['desde'])
+        else:  # desde una lista: si se cortó a medias, Reanudar o Desde el principio
+            desde = preguntar_desde(archivo)
+            if desde is None:
+                xbmcplugin.setResolvedUrl(HANDLE, False, li)
+                return
+            if desde is not False:  # Kodi usa el punto del ítem que se reproduce: (0, 0) arranca de cero
+                li.getVideoInfoTag().setResumePoint(*desde)
         # Trakt (script.trakt) identifica lo que no está en la biblioteca con esta propiedad: códigos de la película o,
         # para un episodio, los de la serie (temporada y episodio los toma del reproductor).
         ids = next((p.get('ids') for p in pelis if p['archivo'] == archivo), None)

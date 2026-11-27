@@ -368,6 +368,21 @@ RECARGA_PERIODICA = 5 * 60  # con el inicio en pantalla y nada sonando
 ARRANQUE_SEGURO = 4  # segundos: no cortar un tráiler antes (ver Trailers.paso)
 
 
+PUNTOS_KODI = []  # (cuándo, archivo): puntos de Kodi para borrar (ver borrar_puntos_kodi)
+
+
+def borrar_puntos_kodi():
+    """Kodi guarda su propio punto bajo la dirección del plugin (hasta el 92 %) y, al elegir el video en una lista,
+    preguntaría "Reanudar" antes que Vidrio (default.preguntar_desde): dos preguntas seguidas. Con el punto ya anotado
+    por Vidrio, el de Kodi se borra, unos segundos después de cortar (Kodi lo guarda al detenerse)."""
+    from urllib.parse import quote_plus
+    ahora = time.time()
+    for item in [x for x in PUNTOS_KODI if x[0] <= ahora]:
+        PUNTOS_KODI.remove(item)
+        rpc('Files.SetFileDetails', file='plugin://plugin.video.vidrio/?reproducir=' + quote_plus(item[1]),
+            media='video', resume={'position': 0, 'total': 0})
+
+
 def seguir_posicion(trailers, seguido):
     """Va tomando por dónde va lo que se mira del homelab y, al cortarlo, lo anota (resources/lib/posiciones.py):
     "Continuar viendo" no pierde lo que Trakt da por visto pasado el 80 %. Los tráileres no cuentan."""
@@ -385,6 +400,8 @@ def seguir_posicion(trailers, seguido):
             from resources.lib import posiciones
             porcentaje = posiciones.anotar(*seguido)
             log(f'posición anotada: {porcentaje:.0%}' if porcentaje is not None else 'posición: terminado o recién empezado')
+            if porcentaje is not None:
+                PUNTOS_KODI.append((time.time() + 5, seguido[0]))
         except Exception as e:
             log(f'no pude anotar la posición: {e}')
     return actual
@@ -717,6 +734,12 @@ def main():
         fijar_origen()
     except Exception as e:
         log(f'origen de los add-ons: error {e}')
+    try:  # los puntos de Kodi que Vidrio ya tiene anotados (de antes de que los borrara al cortar)
+        from resources.lib import posiciones
+        PUNTOS_KODI.extend((0, a) for a in posiciones.cargar())
+        borrar_puntos_kodi()
+    except Exception as e:
+        log(f'no pude borrar los puntos de Kodi: {e}')
     try:
         avisar_actualizacion()
     except Exception as e:
@@ -800,6 +823,11 @@ def main():
             rpc('Addons.SetAddonEnabled', addonid='plugin.video.youtube', enabled=True)
             trailers.fallos = 0
         seguido = seguir_posicion(trailers, seguido)
+        if PUNTOS_KODI:
+            try:
+                borrar_puntos_kodi()
+            except Exception as e:
+                log(f'no pude borrar el punto de Kodi: {e}')
         vueltas += 1
         try:
             trailers.paso()
